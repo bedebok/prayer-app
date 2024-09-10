@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Magnificat</title>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="237v" to="238v"/>
+              <title xml:id="MAGNIFICAT">Magnificat</title>
+              <textLang mainLang="gml"/>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head>
+          <w xml:lang="la"><hi rend="2">M</hi>agnificat</w> 
+        </head>
+        <p>
+          <lb n="7"/>
+          <w><supplied>M</supplied>yne</w>
+          <w>sele</w>
+          <w>grote</w>
+          <w>den</w>
+          <w>herren</w>
+          <lb n="8"/>
+          <w><hi>U</hi>nde </w>
+          <w>my<ex>n</ex></w>
+          <w>geist</w>
+          <w>hoghe</w>
+          <w>syk</w>
+          <w>yn</w>
+          <lb n="9"/>
+          <w>gode</w>
+          <w>myneme</w>
+          <w>heile</w>
+          <w><hi rend="1">W</hi>ente</w>
+          <hi>he</hi>
+          <lb n="10"/>
+          <w>heft</w>
+          <w>an</w>
+          <w>geseen</w>
+          <w>de</w>
+          <w>otmodicheit</w>
+          <w>sy<lb n="11"/>ner</w>
+          <w>dernen</w>
+          <w>dar</w>
+          <w>v<ex>m</ex>me</w>
+          <w>scal</w>
+          <w>my</w>
+          <w>sa<lb n="12"/>lich</w>
+          <w>spreke<ex>n</ex></w>
+          <w>alle</w>
+          <w>slechte</w>
+          <w><hi rend="1">W</hi>ente</w>
+          <lb n="13"/>
+          <w>de</w>
+          <w>dar</w>
+          <w>weldig</w>
+          <w>is</w>
+          <w>de</w>
+          <w>heft</w>
+          <w>gedan</w>
+          <lb n="14"/>
+          <w>grote</w>
+          <w>dynk</w>
+          <w>vn<ex>de</ex></w>
+          <w>syn</w>
+          <w>name</w>
+          <w>de</w>
+          <w>is</w>
+          <pb n="238r"/>
+          <lb n="1"/>
+          <w>hilligh</w>
+          <w><hi rend="1">U</hi>nde</w>
+          <w>syne</w>
+          <w>barmher<lb n="2"/>ticheit</w>
+          <w>is</w>
+          <w>van</w>
+          <w>selchte</w>
+          <w>to</w>
+          <w>slechte<ex>n</ex></w>
+          <lb n="3"/>
+          <w>den</w>
+          <w>de</w>
+          <w>ene</w>
+          <w>vruchte</w>
+          <w><hi rend="1">H</hi>e</w>
+          <w>heft</w>
+          <w>wel<lb n="4"/>de</w>
+          <w>gedan</w>
+          <w>yn</w>
+          <w>syneme</w>
+          <w>arme</w>
+          <w>he</w>
+          <lb n="5"/>
+          <w>vorstorede</w>
+          <w>de</w>
+          <w>houerdege<ex>n</ex></w>
+          <w>in</w>
+          <w>deme</w>
+          <lb n="6"/>
+          <w>danke<ex>n</ex></w>
+          <w>sines</w>
+          <w>herte<ex>n</ex></w>
+          <w><hi rend="1">H</hi>e</w>
+          <w>settede</w>
+          <w>de</w>
+          <lb n="7"/>
+          <w>weldege<ex>n</ex></w>
+          <w>van</w>
+          <w>deme</w>
+          <w>stole</w>
+          <w>vn<ex>de</ex></w>
+          <w>ho<lb n="8"/>gede</w>
+          <w>de</w>
+          <w>otmodigen</w>
+          <w><hi rend="1">H</hi>e</w>
+          <w>voruul<lb n="9"/>lede</w>
+          <w>de</w>
+          <w>hungergen</w>
+          <w>mit</w>
+          <w>gude<ex>n</ex></w>
+          <w>dinge<ex>n</ex></w>
+          <lb n="10"/><w>vnde</w>
+          <w>leet</w>
+          <w>de</w>
+          <w>riken</w>
+          <w>ydel</w>
+          <w><hi rend="1">H</hi>e</w>
+          <w>vnt<lb n="11"/>fenk</w>
+          <w>syn</w>
+          <w>kynt</w>
+          <name type="place" key="Israel">
+            <w>israhel</w>
+          </name>
+          <w>he</w>
+          <w>dachte</w>
+          <lb n="12"/>
+          <w>syner</w>
+          <w>barmherticheit</w>
+          <w><hi rend="1">A</hi>lso</w>
+          <w>he</w>
+          <lb n="13"/>
+          <w>gesproken</w>
+          <w>heft</w>
+          <w>to</w>
+          <w>vnsen</w>
+          <w>verdere<ex>n</ex></w>
+          <lb n="14"/>
+          <name type="pers" key="Abraham">
+            <w>abrahame</w>
+          </name>
+          <w>to</w>
+          <w>eweliken</w>
+          <w>syme</w>
+          <lb n="15"/>
+          <w>slechte</w>
+          <w><hi rend="1">H</hi>ere</w>
+          <w>gif</w>
+          <w>en</w>
+          <w>de</w>
+          <w>ewige</w>
+          <pb n="238v"/>
+          <lb n="1"/>
+          <w>rouwe</w>
+          <pc>:</pc>
+          <w>vnde</w>
+          <w>lat</w>
+          <w>en</w>
+          <w>shine<ex>n</ex></w>
+          <w>dyn</w>
+          <w>e<lb n="2"/>wige</w>
+          <w>licht</w>
+          <pc>.</pc>
+        </p>
+      </div>
+      <div type="antiphone">
+        <head><w>an<ex>tiphonia</ex></w></head>
+        <p><w>Wy</w>
+          <w>biddet</w>
+          <w>dyne</w>
+          <w>vrou<lb n="3"/>de</w>
+          <w>gude</w>
+          <w>dat</w>
+          <w>du</w>
+          <w>en</w>
+          <w>geuest</w>
+          <w>lichte</w>
+          <w>vnde</w>
+          <lb n="4"/>
+          <w>rouwe</w>
+          <w>gewonynge</w>
+          <pc>.</pc>
+        </p>
+      </div>
+    </body>
+  </text>
+</TEI>

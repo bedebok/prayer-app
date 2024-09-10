@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Magnificat</title>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="STH"/>
+            <repository key="KBS"/>
+            <idno xml:id="Holm-A42">A 42</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="32r" to="32v"/>
+              <title xml:id="MAGNIFICAT">Magnificat</title>
+              <textLang mainLang="lat"/>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <p>[[M]]agnificat anima mea dominum; Et exultauit spiritus meus in deo salutari meo; Quia
+          respexit humilitatem ancille sue, ecce enim ex hoc beatam me dicent omnes generaciones.
+          Quia fecit mihi magna qui potens est, et sanctum nomen eius, Et misericordia eius a
+          progenie in progenies timentibus <pb n="32v"/> eum. Fecit potenciam in brachio suo,
+          dispersit superbos mente cordis sui, Deposuit potentes de sede et exaltauit humiles,
+          Esurientes impleuit bonis et diuites dimisit inanes. Suscepit <name type="place" key="Israel">israel</name> puerum suum
+          recordatus misericordie sue, Sicut locutus est ad patres nostros, <name type="person" key="Abraham">abraham</name> et semini eius
+          in secula. Gloria [patri. Sicut erat].</p>
+      </div>
+
+      <div type="antiphone">
+        <head>Ant.</head>
+        <p><name type="person" key="Mary">Sancta maria</name>, succurre miseris, iuua pusillanimes, refoue flebiles, ora pro populo,
+          interueni pro clero, intercede pro deuoto femineo sexu; [senciant omnes iuuamen tuum,
+          quicumque cele- brant tuam commemoracionem.</p>
+      </div>
+      <div type="versicle">
+        <head>V.</head>
+        <p>Domine, exaudi oracionem meam.</p>
+      </div>
+      <div type="responsorium">
+        <head>R.</head>
+        <p>Et clamor meus ad te veniat].</p>
+      </div>
+    </body>
+  </text>
+</TEI>

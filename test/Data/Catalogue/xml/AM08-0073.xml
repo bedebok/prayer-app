@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="msDesc.css"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title/>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem class="calendar">
+              <locus from="2r" to="11v"/>
+              <title>Calendarium</title>
+              <rubric>Calendarium ad uso XX</rubric>
+              <incipit>Januari(us) heft .xxxi. daghe</incipit>
+              <explicit>De nacht is xviij stunde de dagh vj.</explicit>
+              <textLang mainLang="gml"/>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="11v" to="11v"/>
+              <title>Added prayer</title>
+              <incipit>Gudtz Guodhied will wi prise</incipit>
+              <explicit>est Anima mea</explicit>
+              <textLang mainLang="da" otherLangs="la"/>
+            </msItem>
+            <msItem class="computus">
+              <locus from="12r" to="12r"/>
+              <title>Computus</title>
+              <textLang mainLang="la"/>
+            </msItem>
+            <msItem class="prognosticon">
+              <locus from="12v" to="12v"/>
+              <title>Prognosticon</title>
+              <textLang mainLang="da"/>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="13r"/>
+              <title key="SEVEN_PSALMS">Seven Penitential Psalms</title>
+              <rubric>Hir begynne<ex>n</ex> soue<ex>n</ex> salme<ex>n</ex></rubric>
+              <msItem class="prayer_part">
+                <locus/>
+                <title key="PSALM_6">Psalm 6</title>
+                <incipit xml:lang="la" type="latin"><hi>D</hi>omine ne in furo<ex>r</ex>e tuo</incipit>
+                <incipit xml:lang="gml"><hi>H</hi>ere en schelt my nicht in dyneme vmmode</incipit>
+                <explicit>vnde deme hilgen geyste. Amen.</explicit>
+                <textLang mainLang="gml" otherLangs="la"/>
+              </msItem>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="42v" to="43r"/>
+              <title>Prayer to the Virgin Mary</title>
+              <incipit>Grot sistu maria lilien wit</incipit>
+              <explicit>dorch dynes leue<ex>n</ex> kindes milden barmherticheit. Amen.</explicit>
+              <textLang mainLang="gml"/>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="44r"/>
+              <title key="HOURS_VIRGIN">Hours of the Virgin</title>
+              <incipit type="latin" xml:lang="la">Domine labia mea aperies</incipit>
+              <incipit xml:lang="gml">Here opene myne lippen</incipit>
+              <textLang mainLang="gml" otherLangs="la"/>
+              <msItem class="prayer added">
+                <locus from="46r" to="46v"/>
+                <title key="QUEM_TERRA_PONTUS">Quem terra pontus</title>
+                <rubric>Quem terra pontus</rubric>
+                <incipit>Dat lyf der iunvrouwen</incipit>
+                <explicit>inde ewigen werlt. amen.</explicit>
+                <textLang mainLang="gml"/>
+                <note>On inserted leaf.</note>
+              </msItem>
+              <msItem class="prayer added">
+                <locus from="55r" to="57r"/>
+                <title key="TE_DEUM">Te deum</title>
+                <rubric>Te deum</rubric>
+                <incipit type="latin">Te uirginem mariam</incipit>
+                <incipit>Wy louen di iu<ex>n</ex>curouwe maria</incipit>
+                <explicit>Wy hopen an dy vrouwe make vns salich ewichliken. Amen.</explicit>
+                <textLang mainLang="gml" otherLangs="la"/>
+              </msItem>
+              <!-- PRIME starts 71r -->
+              <!-- COMPLINE starts 88v -->
+            </msItem>
+            <msItem class="prayer">
+              <locus from="93r" to="94r"/>
+              <title key="ANNA_REDEMPTORIS">Anna Redemptoris</title>
+              <rubric>Anna rede<ex>m</ex>toris.</rubric>
+              <incipit>O du gutlike moder godes</incipit>
+              <explicit>so vorbarme dy oue<ex>r</ex> dat we vnser sunde</explicit>
+              <msItem class="versicle">
+                <locus from="93v" to="93v"/>
+                  <title>Versicle</title>
+                <rubric>v<ex>ersiculus</ex></rubric>
+                <incipit>Maria bidde vor vns</incipit>
+                <explicit>des goluedes ih<ex>es</ex>u <ex>christ</ex>i</explicit>
+              </msItem>
+              <msItem class="collect">
+                <locus from="93v" to="94r"/>
+                <title>Collect</title>
+                <rubric>Collecta.</rubric>
+                <incipit>Here bescheme<ex>n</ex> dyne denere</incipit>
+                <explicit>dor dynen leuen sone ih<ex>esu</ex>m <ex>christu</ex>m vnsen leuen heren. Amen. P<ex>ate</ex>r n<ex>oste</ex>r. Aue maria.</explicit>
+              </msItem>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="94r" to="95r"/>
+              <title key="AVE_REGINA_COELORUM">Ave Maria Cœlorum</title>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="95r" to="95r"/>
+              <title key="O_FLORENS_ROSA">O Florens Rosa</title>
+              <rubric>o florens</rubric>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="95r" to="95v"/>
+              <title key="AVE_STELLA_MATUTINA">Ave Stella Matutina</title>
+              <rubric>A<sic>nt</sic>e stella matutina</rubric>
+              <incipit>Ghegrutet systu morghen sterne</incipit>
+              <explicit>to der ewigen vro<sic><ex>n</ex></sic>de.</explicit>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="95v" to="96r"/>
+              <title key="MUNDI_DOMINA">Mundi Domina</title>
+              <rubric>Mundi d<ex>omi</ex>na.</rubric>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="96r" to="96v"/>
+              <title key="DE_TE_VIRGO">De te virgo</title>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="96v" to="97r"/>
+              <rubric>Deus qui de b<ex>eate</ex> marie</rubric>
+              <!-- Oratio in the Hours of the Virgin terce? -->
+              <incipit>Got de du van der hilgen iu<ex>n</ex>curouwen marie lychame</incipit>
+              <explicit>Vorwunddelst den suluen ih<ex>esu</ex>m <ex>christu</ex>m vnsen heren.</explicit>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="97r" to="99r"/>
+              <title key="GAUDENDUM_NOBIS_EST">Gaudendum nobis est</title>
+              <rubric>Gaudendum nob<ex>is</ex></rubric>
+              <incipit>Tho vrouwen de ys vns dat <ex>christus</ex> en middeler godes vnde des mynschen</incipit>
+              <explicit>vor des olden viandes dusent suse<ex>n</ex>derleye drognisse.</explicit>
+              <msItem class="collect">
+                 <locus from="97v" to="99r"/>
+                <title>Collect</title>
+                <rubric>Collecta</rubric>
+                <incipit>Got we du dat ewuge heil vormiddelst</incipit>
+                <explicit>vormiddelste vnsen here<ex>n</ex> ih<ex>esu</ex>m <ex>christu</ex>m</explicit>
+              </msItem>
+            </msItem>
+            <msItem class="prayer hours">
+              <locus from="99r" to="109r"/>
+              <title key="HOURS_ANNE">Hours of St. Anne</title>
+              <rubric>Van S<ex>ancte</ex> annen</rubric>
+              <incipit>Got denke an myne hulpe my to hulpe<ex>n</ex>de</incipit>
+              <explicit>Ih<ex>esus</ex> <ex>christus</ex> godes sone. Amen.</explicit>
+            </msItem>
+            <msItem class="prayer hours">
+              <locus from="109r" to="130r"/>
+              <title key="HOURS_TRINITY">Hours of the Trinity</title>
+              <rubric>De hilge dreualdicheit</rubric>
+              <incipit>O Hilghe dreualdicheit wy an ropen dy</incipit>
+              <explicit>sunder vortoch dat ik van dy begherende byn Amen.</explicit>
+            </msItem>
+            <msItem class="prayer hours">
+              <locus from="130r"/>
+              <title key="HOURS_PASSION">Hours of the Passion</title>
+              <rubric>Hir beghinnin sik de tide van deme lydende godes.</rubric>
+              <incipit>Wy anbeden dy cristus vnd<ex>e</ex> benedien dy</incipit>
+              <msItem class="credo">
+                <locus from="136v" to="137r"/>
+                <title key="CREDO">Credo</title>
+                <incipit>Ik loue in got vader alweldich</incipit>
+                <explicit>vnd<ex>e</ex> in dat ewigen leuent Ame<ex>n</ex></explicit>
+              </msItem>
+              <msItem class="prayer">
+                <locus from="141r" to="142r"/>
+                <title key="TE_DEUM">Te deum</title>
+                <rubric>Te deum</rubric>
+                <incipit>Wy luen dy cristus</incipit>
+                <explicit>to ewigen tiden. Amen.</explicit>
+            </msItem>
+            </msItem>
+            <msItem class="prayer">
+              <locus from="165v" to="166r"/>
+              <rubric>En ghut becht na deme lydende to losende.</rubric>
+              <incipit>Ik bidde dy leue here ih<ex>es</ex>u <ex>christ</ex>e dor dynen swaren dot</incipit>
+              <explicit>alle dyner leuen hilghen. Amen.</explicit>
+            </msItem>
+            <msItem class="prayer hours">
+              <locus from="166v"/>
+              <title key="HOURS_HOLY_SPIRIT">Hours of the Holy Spirit</title>
+              <rubric>Hir begynne<ex>n</ex> de tide va<ex>n</ex> deme hilgen gheiste.</rubric>
+              <incipit>De vader vnd<ex>e</ex> de sone in der ewicheit des hilghen gheistes</incipit>
+              <msItem class="prayer">
+                <locus from="169r" to="171r"/>
+                <title key="TE_DEUM">Te deum</title>
+                <rubric>Te deu<ex>m</ex> la<ex>udamus</ex></rubric>
+                <incipit>Wy louen dy got wi bekenne<ex>n</ex> des dat du en here byst.</incipit>
+                <explicit>gyf my dat ik ewichliken nicht werde vorstoret.</explicit>
+              </msItem>
+              <msItem class="prayer added">
+                <locus from="173r" to="173r"/>
+                <title key="VENI_SANCTE_SPIRITUS">Veni Sancte Spiritus</title>
+                <incipit>Ueni sancte sp<ex>iri</ex>tus et emitte celitus lucis tue radiu<ex>m</ex></incipit>
+                <explicit>Confirma hoc deus quod operatus es in nobis Amen</explicit>
+                <textLang mainLang="la"/>
+                <msItem class="collect">
+                  <locus from="173r" to="173r"/>
+                  <title>Collect</title>
+                  <rubric>coll<ex>ect</ex>a</rubric>
+                  <incipit>Exaudi d<ex>omi</ex>ne ih<ex>es</ex>u <ex>christ</ex>e</incipit>
+                  <explicit>regnas ins<ex>e</ex>c<ex>u</ex>la s<ex>e</ex>c<ex>u</ex>lor<ex>um</ex> am<ex>en</ex>.</explicit>
+              </msItem>
+                <msItem class="prayer">
+                  <locus from="193r" to="195r"/>
+                  <title key="MAGNIFICAT">Magnificat</title>
+                  <rubric>Magnifica.</rubric>
+                  <incipit>Myne sele schal grot maken den heren</incipit>
+                  <explicit>Ere sy deme vadere vnd<ex>e</ex> deme sonde vnd<ex>e</ex> deme hilghen gheyste.</explicit>
+                  <msItem class="antiphone">
+                    <locus from="194v" to="194v"/>
+                    <title>Antiphone</title>
+                    <rubric>Ant<ex>iphona</ex></rubric>
+                    <incipit>De hilge geist war he wil</incipit>
+                    <explicit>here entwide my<ex>n</ex> beth vnd<ex>e</ex> my<ex>n</ex> ropent kome to dy.</explicit>
+                  </msItem>
+                  <msItem class="collect">
+                    <locus from="194v" to="195r"/>
+                    <title>Collect</title>
+                    <rubric>Collecta.</rubric>
+                    <incipit>Got deme alle herte openbare ys</incipit>
+                    <explicit>De hilge geist mote vns sterken in ghuden werke<ex>n</ex>.</explicit>
+                  </msItem>
+                </msItem>
+              </msItem>
+            </msItem>
+            <!-- MORE MS ITEMS HERE -->
+            <msItem class="prayer">
+              <locus from="237v" to="238v"/>
+              <title key="MAGNIFICAT">Magnificat</title>
+              <rubric><hi>M</hi>agnificat</rubric>
+              <incipit>Myne sele grote den herren</incipit>
+              <explicit>vnde lat en shine<ex>n</ex> dyn ewige licht.</explicit>
+              <msItem class="antiphone">
+                <locus from="238v">238v</locus>
+                <title>Antiphone</title>
+                <rubric>an<ex>tiphonia</ex></rubric>
+                <incipit>Wy biddet dyne vroude</incipit>
+                <explicit>du en geuest lichte vnde rouwe gewonynge</explicit>
+              </msItem>
+            </msItem>
+          </msContents>
+          <physDesc>
+            <objectDesc>
+              <supportDesc material="perg">
+                <support>Parchment</support>
+                <extent>288. <dimensions>
+                    <height>157</height>
+                    <width>112</width>
+                  </dimensions></extent>
+                <collation>
+                  <list>
+                    <item n="1">
+                      <locus from="1" to="1">1</locus>
+                      <desc>singleton</desc>
+                    </item>
+                    <item n="2">
+                      <locus from="2" to="11">2-11</locus>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item n="3">
+                      <locus from="12" to="12">12</locus>
+                      <desc>singleton</desc>
+                    </item>
+                    <item n="4"><locus from="13" to="22">13-22</locus>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item><locus from="23" to="32">23-32</locus>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="33" to="42">33-42</locus>
+                      <desc>quinternion. Loose guard between <locus from="37v" to="38r"
+                          >37v-38r</locus></desc>
+                    </item>
+                    <item>
+                      <locus from="43" to="54">43-54</locus>
+                      <desc>quinternion. 43, 46 added, flap inserted at 48v</desc>
+                    </item>
+                    <item>
+                      <locus from="55" to="58">55-58</locus>
+                      <desc>singletons? | attatched to guards </desc>
+                    </item>
+                    <item>
+                      <locus from="59" to="70">59-70</locus>
+                      <desc>quinternion | 67, 68 added </desc>
+                    </item>
+                    <item>
+                      <locus from="71" to="80"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="81" to="90">81-90</locus>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item><locus from="91" to="99"/>
+                      <desc>unclear | 91, 92, 98, 99 on guards</desc>
+                    </item>
+                    <item>
+                      <locus from="100" to="109"/>
+                      <desc>quinternion | loose guard between 100v-109r</desc>
+                    </item>
+                    <item>
+                      <locus from="110" to="119"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="120" to="129"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="130" to="139"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="140" to="149"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="150" to="159"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="160" to="170"/> 
+                      <desc>quinternion. 167 added</desc> 
+                    </item>
+                    <item>
+                      <locus from="171" to="181"/> 
+                      <desc>quinternion. 173 added</desc> 
+                    </item>
+                    <item>
+                      <locus from="182" to="189"/> 
+                      <desc>quaternion</desc>
+                    </item>
+                    <item>
+                      <locus from="190" to="198"/> 
+                      <desc>quaternion. 197 added</desc>
+                    </item>
+                    <item>
+                      <locus from="199" to="209"/> 
+                      <desc>quinternion. 199 added</desc> 
+                    </item>
+                    <item>
+                      <locus from="210" to="219"/> 
+                      <desc>quinternion</desc> 
+                    </item>
+                    <item>
+                      <locus from="220" to="229"/> 
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="230" to="240"/> 
+                      <desc>quinternion. 230 added</desc>
+                    </item>
+                    <item>
+                      <locus from="241" to="250"/>
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="251" to="260"/> 
+                      <desc>quinternion</desc> 
+                    </item>
+                    <item>
+                      <locus from="261" to="270"/>  
+                      <desc>quinternion</desc>
+                    </item>
+                    <item>
+                      <locus from="271" to="272"/> 
+                      <desc>bifolium</desc>
+                    </item>
+                    <item>
+                      <locus from="273" to="281"/> 
+                      <desc>quinternion? final leaf missing?</desc> 
+                    </item>
+                    <item>
+                      <locus from="283" to="288"/> 
+                      <desc>ternion. Loose guard between 283r-288v, pastedown on guard to 283r</desc>
+                    </item>
+                  </list>
+                </collation>
+              </supportDesc>
+            </objectDesc>
+          </physDesc>
+          <history>
+            <origin>Most likely written in Northern <origPlace key="#DE">Germany</origPlace> at the
+              end of the <origDate notBefore="1470" notAfter="1500">fifteenth
+              century</origDate>.</origin>
+            <provenance>Lars Pedersen</provenance>
+          </history>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <facsimile>
+    <surface/>
+  </facsimile>
+</TEI>

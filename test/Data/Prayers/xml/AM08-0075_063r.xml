@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Magnificat</title>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0075">AM 75 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="63r" to="64r"/>
+              <title xml:id="MAGNIFICAT">Magnificat</title>
+              <textLang mainLang="da"/>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head><w><hi rend="red">cantic<ex>um</ex></hi></w>
+          <w>Magnificat</w>
+          <w>a<ex>n</ex>ima</w></head>
+        <p>
+          <lb n="11"/>
+          <s n="Luke 1:46" type="biblical">
+            <w><hi rend="2">M</hi>yn</w>
+            <w>siel</w>
+            <w>skal</w>
+            <w>lofue</w>
+            <w>oc</w>
+            <w>b<ex>e</ex>n<ex>e</ex>dide</w>
+            <lb n="12"/>
+            <w>h<ex>er</ex>ræn</w>
+          </s>
+          <s n="Luke 1:47" type="biblical">
+            <w><hi>O</hi>c</w>
+            <w>myn</w>
+            <w>and</w>
+            <w>skal</w>
+            <w>glæde</w>
+            <lb n="13"/><w>sigh</w>
+            <w>meth</w>
+            <w>gud</w>
+            <w>som</w>
+            <w>er</w>
+            <w>
+              <sic>ha<ex>n</ex></sic><corr>myn</corr>
+            </w>
+            <w>salighet</w>
+          </s>
+          <lb n="14"/>
+          <s n="Luke 1:48" type="biblical">
+            <w><hi>F</hi>orthy</w>
+            <w>ha<ex>n</ex></w>
+            <w>haw<ex>er</ex></w>
+            <w>set</w>
+            <w>oc</w>
+            <w>skut</w>
+            <w>syn</w>
+            <lb n="15"/>
+            <w>thiæneste</w>
+            <w>q<ex>ui</ex>nnæs</w>
+            <w>ødmiwghet</w>
+            <w>th<ex>er</ex></w>
+            <lb n="16"/>
+            <w>fore</w>
+            <w>skule</w>
+            <w>alle</w>
+            <w>sletth<ex>e</ex>r</w>
+            <w>syæ</w>
+            <w>migh</w>
+            <lb n="17"/><w>at</w>
+            <w>wære</w>
+            <w>helligh</w>
+          </s>
+          <s n="Luke 1:49" type="biblical">
+            <w><hi>F</hi>orthi</w>
+            <w>ath</w>
+            <pb n="63v"/>
+            <lb n="1"/>
+            <w>th<ex>en</ex></w>
+            <w>som</w>
+            <w>mektig</w>
+            <w>er</w>
+            <w>ha<ex>n</ex></w>
+            <w>hafue<ex>r</ex></w>
+            <w>giørt</w>
+            <lb n="2"/><w>meth</w>
+            <w>mik</w>
+            <w>the</w>
+            <w>thing</w>
+            <w>som</w>
+            <w>mektighe</w>
+            <lb n="3"/><w>ære</w>
+            <w>oc</w>
+            <w>hans</w>
+            <w>nafn</w>
+            <w>ær</w>
+            <w>hælligt</w>
+          </s>
+          <lb n="4"/><w><hi>O</hi>c</w>
+          <s n="Luke 1:50" type="biblical">
+            <w>hans</w>
+            <w>bar[m]h<ex>er</ex>tighet</w>
+            <w>er</w>
+            <w>vt</w>
+            <w>aff</w>
+            <lb n="5"/><w>slekt</w>
+            <w>oc</w>
+            <w>til</w>
+            <w>slekt</w>
+            <w>the</w>
+            <w>som</w>
+            <w>rædis</w>
+            <lb n="6"/><w>hanum</w>
+          </s>
+          <s n="Luke 1:51" type="biblical">
+            <w><hi>H</hi>an</w>
+            <w>hafuer</w>
+            <w>beuist</w>
+            <w>syn</w>
+            <lb n="7"/>
+            <w>makt</w>
+            <w>i</w>
+            <w>th<ex>et</ex></w>
+            <w>at</w>
+            <w>han</w>
+            <w>hafu<ex>er</ex></w>
+            <w>nedh<ex>e</ex>r</w>
+            <lb n="8"/>
+            <w>trykt</w>
+            <w>the</w>
+            <w>som</w>
+            <w>ere</w>
+            <w>høgfærduge</w>
+            <lb n="9"/>
+            <w>i</w>
+            <w>theris</w>
+            <w>hierte</w>
+          </s>
+          <s n="Luke 1:52" type="biblical">
+            <w><hi>H</hi>an</w>
+            <w>haw<ex>er</ex></w>
+            <w>seth</w>
+            <lb n="10"/>
+            <w>the</w>
+            <w>mektige</w>
+            <w>vt</w>
+            <w>aff</w>
+            <w>theris</w>
+            <w>sæde</w>
+            <lb n="11"/><w>oc</w>
+            <w>ophøgt</w>
+            <w>the</w>
+            <w>som</w>
+            <w>ødmyghe</w>
+            <lb n="12"/>
+            <w>ære</w>
+          </s>
+          <s n="Luke 1:53" type="biblical">
+            <w><hi>T</hi>he</w>
+            <w>hungræ</w>
+            <w>hafu<ex>er</ex></w>
+            <w>[han]</w>
+            <w>op</w>
+            <w>fylt</w>
+            <lb n="13"/><w>meth</w>
+            <w>got</w>
+            <w>oc</w>
+            <w>hafuer</w>
+            <w>ow<ex>er</ex>gifueth</w>
+            <lb n="14"/><w>the</w>
+            <w>som</w>
+            <w>vnitthelige</w>
+            <w>righe</w>
+          </s>
+          <s n="Luke 1:54">
+            <w><hi>H</hi>an</w>
+            <lb n="15"/><w>i</w>
+            <w>hwg</w>
+            <w>kom</w>
+            <w>sin</w>
+            <w>miskund</w>
+            <w>oc</w>
+            <w>vnt<lb n="16"/>fik</w>
+            <w>thet</w>
+            <name type="place" key="Israel">
+              <w>isr<ex>ae</ex>l</w>
+            </name>
+            <w>folk</w>
+            <w>thil</w>
+            <w>sith</w>
+            <w>barn</w>
+          </s>
+          <lb n="17"/>
+          <s n="Luke 1:55" type="biblical">
+            <w><hi>S</hi>oo</w>
+            <w>som</w>
+            <w>han</w>
+            <w>hafu<ex>er</ex></w>
+            <w>talet</w>
+            <w>til</w>
+            <pb n="64r"/>
+            <lb n="1"/>
+            <w>wore</w>
+            <w>fædre</w>
+            <name type="place" key="Abraham">
+              <w>abraham</w>
+            </name>
+            <w>oc</w>
+            <w>han[s]</w>
+            <w>slekt</w>
+            <lb n="2"/><w>her</w>
+            <w>i</w>
+            <w>werlden</w>
+          </s>
+          <w>Glo<ex>r</ex>ia</w>
+          <w>p<ex>at</ex>ri</w>
+        </p>
+      </div>
+      <div type="antiphone">
+        <head><w>anthi<ex>phona</ex></w></head>
+        <p>
+          <lb n="3"/><w>O</w>
+          <w>also</w>
+          <w>millest</w>
+          <name type="person" key="MaryMagdalene">
+            <w>s<ex>anc</ex>ta</w>
+            <w>ma<ex>r</ex>ia</w>
+            <w>magda<ex>lena</ex></w>
+          </name>
+          <lb n="4"/><w>glees</w>
+          <w>nw</w>
+          <w>meth</w>
+          <w>stor</w>
+          <w>glæde</w>
+          <w>for</w>
+          <w>thy</w>
+          <lb n="5"/><w>thu</w>
+          <w>æst</w>
+          <w>nw</w>
+          <w>til</w>
+          <w>fow<ex>et</ex></w>
+          <w>i</w>
+          <w>hy<ex>m</ex>merige</w>
+          <lb n="6"/><w>wor</w>
+          <w>h<ex>er</ex>ræ</w>
+          <name type="person" key="JesusChrist">
+            <w>ih<ex>es</ex>u</w>
+            <w><ex>christ</ex>o</w>
+          </name>
+          <w>th<ex>e</ex>n</w>
+          <w>som</w>
+          <w>thu</w>
+          <lb n="7"/><w>till</w>
+          <w>bast</w>
+          <w>ødmygelik</w>
+          <w>syt</w>
+          <w>thenæ</w>
+          <lb n="8"/><w>hær</w>
+          <w>[i]</w>
+          <w>werthænne</w>
+        </p>
+      </div>
+    </body>
+  </text>
+</TEI>

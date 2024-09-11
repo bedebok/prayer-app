@@ -1,1 +1,5 @@
-{:deps {}}
+{:deps {org.clojure/clojure {:mvn/version "1.12.0"}
+        dk.cst/xml-hiccup   {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
+                             :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
+        dk.cst/hiccup-tools {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
+                             :sha     "ea24f8b7fca4a5b8e7ee476dc24756e42079ee8c"}}}

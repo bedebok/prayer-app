@@ -2,3 +2,4 @@
 .cpcache
 .idea/
 .nrepl-port
+test/db

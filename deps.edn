@@ -1,5 +1,14 @@
-{:deps {org.clojure/clojure {:mvn/version "1.12.0"}
-        dk.cst/xml-hiccup   {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
-                             :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
-        dk.cst/hiccup-tools {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
-                             :sha     "cc67862049ceb90551dba149b158eff46261c839"}}}
+{:deps    {org.clojure/clojure       {:mvn/version "1.12.0"}
+
+           datalevin/datalevin       {:mvn/version "0.9.10"}
+           ;com.cognitect/transit-clj {:mvn/version "1.0.333"}
+           ;io.airlift/aircompressor  {:mvn/version "0.26"}
+
+           dk.cst/xml-hiccup         {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
+                                      :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
+           dk.cst/hiccup-tools       {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
+                                      :sha     "e511e609a95730fd22db36449d899bf0d4910d57"}}
+
+ ;; https://github.com/juji-io/datalevin/blob/master/doc/install.md
+ :aliases {:jvm-base {:jvm-opts ["--add-opens=java.base/java.nio=ALL-UNNAMED"
+                                 "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"]}}}

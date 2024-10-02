@@ -3,7 +3,6 @@
             [clojure.zip :as zip]
             [dk.cst.hiccup-tools.elem :as elem]
             [dk.cst.xml-hiccup :as xh]
-            [dk.cst.hiccup-tools.helper :as helper]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.zip :as z]
             [dk.cst.hiccup-tools.match :as match]
@@ -35,76 +34,79 @@
    :postprocess str/trim})
 
 ;; Since the order matters, this part of the search is written as kvs
-(def msItem-search
-  [[:part {:matcher (every-pred
-                      (match/has-parent (match/tag :msItem))
-                      (match/tag :msItem))
-           :process 'recursive}]
-   ;; TODO: should also match {:to true}, but currently the TEI files have errors
-   [:locus {:matcher (match/tag+attr :locus {:from true})
-            :process (fn [node]
-                       (let [{:keys [from to]} (elem/attr node)]
-                         (cond-> {:locus/from from}
-                           to (assoc :to to))))}]
-   [:title {:matcher (match/tag+attr :title {:xml/id true})
-            :process (fn [node]
-                       (let [{:keys [xml/id]} (elem/attr node)
-                             title (first (elem/children node))]
-                         {:title    title
-                          :title/id id}))}]
-   [:lang {:matcher (match/tag+attr :textLang {:mainLang true})
-           :process (fn [node]
-                      (let [{:keys [mainLang]} (elem/attr node)]
-                        {:lang mainLang}))}]])
+(def msItem-search-kvs
+  "The [matcher process] kvs for doing a recursive sweep of <msItem> elements."
+  [[(every-pred
+      (match/has-parent (match/tag :msItem))
+      (match/tag :msItem))
+    [:tei/msItem 'recursive]]
 
-(def manuscript-search
-  {:id         {:matcher (every-pred
-                           (match/tag+attr :idno {:xml/id true})
-                           (match/has-parent (match/tag :msIdentifier)))
-                :process (fn [node]
-                           (let [{:keys [xml/id]} (elem/attr node)]
-                             ;; TODO: do this properly
-                             {:db/id id}))}
-   :settlement {:matcher (every-pred
-                           (match/tag+attr :settlement {:key true})
-                           (match/has-parent (match/tag :msIdentifier)))
-                :process (fn [node]
-                           (let [{:keys [key]} (elem/attr node)]
-                             {:settlement key}))}
-   :repository {:matcher (every-pred
-                           (match/tag+attr :repository {:key true})
-                           (match/has-parent (match/tag :msIdentifier)))
-                :process (fn [node]
-                           (let [{:keys [key]} (elem/attr node)]
-                             {:repository key}))}
-   :msItem     {:matcher (every-pred
-                           (match/has-parent (match/tag :msContents))
-                           (match/tag :msItem))
-                :process msItem-search}
-   :name       {:matcher (match/tag+attr :name {:type true :key true})
-                :process (fn [node]
-                           (let [{:keys [type key]} (elem/attr node)
-                                 label (h/hiccup->text node tei-conversion)]
-                             {:name [{(keyword "name" type) key
-                                      :label                label}]}))}
-   #_#_:section {:matcher (match/tag+attr :div {:type true})} ;TODO
-   :refs {:matcher (match/attr {:n true :type true})
-          :process (fn [node]
-                     (let [{:keys [n type]} (elem/attr node)
-                           label (h/hiccup->text node tei-conversion)]
-                       ;; TODO: keywordify ref IDs?
-                       {:ref [{(keyword "ref" type) n
-                               :label               label}]}))}})
+   ;; TODO: should also match {:to true}, but currently the TEI files have errors
+   [(match/tag+attr :locus {:from true})
+    (fn [node]
+      (let [{:keys [from to]} (elem/attr node)]
+        (cond-> {:tei/from from}
+          to (assoc :tei/to to))))]
+
+   [(match/tag+attr :title {:xml/id true})
+    (fn [node]
+      (let [{:keys [xml/id]} (elem/attr node)
+            title (first (elem/children node))]
+        {:tei/title title
+         :xml/id    id}))]
+
+   [(match/tag+attr :textLang {:mainLang true})
+    (fn [node]
+      (let [{:keys [mainLang]} (elem/attr node)]
+        {:tei/mainLang mainLang}))]])
+
+(def manuscript-search-kvs
+  "The core [matcher process] kvs for initiating a TEI data search."
+  [[(every-pred
+      (match/tag+attr :idno {:xml/id true})
+      (match/has-parent (match/tag :msIdentifier)))
+    (fn [node]
+      (let [{:keys [xml/id]} (elem/attr node)]
+        ;; TODO: do this properly
+        {:xml/id id}))]
+
+   [(every-pred
+      (match/tag+attr :settlement {:key true})
+      (match/has-parent (match/tag :msIdentifier)))
+    (fn [node]
+      (let [{:keys [key]} (elem/attr node)]
+        {:tei/settlement key}))]
+
+   [(every-pred
+      (match/tag+attr :repository {:key true})
+      (match/has-parent (match/tag :msIdentifier)))
+    (fn [node]
+      (let [{:keys [key]} (elem/attr node)]
+        {:tei/repository key}))]
+
+   [(match/tag+attr :name {:type true :key true})
+    (fn [node]
+      (let [{:keys [type key]} (elem/attr node)
+            label (h/hiccup->text node tei-conversion)]
+        ;; NOTE: upserts require both composite & constituent parts!
+        {:tei/named [{:tei/entity {:tei/name+type [key type]
+                                   :tei/name      key
+                                   :tei/type      type}
+                      :tei/label  label}]}))]
+
+   ;; Marks the sub-search of a variable depth tree of <msItem> elements.
+   [(every-pred
+      (match/has-parent (match/tag :msContents))
+      (match/tag :msItem))
+    [:tei/msItem msItem-search-kvs]]])
 
 (defn hiccup->entity
   "Convert TEI `hiccup` into an Datom entity based on a `search-kvs`."
   [hiccup search-kvs]
-  (let [k->matcher (helper/update-kv-vals search-kvs :matcher)
-        k->process (->> (helper/update-kv-vals search-kvs :process)
-                        (remove (comp nil? second))
-                        (into (empty search-kvs)))
-        result     (h/search hiccup k->matcher :exhaustive false)]
-    (->> k->process
+  (let [matchers (map-indexed (fn [n [matcher _]] [n matcher]) search-kvs)
+        fns      (map-indexed (fn [n [_ process]] [n process]) search-kvs)
+        result   (h/search hiccup matchers :exhaustive false)]
+    (->> fns
 
          (mapcat (fn [[k process]]
                    (when-let [matches (get result k)]
@@ -115,17 +117,20 @@
                        (fn? process)
                        (map process matches)
 
-                       ;; Maps are used for sub-searches inside the matched node.
+                       ;; Special vectors mark sub-searches in the matched node.
                        ;; This solves the issue of matching e.g. list items that
                        ;; are not distinguished by an ID such as msItem.
-                       ;; Sub-searches result in component data.
-                       (or (map? process) (vector? process))
-                       [{k (mapv #(hiccup->entity % process) matches)}]
-
-                       ;; This special symbol marks recursive sub-searches as
-                       ;; you can't do direct self-references in Clojure data.
-                       (= process 'recursive)
-                       [{k (mapv #(hiccup->entity % search-kvs) matches)}]))))
+                       ;; Sub-searches result in component data keyed to the
+                       ;; first item in the vector; the second item are the kvs
+                       ;; to be used for the sub-search OR the special symbol
+                       ;; 'recursive when the current kvs should be reused.
+                       (vector? process)
+                       (let [[k v] process]
+                         ;; This special symbol marks recursive sub-searches as
+                         ;; you can't do direct self-references in Clojure data.
+                         (if (= v 'recursive)
+                           [{k (mapv #(hiccup->entity % search-kvs) matches)}]
+                           [{k (mapv #(hiccup->entity % v) matches)}]))))))
 
          ;; The entity and its components are merged into a single data structure.
          ;; This data can be transacted into a Datomic-compatible db
@@ -152,14 +157,14 @@
 
   ;; Metadata retrieval from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
-  (-> (io/file "test/Data/Prayers/xml/Holm-A42_032r.xml")
+  (-> (io/file "test/Data/Prayers/xml/AM08-0075_063r.xml")
       (xh/parse)
-      (hiccup->entity manuscript-search))
+      (hiccup->entity manuscript-search-kvs))
 
   ;; TODO: "test/Data/Prayers/xml/AM08-0073_237v.xml" and  "test/Data/Catalogue/xml/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0075_063r.org
-  (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
+  (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
       (xh/parse)
-      (hiccup->entity manuscript-search))
+      (hiccup->entity manuscript-search-kvs))
   #_.)

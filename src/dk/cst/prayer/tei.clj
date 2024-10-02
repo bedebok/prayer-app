@@ -1,4 +1,4 @@
-(ns dk.cst.db
+(ns dk.cst.prayer.tei
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
             [dk.cst.hiccup-tools.elem :as elem]
@@ -40,6 +40,7 @@
                       (match/has-parent (match/tag :msItem))
                       (match/tag :msItem))
            :process 'recursive}]
+   ;; TODO: should also match {:to true}, but currently the TEI files have errors
    [:locus {:matcher (match/tag+attr :locus {:from true})
             :process (fn [node]
                        (let [{:keys [from to]} (elem/attr node)]

@@ -5,7 +5,7 @@
             [dk.cst.xml-hiccup :as xh]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.zip :as z]
-            [dk.cst.hiccup-tools.match :as match]
+            [dk.cst.hiccup-tools.match :as match :refer [match]]
             [clojure.java.io :as io]))
 
 (defn tei-ref
@@ -36,55 +36,51 @@
 ;; Since the order matters, this part of the search is written as kvs
 (def msItem-search-kvs
   "The [matcher process] kvs for doing a recursive sweep of <msItem> elements."
-  [[(every-pred
-      (match/has-parent (match/tag :msItem))
-      (match/tag :msItem))
+  [[(match :msItem
+           (match/has-parent (match/tag :msItem)))
     [:tei/msItem 'recursive]]
 
    ;; TODO: should also match {:to true}, but currently the TEI files have errors
-   [(match/tag+attr :locus {:from true})
+   [[:locus {:from true}]
     (fn [node]
       (let [{:keys [from to]} (elem/attr node)]
         (cond-> {:tei/from from}
           to (assoc :tei/to to))))]
 
-   [(match/tag+attr :title {:xml/id true})
+   [[:title {:xml/id true}]
     (fn [node]
       (let [{:keys [xml/id]} (elem/attr node)
             title (first (elem/children node))]
         {:tei/title title
          :xml/id    id}))]
 
-   [(match/tag+attr :textLang {:mainLang true})
+   [[:textLang {:mainLang true}]
     (fn [node]
       (let [{:keys [mainLang]} (elem/attr node)]
         {:tei/mainLang mainLang}))]])
 
 (def manuscript-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
-  [[(every-pred
-      (match/tag+attr :idno {:xml/id true})
-      (match/has-parent (match/tag :msIdentifier)))
+  [[(match [:idno {:xml/id true}]
+           (match/has-parent (match/tag :msIdentifier)))
     (fn [node]
       (let [{:keys [xml/id]} (elem/attr node)]
         ;; TODO: do this properly
         {:xml/id id}))]
 
-   [(every-pred
-      (match/tag+attr :settlement {:key true})
-      (match/has-parent (match/tag :msIdentifier)))
+   [(match [:settlement {:key true}]
+           (match/has-parent (match/tag :msIdentifier)))
     (fn [node]
       (let [{:keys [key]} (elem/attr node)]
         {:tei/settlement key}))]
 
-   [(every-pred
-      (match/tag+attr :repository {:key true})
-      (match/has-parent (match/tag :msIdentifier)))
+   [(match [:repository {:key true}]
+           (match/has-parent (match/tag :msIdentifier)))
     (fn [node]
       (let [{:keys [key]} (elem/attr node)]
         {:tei/repository key}))]
 
-   [(match/tag+attr :name {:type true :key true})
+   [[:name {:type true :key true}]
     (fn [node]
       (let [{:keys [type key]} (elem/attr node)
             label (h/hiccup->text node tei-conversion)]
@@ -95,15 +91,15 @@
                       :tei/label  label}]}))]
 
    ;; Marks the sub-search of a variable depth tree of <msItem> elements.
-   [(every-pred
-      (match/has-parent (match/tag :msContents))
-      (match/tag :msItem))
+   [(match :msItem
+           (match/has-parent (match/tag :msContents)))
     [:tei/msItem msItem-search-kvs]]])
 
 (defn hiccup->entity
   "Convert TEI `hiccup` into an Datom entity based on a `search-kvs`."
   [hiccup search-kvs]
-  (let [matchers (map-indexed (fn [n [matcher _]] [n matcher]) search-kvs)
+  (let [matchers (map-indexed (fn [n [matcher _]]
+                                [n (match matcher)]) search-kvs)
         fns      (map-indexed (fn [n [_ process]] [n process]) search-kvs)
         result   (h/search hiccup matchers :exhaustive false)]
     (->> fns

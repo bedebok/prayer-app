@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hours of the Virgin (Compline)</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Edition</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="44r" to="92v"/>
+              <title xml:id="HOURS_VIRGIN">Hours of the Virgin</title>
+              <textLang mainLang="gml"/>
+              <msItem>
+                <locus from="88v" to="92v"/>
+                <title xml:id="HOURS_VIRGIN_COMPLINE">COMPLINE</title>
+                <textLang mainLang="gml"/>
+              </msItem>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head>Ad completor(r)ium</head>
+        <p>
+          <hi rend="2 blue">B</hi>ekere vns got vnse heyl vn(de)
+          kere dinen torn van vns.
+          Got denke an myne helpe. H(er)e
+          snelle my to helpende. [E]re sy de.
+        </p>
+        <div type="psalm">
+          <head rend="red">p(salmu)s</head>
+          <p>
+            <hi rend="2 red">H</hi>ere denke dauites vnde
+            syner sachtmodicheit [A]l-
+            so he swor dat louede deme h(er)en
+            he louede iacobes gode [O]fte ik
+            ga in dat tabernakel mynes
+            huses ofte ik den slap geue my-
+            <pb/>
+            nen ogen vnde de sclu(m)meringhe <!-- -nighe? -->
+            myne(n) ochbranen [U]nde de ru-
+            we myne(n) du(m)mughen went ik
+            vinde de stede des here(n) eyn taber-
+            naculu(m) iacobes gode [S]ee wy
+            horde(n) de dingh to affrica wy vun-
+            den se in den delden des woldes
+            [G]y scolen gan an syn taber-
+            naculu(m) wy scolen anbeden in
+            der stede dar syne vote stunden
+            [H]ere sta up an dyne rowe du
+            vnde de arke dyner hillicheit
+            [D]ine prestere werde(n) angeto-
+            gen myt rechticheit vnde de hil-
+            lighen vrowen sik [D]orch dine(n)
+            <pb/>
+            kriecht dauite ne kere nicht aff
+            dynes cristus antlat [D]e here
+            swor dauite de warheit vnde
+            wil ene nicht vorgeues beyden
+            laten van der vrucht dynes li-
+            ues wil ik vppe dyne(n) stol sette(n)
+            [O]fte dine kindere myne tuch-
+            nisse beware(n) vn(de) myne thughi(n)-
+            ge de ik en wil leren [U]nde ere
+            kind(er)e wente to ewighe(n) tiden 
+            scolen se sitte(n) vppe dyme stole
+            [W]ente de here heft syon wth-
+            ghekore(n) sik to euer wonynge
+            [D]it is my(n) rowe van ewicheit
+            to ewicheit hir wil ik wonen
+            <pb/>
+            wente ik se hebbe wterkoren
+            [E]re wedewen wil ik sechene(n)
+            vn(de) wil ere arme(n) laden mit bro-
+            de [I]k wil ere prestere anthen
+            mit heile vnde ere hilghe(n) scole(n)
+            sik vrowe(n) mit hochnisse [D]ar
+            wil ik vorebringe(n) dauites hor-
+            ne vn(de) ik make myme (christ)o ane
+            luchten [I]k wil syne viende an-
+            then mit vorstoringe sunder
+            bouen en scal bloyen my(n) seghe(n).
+            [E]re sy deme vad(er)e (et) (cetera).
+          </p>
+        </div>
+        <div type="psalm">
+          <head rend="red">psalmus</head>
+          <p>
+            <hi rend="2 blue">S</hi>ee wo gut vnde wo vrolik
+            is dat dat de brodere wone(n)
+            to samende [A]lso de salue i(n) deme
+            <pb/>
+            houede de dar vletet in den bart
+            arons bart [D]e dar quam in 
+            den som sines cledes also de daw <!-- ? -->
+            hermon de dar quam an den
+            bergh to syon [W]ente dar en-
+            both de here de segheni(n)ge vnde
+            dat leuent to ewige(n) tiden [E]re.
+          </p>
+        </div>
+        <div type="psalm">
+          <p>
+            <hi rend="2 blue">S</hi>ee nu benediet den heren
+            alle gy knechte des heren
+            [D]ar gy stan in des here(n) hus
+            in den salen vnsen godes [D]es
+            nachtes boret up iuwe hande
+            vnde benediet den here [D]e h(er)e
+            van syon de seghene dy de h(er)e
+            mel vn(de) erde makede [E]re sy.
+          </p>
+          <div type="respond">
+            <p>
+              Wy vrowen vns der hoghtit vnser
+              leuen vrowen vppe dat se vor
+              vns bidde vnsen here(n) ih(esu)m (christu)m
+            </p>
+          </div>
+          </div>
+        <div type="hymn">
+          <head rend="red">y(mnus)</head>
+          <p>
+            <hi rend="2 red">D</hi>e porte (christ)i de myt
+            gnaden voruullet is de
+            is upgeslote(n) vnde de konyng
+            gink dar dore vnde se blift e-
+            wichliken sloten also ze was
+            [D]at he(m)melssche licht gink
+            dorch de iuncvrowe de brudegam
+            de losere de scheppere vnde eyn re-
+            se syner cristenheit [H]e is en
+            ere vnde ey(n) vrowde der moder
+            vnde ene ghude hopene der lo-
+            uigen mit den bittere(n) tranen
+            <pb/>
+            des dodes heuet he vns gheloset
+            [G]ode deme vadere sy ere vnde
+            syme eyneghen sone myt de-
+            me hilghen trostende(n) geyste
+            nu vnde ewichlike(n). Amen.
+          </p>
+        </div>
+        <div type="chapter">
+          <head rend="red">cap(itulum)</head>
+          <p>
+            <hi rend="2 red">I</hi>k wisheyt byn gheulate(n)
+            van deme munde des alle wel-
+            dighen erst gebore(n) vor allen
+            creaturen. Gode sy ghedancket
+          </p>
+          <div type="respond">
+            <p>
+              Hore dochter vn(de) neghe
+              dyn ore. Wente de koni(n)g begerde dy-
+              ner schone all(elui)a.
+            </p>
+          </div>
+        </div>
+        <div type="psalm">
+          <head rend="red">p(salmu)s</head>
+          <p>
+            <hi rend="2 blue">H</hi>ere nu lestu dyne(n) knecht
+            na dyme worde in deme vre-
+            de [W]ente myne ogen seghen
+            <pb/>
+            dyn heil [D]at du makedest vor
+            aller lude angesichte [E]yn licht
+            to der openbaringe vnde to der 
+            ere dynes volkes van isr(ae)l [E]re
+            sy deme vadere.
+          </p>
+          <div type="antiphon">
+            <p>
+              Wy eret dy
+              godes moder wente (christu)s van dy ge-
+              boren is make salich alle de dy eret
+              <span rend="underline">Kyriel(eyson). (christ)el(eyson). Ky(rieleyson). P(ate)r n(oste)r. Credo.</span>
+            </p>
+          </div>
+        </div>
+        <div>
+          <p>
+            <hi rend="2 red">U</hi>orlene vns leue here got
+            dat dyne knechte moghe(n)
+            gevrowet werde(n) mit ewiger
+            suntheit liues vnde sele van
+            der <sic>van der</sic> erliken bede der ewy-
+            gen iuncvrowe(n) sunte marien
+            dat wy geloset werde(n) van der
+            <pb/>
+            ieghenwardighen drofnisse
+            vnde dat wy moten besitten
+            de ewighen vrowde. Dorch
+            ih(esu)m (christu)m vnsen here(n) de myt dy
+            leuet vn(de) regneret ewichliken.
+            Amen.
+          </p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

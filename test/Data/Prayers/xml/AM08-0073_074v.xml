@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hours of the Virgin (Terce)</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Catalogue</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="44r" to="92v"/>
+              <title xml:id="HOURS_VIRGIN">Hours of the Virgin</title>
+              <textLang mainLang="gml"/>
+              <msItem>
+                <locus from="74v" to="77r"/>
+                <title xml:id="HOURS_VIRGIN_TERCE">Terce</title>
+                <textLang mainLang="gml"/>
+              </msItem>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head rend="red">ters</head>
+        <head rend="underline"><hi rend="2 blue">D</hi>eus in adiut(orium)</head>
+        <p>
+          [G]ot 
+          dencke an myne helpe
+          here snelle my to helpende [E]re
+          sy deme vad(er)e. deme sone vnde.
+        </p>
+        <div type="hymn">
+          <head rend="red">y(mnus)</head>
+          <p>
+            <hi rend="2 red">O</hi> criste allerbarmh(er)tigheste
+            koning vnse herte besitte
+            dat wy dy plichtlighen offere(n) vn(de)
+            wedder geuen lof to allen tiden.
+            [D]encke du meyst(er) [M]aria mod(er) <!-- It does look like there is an abbr here -->
+            der [E]re sy dy here. <span rend="underline">vts(ra)</span>
+          </p>
+        </div>
+        <div type="psalm" xml:id="PSALM_120_V119">
+          <head rend="red">p(salmu)s</head>
+          <p>
+            <hi rend="2 red">J</hi>k borede myne ogen to dy dar
+            du wonest in den he(m)melen.
+            <pb n="75r"/>
+            [S]ee also der knechte ogen in
+            erer here(n) hende [A]lzo der magh(et)
+            ogen seen in erer vrowe(n) hende
+            alzo sin vnse ogen to vnseme
+            heren gode wente he vns gne-
+            dik is [H]ere vorbarme dy o-
+            uer vns wente wy sere voruul-
+            let sint mit vorsmaheit [W]en-
+            te vnse sele is zere voruullet
+            mit spotte der riken vnde vor-
+            smaheit der houerdigen [E]re.
+          </p>
+        </div>
+        <div type="psalm" xml:id="PSALM_124_V123">
+          <head rend="red">p(salmu)s</head>
+          <p>
+            <hi rend="2 red">N</hi>u spreket isr(ae)l wente de
+            here behalue(n) in vns was
+            [D]o vns lude anverdigeden
+            se hadde(n) vns lichte leuendik vor-
+            <pb n="75v"/>
+            sloken [D]orch ere bedrofnisse
+            he sik tornde an vns lichte had-
+            de vns dat water vorsloken
+            [U]nse sele voer dor ene beke
+            lichte hadde vnse zele varen
+            dorch de vnrechte(n) watere [B]e-
+            nediet sy de here de vns nicht
+            gaf to eer venknisse [U]nse
+            zele is gelaset alzo eyn luny(n)g
+            van der iegere stricke [E]re stric-
+            ke sint to broken vnde wy si(n)t
+            gheloset [V]nse helpe is in
+            deme namen des here(n) de de(n) he(m)-
+            mel vnde erde makede [E]re sy
+            deme vadere deme sone. 
+          </p>
+        </div>
+        <div type="psalm" xml:id="PSALM_125_V124">
+          <head rend="red">psal(mus)</head>
+          <pb/>
+          <p>
+            <hi rend="2 blue">D</hi>e dar louen in den heren
+            also de bergh syon sy(e) <!-- possibly a replacement of y > e? --> scole(n)
+            nicht beweghet werde(n) ewiklike(n)
+            de dar wonen to ih(e)r(usa)l(e)m [D]e
+            berghe syn v(m)me vn(de) de here is i(n)
+            arkelwijs sines volkes van
+            desseme nu wente to ewigen
+            [W]ente de here ne nicht wil
+            laten der sundere roden <!-- ioden? --> vppe der
+            rechte(n) lude lucke dat de rechte(n)
+            lude nicht uth ne recken ere ha(n)-
+            de to der bosheit [H]ere do wol-
+            den ghuden vnde den de rechtes
+            herten sint [S]under dede sik
+            neghen to der bindinge de wil
+            <pb/>
+            got bringen to mit den de quat
+            werken sy bouen isr(ae)l [E]re sy.
+          </p>
+            <div type="antiphon">
+              <head rend="red">an(tiphonia)</head>
+              <p>
+                Den busch den moyses sach
+                vnvorbrant de betekent vns dy-
+                ne louelike reynikeit godes <add place="margin left">moder</add> bid-
+                de vor vns
+              </p>
+            </div>
+          <div type="chapter">
+            <head rend="red">Capit(u)l(u)m</head>
+            <p>
+              <hi rend="2 red">M</hi>yn geist is soter wenne
+              honnich vnde myn erue
+              boue(n) honnich vnde honnich
+              seem. Gode sy lof
+            </p>
+            <div type="respond">
+              <head rend="red">R(esponsorium)</head>
+              <p>
+                Help
+              vns mit dyneme bede Cristus
+              moder maria
+              </p>
+            </div>
+            <div type="versicle">
+              <head rend="red">v(ersiculus)</head>
+              <p>
+                Du bist ey(n) bode
+                des ewighen leuendes vnde de clar-
+                heit des he(m)mels. Crist(us).. Ere sy de-
+                me. Help vns
+              </p>
+            </div>
+            <div type="versicle">
+              <head rend="red">v(ersiculus)</head>
+              <p>
+                Dencke an
+                <pb/>
+                dyne schone vnde dine schepnisse
+                vaer luckelken vort vn(de) wes wel-
+                dich. <span rend="underline">Pater noster</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div type="collect">
+          <head rend="red">Collecta</head>
+          <p>
+            <hi rend="2 blue">B</hi>excherme vns here mit
+            dyme denste vn(de) wente
+            wy truwe(n) sunte marie(n) helpe.
+            swo make vns seker van alle
+            vor alle vnse viende. Dorch
+            ih(esu)m (christu)m vnsen here(n). Amen.
+          </p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

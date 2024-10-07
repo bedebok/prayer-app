@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hours of the Virgin (Nones)</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Catalogue</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="44r" to="92v"/>
+              <title xml:id="HOURS_VIRGIN">Hours of the Virgin</title>
+              <textLang mainLang="gml"/>
+              <msItem>
+                <locus from="80r" to="82r"/>
+                <title xml:id="HOURS_VIRGIN_NONES">Nones</title>
+                <textLang mainLang="gml"/>
+              </msItem>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head>(nonas)</head>
+        <p>
+        <hi rend="2 blue">G</hi>ot dencke an myne
+        helpe. here snelle my to
+        helpende [E]re sy deme vadere.
+        </p>
+        <div>
+          <p>
+            [O] criste allerbarmh(er)tigeste [M]ari-
+            a moder [E]re sy dy here <span>vtsup(ra).</span>
+          </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_126_V125">
+          <head rend="red">p(salmu)s</head>
+          <p>
+            <hi rend="2 red">S</hi>e hebbe(n) my dicke an-
+            gevochten van myner yo-
+            get spreket isr(ae)l nu [D]e hebbe(n)
+            yoget wente se mochte(n) myner
+            nicht [D]e sundere smededen
+            uppe myme rugge se vorlenge-
+            de ere bosheit [D]e rechte here
+            wil to sniden der sundere hals
+            aderen se werde(n) vorstoret also
+            <pb/>
+            de syon hateden vnde werde(n) to
+            rugge keret [S]e werden also
+            hoy der dake dat er vordorret
+            wenne id wert wt getogen.
+            [V]an deme he sine hande nicht
+            voruullet de dit meyt vnder
+            sine(n) schot de de garuen samlet
+            [U]nde de dar vore gingen de
+            enspreken nicht des heren be-
+            nediginge sy bouen iw [W]y
+            benedien iw in des heren name(n)
+            [E]re sy deme vadere.            
+          </p>
+      </div>
+        <div type="psalm" corresp="#PSALM_130_V129">
+          <head rend="red">Ite(m) p(salmu)s</head>
+          <p>
+            <hi rend="2 red">H</hi>ere ik reep to dy wte der
+            dupe here twide myne 
+            stempne [D]ine oren werden
+            <pb/>
+              andencke(n)de an mynes bedes ste(m)p-
+              ne [H]ere oftu beholdest de bos-
+              heit here we mach dat doghe(n)
+              [W]ente by dy is de gnedicheit
+              vnde de dogede ik here dorch dine
+              ee [M]yn sele dogede an syne-
+              me worde my(n) sele hopede in de(n)
+              heren [V]an der mettene tijd we(n)t
+              an de nach hopede isr(ae)l an den
+              heren [W]enste <!-- red curly --> by deme here(n)
+            is de barmherticheyt vnde vul
+            losinge is by eme [U]nde he
+            wil losen isr(ae)l wt alle(n) syne(n) bos
+            heyde(n). [E]re sy.
+          </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_131_V130">
+          <p>
+            <hi rend="2 blue">H</hi>ere myn
+              herte en is nicht vorhoget
+              <pb/>
+            noch myne ogen sint nicht vor-
+            heuen [N]och ich enwanderde
+            nicht in der groten dinge(n) noch
+            an den wunderlike(n) dingen bo-
+            uen my [O]ft ik nicht an vor-
+            nam otmodichlike(n) ich hogede
+            myne zele [I]srahel hopede in den
+            here(n) van desseme wente nu to
+            ewighen tiden [E]re sy deme v.
+          </p>
+          <div type="respond">
+            <p>
+              See maria du hest vns to der werlde(n)
+              gebrocht den salichmaker den ioh(ann)es
+              sach vnde sprak See dit is dat lam
+              godes dat der werlde sunde dreghet.
+            </p>
+          </div>
+        </div>
+        <div type="chapter">
+          <head rend="red">Capit(ulum)</head>
+          <p>
+            <hi rend="2 red">I</hi>k vruchtede also eyn
+            winstock mit soten roke vn(de)
+            <pb/>
+            myne blome(n) syn blome(n) der ere
+            vnde der werdicheyt. Gode sy
+            gedanket.
+          </p>
+        </div>
+        <div type="respond">
+          <head rend="red">R(espo)ns(orium)</head>
+          <p>
+            Help vns myt dine bede (Christ)i moder maria.
+          </p>
+        </div>
+        <div type="versicle">
+          <head rend="red">v(ersiculus)</head>
+          <p>
+            De du
+            bist eyn bode des ewighe(n) leuendes vn(de)
+            de darheit der hemele. (Christ)i moder.
+            Ere sy de. Help vns.
+          </p>
+        </div>
+        <div type="versicle">
+          <head rend="red">v(ersiculus)</head>
+          <p>
+            Got help er mit syneme antlade. Got is vormid-
+            delst er vnde wert nicht beweghet.
+            <span rend="underline">Kyriel(eyson). (christ)el(eyson). Ky(rieleyson). Pater noster.</span>
+          </p>
+        </div>
+        <div type="collect">
+          <head rend="red">Coll(ecta)</head>
+          <p>
+            <hi rend="2 blue">D</hi>er hilghe(n) vnde der erlichen
+            iuncvrowe(n) werdicheit. o h(er)e
+            got mote vns alle tijd na vol-
+            ghen vnde helpe(n) vns dyner gna-
+            den. Dorch vnsen h(er)en ih(esu)m (christum).
+          </p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

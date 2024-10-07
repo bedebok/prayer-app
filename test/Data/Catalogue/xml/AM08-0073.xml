@@ -4,7 +4,7 @@
   <teiHeader>
     <fileDesc>
       <titleStmt>
-        <title/>
+        <title>AM 73 8vo</title>
       </titleStmt>
       <publicationStmt>
         <authority>When Danes Prayed in German</authority>
@@ -16,6 +16,9 @@
             <repository key="AMS"/>
             <idno xml:id="AM08-0073">AM 73 8vo</idno>
           </msIdentifier>
+          <head>
+            A fifteenth-century book of hours in Low German with multiple full-page miniatures. It contains added prayers in Danish.
+          </head>
           <msContents>
             <msItem class="calendar">
               <locus from="2r" to="11v"/>
@@ -68,6 +71,11 @@
               <incipit type="latin" xml:lang="la">Domine labia mea aperies</incipit>
               <incipit xml:lang="gml">Here opene myne lippen</incipit>
               <textLang mainLang="gml" otherLangs="la"/>
+              <msItem>
+                <locus from="44r" to="54v"/>
+                <title key="HOURS_VIRGIN_MATINS">Matins</title>
+                <textLang mainLang="gml"/>
+              </msItem>
               <msItem class="prayer added">
                 <locus from="46r" to="46v"/>
                 <title key="QUEM_TERRA_PONTUS">Quem terra pontus</title>
@@ -86,8 +94,6 @@
                 <explicit>Wy hopen an dy vrouwe make vns salich ewichliken. Amen.</explicit>
                 <textLang mainLang="gml" otherLangs="la"/>
               </msItem>
-              <!-- PRIME starts 71r -->
-              <!-- COMPLINE starts 88v -->
             </msItem>
             <msItem class="prayer">
               <locus from="93r" to="94r"/>
@@ -261,7 +267,7 @@
           </msContents>
           <physDesc>
             <objectDesc>
-              <supportDesc material="perg">
+              <supportDesc material="parch">
                 <support>Parchment</support>
                 <extent>288. <dimensions>
                     <height>157</height>

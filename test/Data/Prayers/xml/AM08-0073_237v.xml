@@ -13,12 +13,12 @@
           <msIdentifier>
             <settlement key="KBH"/>
             <repository key="AMS"/>
-            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+            <idno corresp="AM08-0073">AM 73 8vo</idno>
           </msIdentifier>
           <msContents>
             <msItem>
               <locus from="237v" to="238v"/>
-              <title xml:id="MAGNIFICAT">Magnificat</title>
+              <title key="MAGNIFICAT">Magnificat</title>
               <textLang mainLang="gml"/>
             </msItem>
           </msContents>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hours of the Virgin (Sext)</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Catalogue</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>  
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="44r" to="92v"/>
+              <title xml:id="HOURS_VIRGIN">Hours of the Virgin</title>
+              <textLang mainLang="gml"/>
+              <msItem>
+                <locus from="77r" to="79v"/>
+                <title xml:id="HOURS_VIRGIN_SEXT">Sext</title>
+                <textLang mainLang="gml"/>
+              </msItem>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head rend="red">Sexta.</head>
+        <p>
+          <hi rend="2 red">G</hi>ot dencke an
+          myne helpe. here snelle
+          my to helpende <hi>E</hi>re sy dem.
+          <hi>O</hi> criste barmh<ex>er</ex>tigeste <hi>D</hi>encke.
+          <hi>M</hi>a<ex>r</ex>ia mod<ex>er</ex> <span>soke i<ex>n</ex> der p<ex>ri</ex>me.</span>
+        </p>
+        <div type="psalm" corresp="#PSALM_126_V125">
+          <head rend="red">p<ex>salmu</ex>s</head>
+          <p>
+            <hi rend="2 blue">D</hi>o de here bekerede
+            <pb/>
+            de vencknisse syon do worde wy
+            getrostet <hi>D</hi>es is vnse munt
+            voruullet myt vroude<ex>n</ex> vnde
+            vnse tunge mit blidicheit
+            <hi>D</hi>enne scole<ex>n</ex> se spreken vnd<ex>er</ex>
+            den slechten de here hefft grotli-
+            ken by en gedaen <hi>D</hi>e here
+            heft grotliken by vns gedaen
+            wy sint syn volk geworden
+            <hi>H</hi>ere kere vnse vencknisse
+            also de beke in deme suden wi<ex>n</ex>-
+            de <hi>D</hi>e dar seyet in den trane<ex>n</ex>
+            vnde seyede<ex>n</ex> ere saet <hi>S</hi>under
+            komende scolen se kome<ex>n</ex> mit
+            vrouden vnde bringen ere gar-
+            <pb/>
+            uen <hi>E</hi>re sy deme vadere.
+            </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_127_V126">
+          <head rend="red">sext<ex>us</ex></head>
+          <p>
+            <hi rend="2 blue">I</hi>s dat de here nicht ne buwet
+            dat hus se hebbet vorgheues
+            arbeydet de yd buwet <hi>N</hi>e be-
+            waret de here de stad nicht he
+            maket vorgheues dede se bewa-
+            ret <hi>I</hi>t is vorgheues up to sta<ex>n</ex>-
+            de vor deme lichte stad up na
+            deme dat gy gesetten hebben
+            gy eten dat brot der drouicheit
+            <hi>W</hi>enne he sine<ex>n</ex> leue<ex>n</ex> gift den
+            slap see der kindere vrucht des
+            liues des here<ex>n</ex> erue is ere lon.
+            <hi>A</hi>lso de schote sint in des wel-
+            dinghen hant alzo sint de vthe-
+            <pb/>
+            slagenen kind<ex>er</ex>e <hi>S</hi>alich is de
+            man de syne begheringe vor-
+            uullet heft in en scal he nicht
+            vorstoret werden wan he sine<ex>n</ex>
+            viende<ex>n</ex> to spreket in der porte<ex>n</ex>
+            <hi>E</hi>re sy deme vadere vn<ex>de</ex>.
+          </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_128_V127">
+          <head rend="red">psal<ex>mus</ex></head>
+          <p>
+            <hi rend="2 red">S</hi>alich synt alle de den here<ex>n</ex>
+            vruchte<ex>n</ex> vnde an syneme 
+            weghe wandere<ex>n</ex> <hi>W</hi>ente du
+            scolt eten dat erbeyt dyner he<ex>n</ex>-
+            de salich bistu vnde dy scal wol
+            werden <hi>D</hi>yn husfrue scal
+            syn also eyn vul wyn rauen
+            in den siden dines huses <hi>U</hi>nde
+            dine kindere also nye olye bo-
+            <pb/>
+            me v<ex>m</ex>me dyne<ex>n</ex> disch <hi>S</hi>ee also
+            scal de mynsche benediet wer-
+            den de den here<ex>n</ex> vruchten <hi>D</hi>e h<ex>er</ex>e
+            van syon benedye dy dattu seest
+            gude dink va<ex>n</ex> i<ex>e</ex>r<ex>usa</ex>l<ex>e</ex>m alle daghe
+            dines leuendes <hi>U</hi>nde du mo-
+            test seen de kindere diner kind<ex>er</ex>e
+            den vrede bouen isr<ex>ae</ex>l <hi>E</hi>re sy de.
+          </p>
+          <div type="respond"> <!-- Isaiah -->
+            <p>
+              De rode her yessen heft gebloyet
+              eyn sterne van iacob is upgeghae<ex>n</ex>
+              eyne iuncvrowe heft getelet den
+              salichmakere dy loue wy vnse got
+            </p>
+            </div>
+        </div>
+        <div type="chapter">
+          <head rend="red">Cap<ex>itulum</ex></head>
+          <p>
+            <hi rend="2 blue">K</hi>omet to my alle de
+            myner beghere<ex>n</ex> vnde gy
+            scolen werden voruullet van
+            <pb/>
+            myner hilghen bord. Got sy ge-
+            dancket
+          </p>
+          <div type="respond">
+            <head rend="red">r<ex>esponsorium</ex></head>
+            <p>
+              De gnade is ghegote<ex>n</ex>
+              Jn dine lippen
+            </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v<ex>ersiculus</ex></head>
+            <p>
+              Dar v<ex>m</ex>me heft dy got eweliken benediet. In di. Ere
+              sy deme. De gnade
+            </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v<ex>ersiculus</ex></head>
+            <p>
+              Du bist ge-
+              worde<ex>n</ex> schone vnde sote in dyne<ex>n</ex> ry-
+              kedome hillige telerinne godes.
+            </p>
+          </div>
+        </div>
+        <div type="collect">
+          <head rend="red">coll<ex>ecta</ex></head>
+          <p>
+            <hi rend="2 red">B</hi>armhertige got wy
+            bidden dy gif vnser cranc-
+            heit sterke up dat wy alle de
+            dar begaen de dechtnisse diner
+            leue<ex>n</ex> moder sunte ma<ex>r</ex>ien mo-
+            ten vormiddelst ere hulpe up-
+            staen va<ex>n</ex> alle vnse bosheit.
+            Dor ih<ex>esu</ex>m <ex>christu</ex>m vnse<ex>n</ex> here<ex>n</ex>. Ame<ex>n</ex>.
+          </p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

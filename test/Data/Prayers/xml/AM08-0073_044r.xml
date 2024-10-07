@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hours of the Virgin (Matins)</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Catalogue</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="44r" to="92v"/>
+              <title key="HOURS_VIRGIN">Hours of the Virgin</title>
+              <textLang mainLang="gml"/>
+              <msItem>
+                <locus from="44r" to="54v"/>
+                <title key="HOURS_VIRGIN_MATINS">Matins</title>
+                <textLang mainLang="gml"/>
+              </msItem>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="hour" corresp="#HOURS_VIRGIN.matins">
+        <head>Matins</head>
+        <pb n="44r"/>
+        <lb n="1"/>
+        <p>
+          <s type="incipit">
+            <w><hi rend="3 red blue">D</hi>omine</w>
+            <w>labia</w>
+            <w>mea</w>
+            <w>ape<lb n="2"/>ries</w>
+            <pc>.</pc>
+            <w>et</w>
+            <w>os</w>
+            <w>meu<ex>m</ex></w>
+            <w>an<lb n="3"/>nu<ex>n</ex>ciabit</w>
+            <w>laudem</w>
+            <w>tua</w>
+          </s>
+          <lb n="4"/>
+          <s>
+            <w><hi rend="2 aqua">H</hi>ere </w>
+            <w>opene</w>
+            <w>myne</w>
+            <w>lippen</w>
+            <pc>.</pc>
+            <lb n="5"/>
+            <w>Vnde</w>
+            <w>my<ex>n</ex></w>
+            <w>munt</w>
+            <w>schal</w>
+            <w>ku<lb n="6"/>dighen</w>
+            <w>dyn</w>
+            <w>loff</w>
+            <pc>.</pc>
+          </s>
+          <s>
+            <w><hi rend="red">G</hi>ot</w>
+            <w>dencke</w>
+            <lb n="7"/>
+            <w>in</w>
+            <w>myne</w>
+            <w>helpe</w>
+            <w>here</w>
+            <w>snelle</w>
+            <w>dy</w>
+            <lb n="8"/>
+            <w>my</w>
+            <w>to</w>
+            <w>helpende</w>
+          </s>
+          <s>
+            <w><hi rend="blue">E</hi>re</w>
+            <w>sy</w>
+            <w>deme</w>
+            <lb n="9"/>
+            <w>vadere</w>
+            <w>deme</w>
+            <w>sone</w>
+            <w>vnde</w>
+            <w>deme</w>
+            <lb n="10"/>
+            <w>hilghen</w>
+            <w>geyste</w>
+          </s>
+          <s>
+            <w><hi rend="red">A</hi>lzo</w>
+            <w>dat</w>
+            <w>was</w>
+            <lb n="11"/>
+            <w>an</w>
+            <w>deme</w>
+            <w>antbegyne</w>
+            <w>nu</w>
+            <w>vnde</w>
+            <lb n="12"/>
+            <w>yu<ex>m</ex>mer</w>
+            <w>bliuen</w>
+            <w>scal</w>
+            <w>Amen</w>
+          </s>
+          <pc>.</pc>
+        </p>
+        <div type="invitatory" n="Invitatory">
+          <head>Invitatory</head>
+          <head rend="red"><w>Inui<ex>tatorium</ex></w></head>
+          <lb n="13"/>
+          <p><hi rend="2 blue">I</hi>N de ere der saligen iuncurowe <lb n="14"/>marie<ex>n</ex>.
+            Iubilere wy deme her </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_95_V94">
+          <head>Psalm 95 (94)</head>
+          <p>
+            <lb n="15"/>
+            <w><hi rend="2 red">K</hi>omet</w>
+            <w>wy</w>
+            <w>vrowen</w>
+            <w>vns</w>
+            <pb n="44v"/>
+            <lb n="1"/>
+            <w>to</w>
+            <w>deme</w>
+            <w>here<ex>n</ex></w>
+            <w>wy</w>
+            <w>iubileren</w>
+            <lb n="2"/>
+            <w>gode</w>
+            <w>vnseme</w>
+            <w>heyle</w>
+            <w>wy</w>
+            <w>kome<ex>n</ex></w>
+            <lb n="3"/>
+            <w>vor</w>
+            <w>syn</w>
+            <w>antlat</w>
+            <w>mit</w>
+            <w>loue</w>
+            <w>vnde</w>
+            <lb n="4"/>
+            <w>iubilere<ex>n</ex></w>
+            <w>eme</w>
+            <w>in</w>
+            <w>den</w>
+            <w>salmen</w>
+            <pc>.</pc>
+            <lb n="5"/>
+            <s>
+              <w><hi rend="red">I</hi>n</w>
+              <w>der</w>
+              <w>ere</w>
+              <w>der</w>
+              <w>salige<ex>n</ex></w>
+              <w>vt</w>
+              <w>s<ex>upra</ex></w>
+            </s>
+            <w><hi rend="blue">W</hi>en<lb n="6"/>te</w>
+            <w>got</w>
+            <w>is</w>
+            <w>ey<ex>n</ex></w>
+            <w>grot</w>
+            <w>here</w>
+            <w>vnde</w>
+            <w>ey<ex>n</ex></w>
+            <lb n="7"/>
+            <w>grot</w>
+            <w>koning</w>
+            <w>boue<ex>n</ex></w>
+            <w>alle</w>
+            <w>gode</w>
+            <lb n="8"/>
+            <w>wente</w>
+            <w>de</w>
+            <w>here</w>
+            <w>vordriuet</w>
+            <w>nicht</w>
+            <lb n="9"/>
+            <w>sy<ex>n</ex></w>
+            <w>volk.</w>
+            <w>wente</w>
+            <w>in</w>
+            <w>syner</w>
+            <w>hand</w>
+            <lb n="10"/>
+            <w>sint</w>
+            <w>alle<ex>n</ex></w>
+            <w>ende</w>
+            <w>der</w>
+            <w>erde<ex>n</ex></w>
+            <w>vnde</w>
+            <w>be<lb n="11"/>schouwet</w>
+            <w>de</w>
+            <w>hoge</w>
+            <w>der</w>
+            <w>berghe</w>
+            <lb n="12"/>
+            <s>
+              <w>Jubilere</w>
+              <w>wy</w>
+              <w>deme</w>
+              <w>here<ex>n</ex></w>
+            </s>
+            <w><hi rend="red">W</hi>en<lb n="13"/>te</w>
+            <w>syn</w>
+            <w>is</w>
+            <w>dat</w>
+            <w>meer</w>
+            <w>vnde</w>
+            <w>he</w>
+            <lb n="14"/>
+            <w>makede</w>
+            <w>yd</w>
+            <w>vn<ex>de</ex></w>
+            <w>de</w>
+            <w>erde<ex>n</ex></w>
+            <w>stichtede<ex>n</ex></w>
+            <lb n="15"/>
+            <w>syne</w>
+            <w>hande</w>
+            <w>komet</w>
+            <w>vn<ex>de</ex></w>
+            <w>anbede</w>
+            <pb n="45r"/>
+            <lb n="1"/>
+            <w>wy</w>
+            <w>ene</w>
+            <w>vnde</w>
+            <w>valle<ex>n</ex></w>
+            <w>vor</w>
+            <w>got</w>
+            <lb n="2"/>
+            <w>vnde</w>
+            <w>weyne<ex>n</ex></w>
+            <w>vor</w>
+            <w>deme</w>
+            <w>heren</w>
+            <lb n="3"/>
+            <w>de</w>
+            <w>de</w>
+            <w>vns</w>
+            <w>geschape<ex>n</ex></w>
+            <w>heft</w>
+            <w>we<ex>n</ex>te</w>
+            <lb n="4"/>
+            <w>he</w>
+            <w>is</w>
+            <w>vnse</w>
+            <w>h<ex>er</ex>e</w>
+            <w>got</w>
+            <w>mer</w>
+            <w>my</w>
+            <w>si<ex>n</ex>t</w>
+            <lb n="5"/>
+            <w>syn</w>
+            <w>volk</w>
+            <w>vnde</w>
+            <w>schap</w>
+            <w>syner</w>
+            <lb n="6"/>
+            <w>weyde</w>
+            <w><hi rend="red">I</hi>n</w>
+            <w>de</w>
+            <w>ere</w>
+            <w>der</w>
+            <w>saligen</w>
+            <pc>.</pc>
+            <w>vt</w>
+            <w>s<ex>upra</ex></w>
+            <pc>.</pc>
+            <lb n="7"/>
+            <w><hi rend="blue">O</hi>fte</w>
+            <w>gy</w>
+            <w>hudene</w>
+            <w>syne</w>
+            <w>stemp<lb n="8"/>ne</w>
+            <w>vorneme<ex>n</ex></w>
+            <w>so</w>
+            <w>vorhardet</w>
+            <lb n="9"/>
+            <w>nicht</w>
+            <w>iuwe</w>
+            <w>herte</w>
+            <w>also</w>
+            <w>de</w>
+            <w>lude</w>
+            <lb n="10"/>
+            <w>to</w>
+            <w>der</w>
+            <w>wostenye</w>
+            <w>deden</w>
+            <w>in</w>
+            <w>deme</w>
+            <lb n="11"/>
+            <w>dage</w>
+            <w>der</w>
+            <w>bekoringe</w>
+            <w>dar</w>
+            <w>my</w>
+            <lb n="12"/>
+            <w>bekorede<ex>n</ex></w>
+            <w>iuwe</w>
+            <w>vadere</w>
+            <w>se</w>
+            <w>pro<lb n="13"/>uede<ex>n</ex></w>
+            <w>vnde</w>
+            <w>segen</w>
+            <w>myne</w>
+            <w>werk</w>
+            <lb n="14"/>
+            <w>Jubilere</w>
+            <w>wy</w>
+            <w>deme</w>
+            <w>here</w>
+            <w><hi>U</hi>er<lb n="15"/>tich</w>
+            <w>yar</w>
+            <w>was</w>
+            <w>ik</w>
+            <w>negest</w>
+            <w>desse<pb n="45v"/><lb n="1"/>me</w>
+            <w>slechte</w>
+            <w>vn<ex>de</ex></w>
+            <w>sede</w>
+            <w>alle</w>
+            <w>tyd</w>
+            <w>desse</w>
+            <lb n="2"/>
+            <w>de</w>
+            <w>dwelet</w>
+            <w>an</w>
+            <w>deme</w>
+            <w>herte<ex>n</ex></w>
+            <w>mer</w>
+            <lb n="3"/>
+            <w>se</w>
+            <w>bekande<ex>n</ex></w>
+            <w>myner</w>
+            <w>weghe</w>
+            <lb n="4"/>
+            <w>nicht</w>
+            <pc>.</pc>
+            <w>ik</w>
+            <w>swor</w>
+            <w>en</w>
+            <w>in</w>
+            <w>myneme</w>
+            <lb n="5"/>
+            <w>torne</w>
+            <w>dat</w>
+            <w>se</w>
+            <w>nicht</w>
+            <w>scholen</w>
+            <w>in</w>
+            <lb n="6"/>
+            <w>myne</w>
+            <w>rouwe</w>
+            <w>ghan</w>
+            <w><hi>I</hi>n</w>
+            <w>der</w>
+            <w>ere</w>
+            <lb n="7"/>
+            <w>der</w>
+            <w>salichsten</w>
+            <w>iu<ex>n</ex>cvrowe<ex>n</ex></w>
+            <pc>.</pc>
+            <w><ex>et</ex></w>
+            <w><ex>cetera</ex></w>
+            <pc>.</pc>
+            <lb n="8"/>
+            <w><hi>E</hi>re</w>
+            <w>sy</w>
+            <w>deme</w>
+            <w>vadere</w>
+            <w>.</w>
+            <w>deme</w>
+            <lb n="9"/>
+            <w>sone</w>
+            <w>vnde</w>
+            <w>deme</w>
+            <w>hilgen</w>
+            <w>geyste</w>
+            <lb n="10"/>
+            <w>also</w>
+            <w>dat</w>
+            <w>was</w>
+            <w>in</w>
+            <w>deme</w>
+            <w>begy<ex>n</ex><lb n="11"/>ne</w>
+            <w>vnde</w>
+            <w>ewich</w>
+            <w>bliuet</w>
+            <w>Amen</w>
+            <pc>.</pc>
+            <lb n="12"/>
+            <w>Jubilere</w>
+            <w>wy</w>
+            <w>deme</w>
+            <w>here<ex>n</ex></w>
+            <w>.</w>
+            <w><hi>I</hi>n</w>
+            <w>de</w>
+            <w>ere</w>
+            <lb n="13"/>
+            <w>der</w>
+            <w>saligesten</w>
+            <w>iuncvrowe<ex>n</ex></w>
+            <w>mari<lb n="14"/>en</w>
+            <w>Jubilere</w>
+            <w>wy</w>
+            <w>deme</w>
+            <w>heren</w> 
+            <pc>.</pc> 
+          </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_8">
+          <head type="editor">[Psalm 8]</head>
+          <lb n="15"/>
+          <p><span rend="red">PSAlmus</span>
+            <pb n="47r"/>
+            <lb n="1"/>
+            <span><hi rend="2 red">D</hi>omi<ex>n</ex>e d<ex>omi</ex>n<ex>u</ex>s
+              n<ex>oste</ex>r.</span>
+            <hi>H</hi>ere vn<lb/>se here wo wunderlich <lb/>is dyn name in alle der erde<ex>n</ex>
+            <lb/>
+            <hi>W</hi>ente dyne welde is gebo<lb/>ret boue<ex>n</ex> de he<ex>m</ex>mele
+            <hi>V</hi>te deme <lb/>munde der vnsprekende<ex>n</ex> kin<lb/>dere dede noch sughen
+            vullen <lb/>brochtestu dat lof dor dyne <lb/>viende dat du trostest den vi<lb/>ant vnde
+            den wreker <hi>W</hi>en<lb/>te ik scal seen dyne he<ex>m</ex>mele de <lb/>werke dyner
+            vingere de<ex>n</ex> ma<lb/>nen vn<ex>de</ex> de sterene<ex>n</ex> de du stichte <lb/>
+            dest <hi>W</hi>at is de mynsche dat <lb/>du syner denckest ofte wat is <pb n="47v"/>
+            <lb/>des mysche<ex>n</ex> sone went du <lb/>ene vor wat rekenst <hi>W</hi>ente <lb/>du
+            hefst ene eyn cleyn ge<lb/>mynnet v<ex>n</ex> den engelen du <lb/>cronedest ene myt ere
+            vnde <lb/>myt syrode vnde settest ene <lb/>bouen de werke dyner ha<ex>n</ex>de <lb/>
+            <hi>D</hi>u worpest alle ding vnd<ex>er</ex>
+            <lb/>syne vote schape vnde ossen <lb/>vnde dar en boue<ex>n</ex> alle quik <lb/>des
+            veldes <hi>D</hi>es he<ex>m</ex>mels vo<lb/>gele vnde des meres vissche <lb/>de dar des
+            meres stighe wan<lb/>deren <hi>H</hi>ere vnse here wo wu<ex>n</ex><lb/>derlik is dyn
+            name in alle <pb n="48r"/>
+            <lb/>der erden <hi>E</hi>re sy deme vade<ex>re</ex>
+          </p>
+          <div type="antiphon">
+            <head>Antiphon</head>
+            <lb/>
+            <p>
+              <span rend="red">A<ex>ntiphona</ex></span> Du bist benedyet bouen alle <lb/>vrowen
+              vnde benedyet is de <lb/>vrucht dines liues. </p>
+          </div>
+        </div>
+        <div type="psalm" corresp="#PSALM_19_V18">
+          <head type="editor">[Psalm 19 (18)]</head>
+          <head rend="red">p<ex>salmu</ex>s</head>
+
+
+          <lb/>
+          <head>
+            <hi rend="2 blue">C</hi>eli enarrant gl<ex>ori</ex>am </head>
+          <p>
+            <hi>D</hi>e <lb/>he<ex>m</ex>mele kundeghet de ere <lb/>godes: vnde dat firmament <lb/>
+            kundeghet de werke syner <lb/>hande <hi>D</hi>e dach kundeghet <lb/>deme daghe dat wort
+            vnde <lb/>de nacht kundeghet der nacht <lb/>de wisheyt <hi>I</hi>t en sint nene <lb/>
+              tunghe<ex>n</ex> noch der men ere ste<ex>m</ex>p<lb/>ne nicht ne horet <hi>E</hi>n
+            luth <lb/>gink in alle der erden vne <pb n="48v"/>
+            <lb/>ere wort ginghen in de ende <lb/>des ertrikes <hi>H</hi>e sette syn
+              tha<lb/>bernac<ex>u</ex>l<ex>u</ex>m in de sunne vnde <lb/>he gynk also eyn brudegam
+            <lb/>van syner bedde kameren <lb/>
+            <hi>H</hi>e vrouwede sik also ey<ex>n</ex>
+            <lb/>rese den wech to lopende <lb/>van deme ouerste<ex>n</ex> he<ex>m</ex>mele is
+            <lb/>syn ghank <hi>U</hi>nde syn wed <lb/>derghank beth to deme ho<lb/>geste<ex>n</ex>
+            vnde nemant is dede <lb/>sik hudeth vor syne hitte <lb/>
+            <hi>D</hi>es heren E is vnbesaluet <lb/>vnde bekeret de sele<ex>n</ex> des
+              here<ex>n</ex>
+            <lb/>betuginge is lauelich vnde <pb n="49r"/>
+            <lb/>wisheit den cleynen <hi>D</hi>es he<lb/>ren rechticheit is recht vnde <lb/>vrowet
+            dat herte dat luchte<ex>n</ex>de <lb/>both godes is vorluchtende de <lb/>oghen
+              <hi>G</hi>odes vruchte is hil<lb/>lich vnde bliuet in der werlde <lb/>der
+              werlde<ex>n</ex> des here<ex>n</ex> richte sin <lb/>was vnde sin in sik suluen
+            <lb/>war vnde recht gemaket <lb/>
+            <hi>S</hi>e sint begherlik bouen <lb/>golt vnde vele eddeler stene <lb/>vnde sotere
+            bouen honnych <lb/>vn<ex>de</ex> seem <hi>W</hi>ente dyn knecht <lb/>bewaret se in der
+            bewaringhe <lb/>der bode is vele wedder lones <pb n="49v"/>
+            <lb/>
+            <hi>W</hi>e vornympt de vorsume<ex>n</ex><lb/>heit van mynen hemelken <lb/>reyneghe my
+            vnde van den <lb/>vromeden schoue dyme knech<lb/>te <hi>O</hi>fte se myner nicht ouer
+            <lb/>herich ne werde<ex>n</ex> so werde ik <lb/>vmbesaluet vnde werde ge <lb/>reyneget
+            van deme groteste<ex>n</ex>
+            <lb/>broke <hi>U</hi>nde mynes mu<ex>n</ex>des <lb/>sproke werdet behegelik
+              vn<ex>de</ex>
+            <lb/>mynes herte<ex>n</ex> trachtent wert <lb/>alle tijd in dyme angesichte. <lb/>
+            <hi>H</hi>ere my<ex>n</ex> helpere vnde my<ex>n</ex>
+            <lb/>losere bist du <hi>E</hi>re sy deme <lb/>vadere deme sone vnde. </p>
+          <div type="antiphon">
+            <head rend="red">Anti<ex>phona</ex></head>
+            <pb n="50r"/>
+            <p> Du gheuest eyne<ex>n</ex> soten roke <lb/>also wterkoren myrre hilghe <lb/>godes
+              moder. </p>
+          </div>
+        </div>
+        <div type="psalm" corresp="#PSALM_24_V23">
+          <head type="editor">[Psalm 24 (23)]</head>
+          <head rend="blue">P<ex>salmu</ex>s</head>
+          <head><hi rend="2 blue">D</hi>omini est t<ex>er</ex>ra</head>
+          <p>
+            <hi>D</hi>es here<ex>n</ex>
+            <lb/>is dat ertrike vnde ere <lb/>vulle vnde allent dat dar y<ex>n</ex>ne <lb/>wonet
+              <hi>W</hi>ente he ene gestich<lb/>tet heft vp dat mer vnde heft <lb/>ene berede maket
+            bouen de vlot <lb/>
+            <hi>W</hi>e stighet in des here<ex>n</ex> berch <lb/>edder we mach stan in syner <lb/>
+            hilghen stede <hi>D</hi>e vnschuldege <lb/>in den handen vnde reynes her<lb/>ten is de
+            syne sele nicht geues <lb/>nam vnde de syme negesten nicht <pb n="50v"/>
+            <lb/>en swor in drogene <hi>D</hi>esse <lb/>scal nemen den sege van gode <lb/>vnde
+            barmherticheit van go<lb/>de syneme heyle <hi>D</hi>it is dat <lb/>slechte der genen de
+            ene soket <lb/>dat antlat godes iacob <hi>G</hi>y <lb/>vorsten vorhauet iuwe porten
+            <lb/>vnde gy ewige<ex>n</ex> porte<ex>n</ex> werdet <lb/>irhauen vnde de koning der
+            <lb/>eren de scal dar inghan <hi>W</hi>e <lb/>is desse koni<ex>n</ex>g der ere<ex>n</ex>
+            de starke <lb/>vnde de weldighe here de wel<lb/>dich is in deme stride <hi>G</hi>y
+            vor<lb/>sten irhauet iuwe porten vn<ex>de</ex>
+            <lb/>gy ewighe<ex>n</ex> porte<ex>n</ex> werdey irhaue<ex>n</ex>
+            <lb/>
+            <pb n="51r"/>
+            <lb/>vnde de koni<ex>n</ex>g der eren scal dar <lb/>inghan <hi>W</hi>e is desse koning
+            <lb/>der eren de here der dogede is ko<lb/>ni<ex>n</ex>g der ere<ex>n</ex>
+            <hi>E</hi>re sy deme vad<ex>er</ex>e. </p>
+          <div type="antiphon">
+            <p> Singet vns sote sange vor deme <lb/>bedde desser iuncvrowen. </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v<ex>ersiculus</ex></head>
+            <p> De <lb/>gnade is geghote<ex>n</ex> an dyne<ex>n</ex> lippen. <lb/>Dar van benedye dy
+              got ewichli<lb/>chen. </p>
+            <p rend="underline">Paater n<ex>oste</ex>r. Aue maria</p>
+          </div>
+        </div>
+        <div type="lesson">
+          <head rend="red">l<ex>ecc</ex>i<ex>o</ex> p<ex>rin</ex>cib<ex>us</ex></head>
+          <p>
+            <hi rend="2 blue">S</hi>ancta maria iuncvrowe <lb/>bouen alle iuncvrowen <lb/>moder vnde
+            dochter des de eyn <lb/>koning is boue<ex>n</ex> alle koninge <lb/>gif vns
+              dyne<ex>n</ex> trost dat wy <lb/>van dyner wegen moten be <lb/>
+            <pb n="51v"/>
+            <lb/>holde<ex>n</ex> dat lon des ewighe<ex>n</ex> leue<ex>n</ex>
+            <lb/>des vnde dat wy mit dyne<ex>n</ex>
+            <lb/>wterkorne<ex>n</ex> moten dat rike <lb/>beholde<ex>n</ex> ewichlike<ex>n</ex>.
+            Sunder <lb/>du h<ex>er</ex>e wes vns gnedich. </p>
+          <div type="responsory">
+            <head rend="red">R<ex>esponsorium</ex></head>
+            <p>
+              <hi>H</hi>ilghe vnde vndbevleckede iu<ex>n</ex>c<lb/>vrowe ik ne wet nicht mit wat
+              <lb/>loue ik schal dy loue<ex>n</ex> Wente den <lb/>de he<ex>m</ex>mel nicht
+                begripe<ex>n</ex> mochte <lb/>den drogestu an dyneme licha<ex>m</ex>me </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v<ex>ersiculus</ex></head>
+            <p> Du bist benedyet bouen alle <lb/>vrowe<ex>n</ex> vnde benedyet is de vrucht <lb/>
+              dynes liues. Wente den. </p>
+          </div>
+        </div>
+        <div type="lesson">
+          <head rend="red">l. ij<ex>ra</ex>.</head>
+          <p>
+            <hi rend="2 red">S</hi>ancta maria vnder alle<ex>n</ex>
+            <lb/>milde<ex>n</ex> de mildeste. vn<ex>de</ex> vnd<supplied reason="illegible"
+              >er</supplied>
+            <lb/>
+            <pb n="52r"/>
+            <lb/>alle<ex>n</ex> hilghen de hilgheste. De <lb/>wte dy gheboren is vnde is
+              ey<ex>n</ex>
+            <lb/>here bouen alle de he<ex>m</ex>mele de <lb/>sulue mote van dyner weghe<ex>n</ex>
+            <lb/>neme<ex>n</ex> vnse bede dat myt syner <lb/>leue mote delghet werde<ex>n</ex> vnse
+            <lb/>sunde. sunder du h<ex>er</ex>e wes vns <lb/>gnedich. </p>
+          <div type="responsory">
+            <head rend="red">R<ex>esponsorium</ex></head>
+            <p>
+              <hi>S</hi>alich bistu iu<ex>n</ex>cvrow <lb/>maria de du den here<ex>n</ex> drogest
+              den <lb/>schepper alle de<add place="above">r</add> werlde<ex>n</ex> du
+              wu<ex>n</ex>nest <lb/>ene de dy schop vn<ex>de</ex> bleuest ewich<lb/>like<ex>n</ex>
+              eyne iuncurowe. </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v<ex>ersiculus</ex></head>
+            <p> Wes <lb/>ghegrot ma<ex>r</ex>ia vnde alle gnade de <lb/>here is myt dy Du teledest
+              den <lb/>de dy makede. </p>
+          </div>
+        </div>
+        <div type="lesson">
+          <head rend="red">lectio tercia</head>
+          <pb n="52v"/>
+          <p>
+            <hi rend="2 blue">S</hi>ancta ma<ex>r</ex>ia wente du <lb/>werdich werest to vnt <lb/>
+            fangende den alle de werlt <lb/>nicht begripe<ex>n</ex> mochte delghe <lb/>vnse schult
+            myt dinen milde<ex>n</ex>
+            <lb/>beden dat wy stighen moge<ex>n</ex>
+            <lb/>to deme stole der ewygen ere <lb/>dar du mit dyme sone bist <lb/>ane ende. Mer du
+            here wes <lb/>vns gnedich </p>
+          <div type="responsorium">
+            <head rend="red">R<ex>esponsorium</ex></head>
+            <p>
+              <hi>A</hi>llerleueste <lb/>iuncvrowe godes werkersche der <lb/>dogede<ex>n</ex> Giff
+              helpe den nottorfti<lb/>ge<ex>n</ex> kum vrowe den to hulpe den <lb/>elende<ex>n</ex>
+              dede to dy ropen. </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v<ex>ersiculus</ex></head>
+            <p> Wente <lb/>wy vorducket werde<ex>n</ex> myit der <lb/>
+              <pb n="53r"/>
+              <lb/>sunden borde<ex>n</ex> aller hilgheste wy <lb/>bidden dy. Gif helpe den </p>
+          </div>
+        </div>
+        <div type="canticle">
+          <head rend="red">cantic<ex>?</ex></head>
+          <head><hi rend="2 red">T</hi>e deum laudam<ex>us</ex></head>
+          <p>
+            <hi>W</hi>y lo<lb/>uen dy got wy bekennen <lb/>des dat du eyn here bist
+            <hi>E</hi>wy<lb/>ge vader alle de werld eret dy <lb/>
+            <hi>A</hi>lle he<ex>m</ex>mele vnde potestate<ex>n</ex>
+            <lb/>louet dy <hi>C</hi>herubin vnde sera<lb/>phin de singet dy mit vnswi<lb/>gelicher
+            stempne <hi>H</hi>ilge hil<lb/>ge. hilge here got der schare. <lb/>
+            <hi>H</hi>emmel lvnde erde sint vul <lb/>dyner weldighen ere <hi>D</hi>e er<lb/>liche
+            koer der apostele. de loue<lb/>liche tal der p<ex>ro</ex>pheten. de schone <pb n="53v"/>
+            <lb/>schar der mertelere louet dy. <lb/>
+            <hi>D</hi>e hilghe cristenheyt louet <lb/>dy ouer den kring der werlt <lb/>
+            <hi>D</hi>u bist eyn vader der vmme<lb/>tigen welde <hi>D</hi>yn ware vnde <lb/>dyn
+            enighe sone is eren wer<lb/>dich vnde de hilghe trostende <lb/>ghest <hi>C</hi>riste du
+            biste eyn ko<lb/>ning der ere <hi>D</hi>u bist des va<lb/>ders ewige sone <hi>D</hi>o du
+            den <lb/>menschen vntfaen vn<ex>de</ex> losen <lb/>woldest do en vorsmadestu nicht
+            <lb/>der iuncurowen lijf <hi>D</hi>o du <lb/>vorwu<ex>n</ex>nen haddest de pyne <lb/>des
+            dodes de opendestu den loue<pb n="54r"/><lb/>gende rike der hemmele <hi>D</hi>u
+            <lb/>settest to der vorderen godes in <lb/>des vaders ere <hi>M</hi>en louet dat <lb/>du
+            wedderkomende sist eyn rich<lb/>tere <hi>D</hi>arvmme bidde wy dy <lb/>kum vns to helpe
+              dyne<ex>n</ex> denst <lb/>luden de du gheloset hefst myt <lb/>dyme dure blote
+              <hi>M</hi>ake dat <lb/>vns gelouet werden my dyne<ex>n</ex>
+            <lb/>hilghen in der ewighen ere. <lb/>
+            <hi>H</hi>ere make salich dyn volk <lb/>vnde benedye dyn erue <hi>U</hi>nde <lb/>richte
+            synde hoge se ewichli<lb/>ken <hi>W</hi>y benedyen dy ouer <lb/>alle daghe <hi>U</hi>nde
+            wy louet <pb n="54v"/>
+            <lb/>dynen name<ex>n</ex> ewichlike<ex>n</ex> in der <lb/>werlde<ex>n</ex> der werlde
+              <hi>H</hi>ere roke <lb/>vns to bewarende in desseme <lb/>dage vor sunde <hi>H</hi>ere
+            vorbar<lb/>me dy ouer vns vnde wes <lb/>vns gnedich <hi>D</hi>yn
+            barmh<ex>er</ex><lb/>ticheit werde boue<ex>n</ex> alse wy <lb/>in dy hopeden
+            <hi>H</hi>ere ik h??e<lb/>de in dy gif my dat ik ewich<lb/>liken nicht ne werde
+            vorsto<lb/>ret </p>
+          <div type="versicle">
+            <head>Versicle</head>
+            <p><span rend="red">v<ex>ersiculus</ex></span> Na der kort bleuest du <lb/>eyne
+              vnbeuleckede iuncvrowe. <lb/>Godes moder bidde vor vns. </p>
+          </div>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

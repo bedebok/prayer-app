@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hours of the Virgin (Lauds)</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Catalogue</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="44r" to="92v"/>
+              <title xml:id="HOURS_VIRGIN">Hours of the Virgin</title>
+              <textLang mainLang="gml"/>
+              <msItem>
+                <locus from="54v" to="71r"/>
+                <title xml:id="HOURS_VIRGIN_LAUDS">Lauds</title>
+                <textLang mainLang="gml"/>
+              </msItem>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <head rend="red">Laud(is)</head>
+        <p>
+          <hi rend="2 red">G</hi>ot dencke an myne
+          helpe here snelle my to
+          <pb n="59r"/>
+          helpende [E]re deme
+        </p>
+      <div type="psalm" corresp="#PSALM_93_V92">
+        <head rend="red">p(salmu)s</head>
+        <p>
+          <hi rend="2 blue">D</hi>e here regnerede vnde toch
+          an de sterke vnde v(m)me gorde sik.
+          [W]ente he heft der erden krink
+          geuestet dede nicht kan beweget
+          werden [D]ar van is bereydet
+          dyn stol van ewicheit bistu.
+          [H]ere de vlode irhaue sik de
+          vlode irhaue(n) ere stempne [D]e
+          vlode irhaue(n) ere hilgen va(n) den
+          stempne(n) veler watere [D]es
+          meers irheuinge sint wunder-
+          lich de here is in der hoghe wu(n)-
+          derlich [D]yne betuginge sint
+          geworden altolouelich dyme
+          <pb n="59v"/>
+          hus themet here hillicheit in
+          de lenge der dage [E]re sy de.
+        </p>
+      </div>
+        <div type="psalm" corresp="#PSALM_100_V99">
+          <head rend="red">p(salmu)s</head>
+          <head><hi rend="2 blue">J</hi>viblate deo</head>
+          <p>
+            [I]ubilere gode
+            alle ertrike deneth deme here(n)
+            in vroude(n) [G]at in syn ange-
+            sichte mit vroulicheit [W]ente
+            de here is got he heft vns ghe-
+            schape(n) vnde wy sulue(n) nicht
+            [S]in volk vnde schape siner
+            weyde gat in syne porten mit
+            loue vnde in syne vorhoue
+            mit sange louet ene [L]ouet
+            synen namen wente de heer
+            is sote syn barmherticheit
+            bliuet ewichlike(n) vnde syn
+            <pb n="60r"/>
+            warheit van slechte to slechte.
+            [E]re sy deme vadere.
+          </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_63_V62">
+          <head rend="red">psalmus</head>
+          <head rend="underlined"><hi rend="2 red">D</hi>eus Deus meus</head>
+          <p>
+            [G]ot my(n)
+            got ik wake to dy van de-
+            me lichte [M]yner sele dorstede
+            in dy vnde myn vlesk mannich-
+            uoldichliche [I]n deme wosten 
+            ertrike dat vnwek vn(de) dorre is
+            dar openbarde ik my dy alzo
+            in deme hilghe(n) dat ik seghe dy-
+            ne doget vnde dyne ere [W]en-
+            te dyn barmherticheit is bete-
+            re bouen dat leuet myne lippe(n)
+            scholen dy louen [A]lzo wil ik
+            dy loue(n) in myme leue(n)t vnde in
+            <pb n="60v"/>
+            dyme name(n) wil ik myne hande
+            upboren [M]yn sele werde vor-
+            vullet mit vetticheit der gnade
+            vn(de) my(n) munt sca<supplied reason="missing">l</supplied> dy louen mit
+            vroude [A]lso dachte ik dyner
+            up myme bedde ik wil dyner
+            dencken in der mettene tijd we(n)-
+            te du my(n) helpere werest [U]n-
+            de ik wil my vrouwe(n) in der be-
+            denckinge diner vlogele myn
+            sele hangede to dy dyn vordere
+            hant vntfink my [M]er se soch-
+            ten vorgheues myne sele se
+            scholen gan in dat nedderste
+            der erden se werdet gegheuen
+            <pb n="61r"/>
+            in des swerdes hant se werdet der
+            vosse deel [S]under de koni(n)g
+            scal sik vrouwe(n) in gode se scho-
+            len alle ghelouet werde(n) de to e-
+            me sweret wente der ouelspre-
+            kere munt is bestoppet.
+          </p>
+        </div>
+        <div type="psalm" corresp="#PSALM_67_V66">
+          <head rend="red">p(salmu)s</head>
+          <p>
+            <hi rend="2 blue">G</hi>ot vorbarme vnser vnde
+            benedye vns he vorluchte
+            syn anlat boue(n) vns vn(de) wese
+            vns gnedich [D]at wy in der
+            enden dynen wech bekennen
+            dyne(n) heil in allen slechte(n) [G]ot
+            dat volk loue(n) dy alle volk lo-
+            ue(n) dy [D]e slechte hogh(e)n vnde
+            vrowen sik wente du ordelest
+            <pb n="61v"/>
+            de lude in rechticheit vnde rich-
+            test de slechte in der erden [G]ot
+            dat volk loue(n) dy alle lude lo-
+            uen dy de ende gaf ere vrucht.
+            [G]ot vnse got seghene vns 
+            vn(de) got segene vns vnde ene
+            vruchte(n) alle ende der erde(n) [E]re
+          </p>
+        </div>
+        <div type="psalm" corresp="#DAN_3">
+          <head><hi rend="2 red">B</hi>enedice om(n)ia</head>
+          <p>
+            [B]enedyet 
+            den here(n) alle gy werke des
+            heren. louet vnde ouerhoghet
+            ene ewichlike(n) [B]enedyet den
+            here(n) alle gy engele des heren.
+            gy he(m)mele b(e)ndyet den heren
+            [B]enedyet den here(n) alle gy wa-
+            tere de bouen den he(m)melen si(n)t.
+            <pb n="62r"/>
+            benedyet den here(n) alle gy doge-
+            de des here(n) [B]enediet de(n) here(n)
+            sunne vnde mane. benediet de(n)
+            here(n) gy streme des hy(m)mels [B]e-
+            nediet den here(n) regen vn(de) dow.
+            b(e)nediet den here(n) alle godes geys-
+            te [B]enediet de(n) heren vur vn(de)
+            hitte. benediet den here(n) winter
+            vnde somer [B]enediet den 
+            heren dow vnde ripe. b(e)nedyet
+            den h(er)en vrost vn(de) kulde [B]ene
+            diet den here(n) ijs vnde snee. be-
+            nediet den here(n) dacht vn(de) nacht.
+            [B]enediet den here(n) licht vn(de)
+            dusternisse. benediet de(n) here(n)
+            <pb n="62v"/>
+            wolke vnde blueme [B]enedi-
+            en scal de erde den here: louen
+            vnde ouer hogh(e)n ene in ewi-
+            cheit [B]enediet den heren
+            berge vnde houele. benediet
+            den heren allent dat in der erde(n)
+            bloyet [B]enediet den heren
+            gy borne. benediet den heren
+            meer vnde vlode [B]enediet de(n)
+            here(n) gy wal_vissche vnde alle(n)t
+            dat in deme watere beweget
+            werde. benediet den heren alle
+            vogele des he(m)mels [B]enediet
+            den here(n) alle vnde quik myn-
+            schen kindere b(e)n(e)diet den heren.
+            <pb n="63r"/>
+            [I]srahel benedie den here(n). loue
+            ene vnde ouerhoghe ene ewich-
+            liken [B]enediet den here(n) gy 
+            prestere des here. benediet den 
+            heren gy kindere des here(n) [B]e-
+            nediet den here(n) gy gheste vnde 
+            gy rechte(n) selen. benediet den
+            here(n) gy hilghe(n) vnde gy otmo-
+            deges herten [B]enediet den
+            heren anama azaria misael.
+            louet vnde ouerhoget ene e-
+            wichliche(n) [B]enedie wy den
+            vader den sone mit deme hil-
+            gen geste. wy louen vn(de) ouer-
+            hoghen ene ewichlike(n) [B]ene-
+            <pb n="63v"/>
+            dyet bistu here in des he(m)mels
+            firmame(n)to. louclich vnde er-
+            lich ouerhoghet ewichliken
+          </p>
+        </div>
+        <div type="psalm">
+          <head rend="underline"><hi rend="2 blue">L</hi>audate d(omi)n(u)m de.</head>
+          <div type="psalm" corresp="#PSALM_148_V148">
+          <p>
+            [L]ouet
+            den here(n) van den hemme-
+            len louet ene in der hoghe
+            [L]ouet ene alle sine engele
+            louet ene alle sine doghede
+            [L]ouet ene su(n)ne vnde mane
+            louet ene sterne vnde licht
+            [L]ouet ene gy hemmele
+            der he(m)mele vnde gy watere
+            de boue(n) den he(m)melen sin loue(n)
+            des here(n) name(n) [W]ente he
+            sprak vnde se worde(n) gemaket
+            <pb n="64r"/>
+            vnde he both vnde se worden
+            gheskapen [H]e settede se va(n) 
+            ewicheit to ewicheit he sette-
+            de en both dat nicht vorgeit
+            [L]oueet den here(n) van der erde(n)
+            gy draken vn(de) alle afgrunde
+            [U]ur. hagel. snee ijs. gy geiste 
+            der hilgen de sin wort doen.
+            [B]erghe vn(de) alle houele vruct-
+            bar holte vn(de) alle cederbome.
+            [D]erete vn(de) alle quick schingede
+            dere vn(de) vedderde vogele [K]oni(n)-
+            ge der erden vn(de) alle volk alle
+            vorste vn(de) richtere der erden.
+            [I]ungelinge vnde iuncvrowe(n)
+            <pb n="64v"/>
+            olt vnde yung louet des here(n)
+            name(n) wente alleyne syn name
+            ghehoghet is [S]yn loff is uppe
+            deme hemmele vnde in der erde(n)
+            vnde he hoghede dat horne sines
+            volkes [L]of sy alle syner hil-
+            ghe(n) den kindere(n) va(n) israhel deme
+            volke dat eme nalet 
+          </p>
+          </div>
+          <div type="psalm" corresp="#PSALM_149_V149">
+            <p>
+              [S]inget
+            deme here(n) eyne(n) nyen sank sin
+            lof is in der samlinge der hilge(n)
+            [I]sr(ae)l vrowet sik wente de en-
+            skop vnde de dochtere va(n) syon
+            vrowe(n) sik in eren koningh
+            [S]e loue(n) sine(n) name(n) in deme
+            kore vn(de) singen eme i(n) hunger<supplied reason="illegible">e</supplied>
+            <pb n="65r"/>
+            vnde in psalte(r)io [W]ente id is
+            deme here(n) beheghelich yn sime
+            volke vnde he hoghede de sacht-
+            modighe(n) in de salicheit [D]e
+            hilghen scholen sik vrowen i(n)
+            der ere se schole(n) blide syn in erer
+            vorborghenheit [G]odes hogh-
+            nisse sint in eren kelen vnde 
+            voresnedige swerde in ere(n) han-
+            den [D]at se wrake don in den
+            slechte(n) bescheldinge in deme
+            volke [T]o bindende ere koni(n)ge
+            in den helden vnde ere eddelen i(n)
+            yseren hende(n) [D]at se doen in
+            en dat beschreuene recht desse
+            <pb n="65v"/>
+            ere is alle eren hilghen 
+            </p>
+          </div>
+          <div type="psalm" corresp="#PSALM_150_V150">
+            <p>
+            [L]o-
+            uet den heren in syne hilge(n)
+            louet ene in deme firmame(n)-
+            to syner doget [L]ouet ene 
+            in synen dogeden louet ene
+            na der me(n)nichuoldicheit sy-
+            ner grote [L]ouet ene in
+            basunen lude louet ene in
+            psalterio vnde in der harpe(n)
+            [L]ouet ene in der bungen
+            vnde in deme kore louet ene
+            in seyden vnde in orgelen
+            [L]ouet ene in wolludende(n)
+            symbalen louet ene i(n) symba-
+            len der iubilatien ey(n) iewelk
+            <pb n="66r"/>
+            geist loue den here(n) [E]re sy de-
+            me vadere deme sone vn(de).
+          </p>
+        </div>
+          <div type="antiphon">
+            <head rend="red">An(tiphonia)</head>
+            <p>
+              O welkene wunderlike sa(m)melin-
+              ge de skepper des mynsliche slech-
+              tes vntfink eyne sele den licham
+              vnde is geboren va(n) eyner iuncvro-
+              wen vnde heft vns syne gotheyt
+              mildelichen gheuen.
+            </p>
+          </div>
+        </div>
+        <div type="chapter">
+          <head rend="red">Capitulum</head>
+          <p>
+            <hi rend="2 blue">M</hi>yn leue de spreket to my
+            stant up myne vrundy(n)ne
+            myn schone. myn duue. vnde
+            kum. Got sy gelouet
+          </p>
+          <div type="versicle">
+            <head rend="red">v(ersiculus)</head>
+            <p>
+              Hore
+              dochter vnde see vnde nege dyn ore.
+              Wente de koning begherde dyner
+              schonede.
+            </p>
+          </div>
+        </div>
+        <div type="psalm" corresp="#SONG_ZACHARIA #LUKE_1">
+          <head rend="red">Psalmus</head>
+          <pb n="66v"/>
+          <head><hi rend="2 red">B</hi>enedictus</head>
+          <p>
+            [B]enedyet
+            sy de here got van israhel
+            wente he schowede vnde make-
+            de de losinghe synes volkes
+            [U]nde he heft vns upgerich-
+            tet eyn horn des heyles in da-
+            uites hus sines kindes [A]lso
+            he sprak dorch siner hilghen
+            p(ro)pheen mu(n)t de van der werl-
+            den sint [H]e makede heyl vte
+            vnsen viende(n) vnde van alle der
+            hant de vns hateden [H]e dede
+            barmh(er)ticheit mit vnsen vedere(n)
+            vnde he wil dencken synes hil-
+            ghen testamentes [D]at swor-
+          <pb n="67r"/>
+            ne recht wil he bedenck<sic>i</sic><corr>e</corr>n dat he
+            swor to abrahame vnseme va-
+            dere dat he sik vns wil gheue(n)
+            [D]at wy van deme angeste
+            vnser viande gheloset worden
+            vn(de) eme deneden [I]n hillicheit
+            vn(de) in rechticheit vor eme alle
+            vnse daghe [V]nde du kint scalt
+            genomet werden eyn p(ro)phete 
+            des allerhoghesten wente du
+            scalt ghan vor des here(n) antlat
+            vnde bereden sine weghe [V]nde
+            du scalt wisheit des heiles syne-
+            me volke geuen in afflate erer
+            sunde [D]orch de inwendigen
+            <pb n="69v"/>
+            barmherticheit vnses godes
+            dar yne he vns sochte vnde 
+            ghink vte der hoghe [H]e luch-
+            tede den de in der dusternisse sitte<supplied reason="illegible">n</supplied>
+            vnde in deme scheme(n)des dodes
+            dat he vnse vote richtede in de(n)
+            wech des vredes [E]re si deme
+          </p>
+          <div type="antiphon">
+            <head rend="red">A<supplied reason="illegible">(ntiphonia)</supplied></head>
+            <p>
+              Du bist saligh iuncvrowe ma(r)ia
+              de du drogest den here(n) skepper der
+              werlde. du gheberedest den de dy <unclear>sko</unclear>
+              vnde bleuest ewichlike(n) eyn iu(n)cvro-
+              we
+            </p>
+            <p rend="underline">Kyriel(esion) (Christi)el(esion) Kyriel(esion) P(ate)r n(oste)r</p>
+            </div>
+        </div>
+        <div type="collect">
+          <head rend="red">Coll(ecta)</head>
+          <p>
+            <hi rend="2 red">G</hi>ot de du woldest van
+            marie(n) liue dinen licham
+            nemen. do de engel din wort
+            <pb n="70r"/>
+            kundigede. wy bidden dy wente
+            wy werlike(n) louen dat se go-
+            des moder is dat wy va(n) ereme
+            bede mote helpe vnde trost vnt-
+            faen. Dor vnsen here(n) ih(esu)m (christu)m
+            dyne(n) sone de mit dy leuet vnde 
+            regneret in der enheit des hilge(n)
+            geistes ware got ewich. Amen.
+          </p>
+          <div type="antiphon">
+            <head rend="red">A(ntiphonia)</head>
+            <head rend="red">Va(n) deme hil.ge.</head>
+            <p>
+              Kum hilge geist
+              voruulle de herte dyner louigen vn(de)
+              vntfenge in en dat vur diner leue
+              de du mit den ma(n)nichuoldige(n) tun-
+              gen sammelst dat volk in de enheit
+              des louen
+            </p>
+          </div>
+          <div type="versicle">
+            <head rend="red">v(ersiculus)</head>
+            <p>
+              Here scheppe en reyne
+              herte an my vnde vornye eyne(n) rech-
+              <pb n="70v"/>
+              ten geyst in myner inwendicheit
+            </p>
+          </div>
+        </div>
+        <div type="collect">
+          <head rend="red">Coll(ecta)</head>
+          <p>
+            <hi rend="2 blue">H</hi>ere de inghetinghe
+            des hilghen geistes mote
+            vnse herte reyneghen vnde be-
+            holden vns dine gnade vnde
+            afflat aller sune.
+          </p>
+          </div>
+        <div type="collect">
+          <head rend="red">Collecta</head>
+          <p>
+            <hi rend="2 red">A</hi>lle weldige got de du vns
+            gegheuen hefst to beken-
+            nende de ere der ewighen dre-
+            uoldigheit to deme cristen lo-
+            uen dat wy de alleweldighe(n)
+            eynheit anbede(n). gif vns dat
+            wy van der craft des fulnen
+            loues mote(n) gestarket werde(n)
+            ieghe(n) alle wedder mode. Dorch
+            <pb n="71r"/>
+            ih(esu)m (christu)m vnsen here(n). Amen
+          </p>
+          <p>
+            [D]e name vnses heren ih(esu)m (christu)m
+            vnde siner eraftigen moder der ewi-
+            ghen iuncrowe(n) marien vnde aller
+            hilghen de sy benediet nu vnde to
+            ewighen tiden. Amen.
+          </p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>
+
+

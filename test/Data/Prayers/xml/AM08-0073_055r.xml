@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Te Deum</title>
+        <respStmt xml:id="SDV">
+          <resp when="2024">Catalogue</resp>
+          <persName>Seán D. Vrieland</persName>
+        </respStmt>
+      </titleStmt>
+      <publicationStmt>
+        <authority>When Danes Prayed in German</authority>
+      </publicationStmt>
+      <sourceDesc>
+        <msDesc>
+          <msIdentifier>
+            <settlement key="KBH"/>
+            <repository key="AMS"/>
+            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+          </msIdentifier>
+          <msContents>
+            <msItem>
+              <locus from="55r" to="57r"/>
+              <title xml:id="TE_DEUM">Te Deum</title>
+              <textLang mainLang="gml"/>
+            </msItem>
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <div type="main">
+        <pb n="55r"/>
+        <lb n="1"/>
+        <head rend="red"><w>Te</w> <w>deum</w></head>
+        <p>
+          <lb n="2"/>
+          <w><hi rend="2 green">T</hi>e</w>
+          <w>uirginem</w>
+          <w>mariam</w>
+          <w><hi rend="red">W</hi>y</w>
+          <lb n="3"/>
+          <w>louen</w>
+          <w>di</w>
+          <w>iu<ex>n</ex>curouwe</w>
+          <w>ma<lb n="4"/>ria</w>
+          <w><hi rend="green">W</hi>y</w>
+          <w>bekennen</w>
+          <w>dy</w>
+          <w><hi rend="red">E</hi>ne</w>
+          <w>er<lb n="5"/>like</w>
+          <w>iu<ex>n</ex>curouwe</w>
+          <w><hi rend="green">A</hi>lle</w>
+          <w>ertrike</w>
+          <lb n="6"/>
+          <w>eret</w>
+          <w>dy</w>
+          <w>moder</w>
+          <w>der</w>
+          <w>barmher<lb n="7"/>ticheyht</w>
+          <w><hi rend="red">A</hi>lle</w>
+          <w>engele</w>
+          <w>vn<ex>de</ex></w>
+          <w>he<ex>m</ex>mele</w>
+          <lb n="8"/>
+          <w>vnde</w>
+          <w>alle</w>
+          <w>chore</w>
+          <w>der</w>
+          <w>engele</w>
+          <w>eret</w>
+          <lb n="9"/>
+          <w>di</w>
+          <w><hi rend="green">C</hi>herubin</w>
+          <w>vnde</w>
+          <w>seraphin</w>
+          <lb n="10"/>
+          <w>myt</w>
+          <w>eme</w>
+          <w>vnuphorlikeme</w>
+          <w>ste<ex>m</ex>p<lb n="11"/>ne</w>
+          <w><hi rend="red">R</hi>open</w>
+          <w>di</w>
+          <w>hilge</w>
+          <w>iu<ex>n</ex>curowe</w>
+          <lb n="12"/>
+          <w><hi rend="green">H</hi>ilge</w>
+          <w>iu<ex>n</ex>curowe</w>
+          <w><hi rend="red">A</hi>lder</w>
+          <w>hil<lb n="12"/>geste</w>
+          <w>iu<ex>n</ex>curouwe</w>
+          <w>der</w>
+          <w>iu<ex>n</ex>curou<lb n="13"/>wen</w>
+          <w><hi rend="green">J</hi>uncurouwe</w>
+          <w>vor</w>
+          <w>der</w>
+          <w>bort</w>
+          <lb n="14"/>
+          <w><hi rend="red">J</hi>u<ex>n</ex>curouwe</w>
+          <w>in</w>
+          <w>der</w>
+          <w>bor</w>
+          <w>vn<ex>de</ex></w>
+          <w>bist</w>
+          <lb n="15"/>
+          <w>ghebleuen</w>
+          <w>ene</w>
+          <w>iu<ex>n</ex>urouwe</w>
+          <w>na</w>
+          <w>der</w>
+          <pb n="55v"/>
+          <lb n="1"/>
+          <w>bort</w>
+          <w><hi rend="green">D</hi>u</w>
+          <w>hefst</w>
+          <w>getelet</w>
+          <w>den</w>
+          <w>ko<lb n="2"/>ningh</w>
+          <w>der</w>
+          <w>konynghe</w>
+          <w>vnde</w>
+          <w>den</w>
+          <lb n="3"/>
+          <w>heren</w>
+          <w>in</w>
+          <w>der</w>
+          <w>vroude</w>
+          <w><hi rend="red">H</hi>e<ex>m</ex>mel</w>
+          <w>vn<ex>de</ex></w>
+          <lb n="4"/>
+          <w>erde</w>
+          <w>sint</w>
+          <w>vul</w>
+          <w>van</w>
+          <w>leue</w>
+          <w>diner</w>
+          <lb n="5"/>
+          <w>ere</w>
+          <w><hi rend="green">D</hi>e</w>
+          <w>engele</w>
+          <w>der</w>
+          <w>he<ex>m</ex>mele</w>
+          <w>ere<ex>n</ex></w>
+          <lb n="6"/>
+          <w>di</w>
+          <w><hi rend="red">D</hi>e</w>
+          <w>apostele</w>
+          <w>kundigen</w>
+          <w>dy</w>
+          <lb n="7"/>
+          <w>erlik</w>
+          <w><hi rend="green">D</hi>e</w>
+          <w>propheten</w>
+          <w>mede</w>
+          <w>loue<ex>n</ex></w>
+          <lb n="8"/>
+          <w>di</w>
+          <w>telerinne</w>
+          <w>godes</w>
+          <w><hi rend="red">D</hi>e</w>
+          <w>hilgen</w>
+          <lb n="9"/>
+          <w>mertelere</w>
+          <w>eren</w>
+          <w>dy</w>
+          <w>sterne</w>
+          <w>des</w>
+          <lb n="10"/>
+          <w>meres</w>
+          <w><hi rend="green">D</hi>e</w>
+          <w>hilgen</w>
+          <w>cristenheyt</w>
+          <lb n="11"/>
+          <w>bekennet</w>
+          <w>di</w>
+          <w>ouer</w>
+          <w>de</w>
+          <w>werlt</w>
+          <w>des</w>
+          <lb n="12"/>
+          <w>ertrikes</w>
+          <w><hi rend="red">E</hi>ne</w>
+          <w>moder</w>
+          <w>der</w>
+          <w>vm</w>
+          <lb n="13"/>
+          <w>begripliken</w>
+          <w>werdicheyt</w>
+          <w><hi rend="green">E</hi>ne</w>
+          <lb n="14"/>
+          <w>erwerdige</w>
+          <w>brut</w>
+          <w>godes</w>
+          <w>vnde</w>
+          <lb n="15"/>
+          <w>vmwittich</w>
+          <w>enes</w>
+          <w>ma<ex>n</ex>nes</w>
+          <w><hi rend="red">E</hi>ne</w>
+          <pb n="56r"/>
+          <lb n="1"/>
+          <w>dochter</w>
+          <w>des</w>
+          <w>hogesten</w>
+          <w>konynges</w><pc>.</pc>
+          <lb n="2"/>
+          <w><hi rend="green">A</hi>lder</w>
+          <w>erwerdigest</w>
+          <w>alles</w>
+          <w>loues</w>
+          <lb n="3"/>
+          <w><hi rend="red">D</hi>u</w>
+          <w>bist</w>
+          <w>ene</w>
+          <w>konyngynne</w>
+          <w>des</w>
+          <lb n="4"/>
+          <w>he<ex>m</ex>mels</w>
+          <w><hi rend="green">D</hi>u</w>
+          <w>bist</w>
+          <w>ene</w>
+          <w>vorsty<ex>n</ex>ne</w>
+          <lb n="5"/>
+          <w>der</w>
+          <w>gantzen</w>
+          <w>werlt</w>
+          <w><hi rend="red">D</hi>u</w>
+          <w>bist</w>
+          <lb n="6"/>
+          <w>en</w>
+          <w>spegel</w>
+          <w>der</w>
+          <w>iu<ex>n</ex>curouweschop</w>
+          <lb n="7"/>
+          <w><hi rend="green">D</hi>u</w>
+          <w>bist</w>
+          <w>en</w>
+          <w>tempel</w>
+          <w>der</w>
+          <w>hogeste<ex>n</ex></w>
+          <lb n="8"/>
+          <w>gotheyt</w>
+          <w><hi rend="red">D</hi>u</w>
+          <w>bist</w>
+          <w>ene</w>
+          <w>lilie</w>
+          <w>der</w>
+          <lb n="9"/>
+          <w>kuscheyt</w>
+          <w><hi rend="green">D</hi>u</w>
+          <w>bist</w>
+          <w>de</w>
+          <w>alder</w>
+          <w>vter<lb n="10"/>kareste</w>
+          <w>mank</w>
+          <w>allen</w>
+          <w>vrouwen</w>
+          <lb n="11"/>
+          <w><hi rend="red">D</hi>u</w>
+          <w>hefst</w>
+          <w>to</w>
+          <w>vor</w>
+          <w>losende</w>
+          <w>de<ex>n</ex></w>
+          <w>vor</w>
+          <lb n="12"/>
+          <w>loren</w>
+          <w>mynschen</w>
+          <w>den</w>
+          <w>sone</w>
+          <w>godes</w>
+          <lb n="13"/>
+          <w>mynsche</w>
+          <w>worden</w>
+          <w>is</w>
+          <w><hi rend="green">E</hi>n</w>
+          <w>erlike</w>
+          <lb n="14"/>
+          <w>vor</w>
+          <w>wynner</w>
+          <w>des</w>
+          <w>dodes</w>
+          <w>geuen</w>
+          <lb n="15"/>
+          <w>vte</w>
+          <w>dime</w>
+          <w>Ju<ex>n</ex>curouweliken</w>
+          <w>licha<pb n="56v"/><lb n="1"/>me</w>
+          <w><hi rend="red">D</hi>u</w>
+          <w>regnerest</w>
+          <w>mit</w>
+          <w>dime</w>
+          <w>en<lb n="2"/>bornen</w>
+          <w>sone</w>
+          <w>sunder</w>
+          <w>ende</w>
+          <w>in</w>
+          <w>der</w>
+          <lb n="3"/>
+          <w>tokumpst</w>
+          <w>des</w>
+          <w>richtes</w>
+          <w><hi rend="green">S</hi>ta</w>
+          <w>be<lb n="4"/>nedie</w>
+          <w>vns</w>
+          <w>armen</w>
+          <w>sunder</w>
+          <w><hi rend="red">K</hi>u<ex>m</ex></w>
+          <lb n="5"/>
+          <w>to</w>
+          <w>hulpe</w>
+          <w>dinen</w>
+          <w>deneren</w>
+          <w>dede</w>
+          <lb n="6"/>
+          <w>sint</w>
+          <w>vorloset</w>
+          <w>myt</w>
+          <w>deme</w>
+          <w>hilge<ex>n</ex></w>
+          <lb n="7"/>
+          <w>blode</w>
+          <w>dines</w>
+          <w>kindes</w>
+          <w><hi rend="green">M</hi>ak</w>
+          <w>vns</w>
+          <lb n="8"/>
+          <w>to</w>
+          <w>leuende</w>
+          <w>myt</w>
+          <w>den</w>
+          <w>hilgen</w>
+          <w>in</w>
+          <lb n="9"/>
+          <w>der</w>
+          <w>ewigen</w>
+          <w>ere</w>
+          <w><hi rend="red">U</hi>rouwe</w>
+          <w>ma<lb n="10"/>ke</w>
+          <w>salich</w>
+          <w>din</w>
+          <w>volk</w>
+          <w>dat</w>
+          <w>di</w>
+          <w>tru<lb n="11"/>liken</w>
+          <w>denet</w>
+          <w>vnde</w>
+          <w>regere</w>
+          <w>ewe<lb n="12"/>liken</w>
+          <w>dat</w>
+          <w>volk</w>
+          <w>dat</w>
+          <w>dar</w>
+          <w>louet</w>
+          <lb n="13"/>
+          <w>an</w>
+          <w>dy</w>
+          <w><hi rend="red">W</hi>i</w>
+          <w>benedien</w>
+          <w>di</w>
+          <w>alle</w>
+          <w>da<lb n="14"/>ge</w>
+          <w>vnde</w>
+          <w>louen</w>
+          <w>dinen</w>
+          <w>erliken</w>
+          <lb n="15"/>
+          <w>namen</w>
+          <w>ewichliken</w>
+          <w><hi rend="green">U</hi>erdige</w>
+          <pb n="57r"/>
+          <lb n="1"/>
+          <w>di</w>
+          <w>vrouwe</w>
+          <w>in</w>
+          <w>desseme</w>
+          <w>daghe</w>
+          <lb n="2"/>
+          <w>vns</w>
+          <w>to</w>
+          <w>helpende</w>
+          <w>to</w>
+          <w>bewarende</w>
+          <lb n="3"/>
+          <w>sunder</w>
+          <w>sunde</w>
+          <w>vorbarme</w>
+          <w>di</w>
+          <w>vid<lb n="4"/>we</w>
+          <w>vorbarme</w>
+          <w>di</w>
+          <w>vnser</w>
+          <w><hi rend="red">D</hi>ine</w>
+          <lb n="5"/>
+          <w>barmeherticheyt</w>
+          <w>vrouwe</w>
+          <w>sche</w>
+          <lb n="6"/>
+          <w>ouer</w>
+          <w>vns</w>
+          <w><hi rend="green">W</hi>ente</w>
+          <w>wy</w>
+          <w>hebben</w>
+          <lb n="7"/>
+          <w>ghe hopet</w>
+          <w>in</w>
+          <w>dy</w>
+          <w><hi rend="red">W</hi>y</w>
+          <w>hopen</w>
+          <lb n="8"/>
+          <w>an</w>
+          <w>dy</w>
+          <w>vrouwe</w>
+          <w>make</w>
+          <w>vns</w>
+          <w>sa<lb n="9"/>lich</w>
+          <w>ewichliken</w>
+          <pc>.</pc>
+          <w>Amen</w>
+          <pc>.</pc>
+        </p>
+      </div>
+    </body>
+  </text>
+</TEI>

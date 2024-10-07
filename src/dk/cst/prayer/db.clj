@@ -1,11 +1,17 @@
 (ns dk.cst.prayer.db
-  (:require [datalevin.core :as d]
+  (:require [clojure.string :as str]
+            [datalevin.core :as d]
             [clojure.java.io :as io]
             [dk.cst.xml-hiccup :as xh]
-            [dk.cst.prayer.tei :as tei]))
+            [dk.cst.prayer.tei :as tei])
+  (:import [java.io File]))
 
 (def db-path
   "test/db")
+
+(def files-path
+  "test/Data")
+
 
 (def schema
   {:xml/id         {:db/valueType :db.type/string
@@ -54,35 +60,45 @@
    :tei/label      {:db/cardinality :db.cardinality/many
                     :db/valueType   :db.type/string}})
 
-(defn conn
-  []
-  (d/get-conn db-path schema))
+(defn xml-files
+  "Fetch XML File objects recursively from a starting `dir`."
+  [dir]
+  (->> (file-seq (io/file dir))
+       (remove (fn [^File f] (.isDirectory f)))
+       (filter (fn [^File f] (str/ends-with? (.getName f) ".xml")))))
 
-;;; Retract the name attribute of an entity
-#_(d/transact! conn [[:db/retract 1 :name "Frege"]])
-;(d/transact! conn [{:name "Frege" :aka "glen"}])
-;
-;;; Pull the entity, now the name is gone
-;(d/q '[:find (pull ?e [*])
-;       :in $ ?alias
-;       :where
-;       [?e :aka ?alias]]
-;     (d/db conn)
-;     "fred")
-;;; => ([{:db/id 1, :aka ["foo" "fred"], :nation "France"}])
-;
-;;; Close DB connection
-;(d/close conn)
+(defn rmdir
+  [dir]
+  (->> (io/file dir)
+       (file-seq)
+       (reverse)
+       (run! io/delete-file)))
 
+
+;; TODO: add full-text search
+(defn ->db
+  [files-path db-path]
+  (let [files           (xml-files files-path)
+        hiccup->entity' #(tei/hiccup->entity % tei/manuscript-search-kvs)
+        entities        (map (comp hiccup->entity' xh/parse) files)
+        ;; TODO: kills old db first (make this a bit more elegant)
+        conn            (do
+                          (d/close (d/get-conn db-path schema))
+                          (rmdir db-path)
+                          (d/get-conn db-path schema))]
+    (d/transact! conn entities)))
 
 (comment
+  (xml-files files-path)
+  (->db files-path db-path)
+
   (-> (io/file "test/Data/Prayers/xml/Holm-A42_032r.xml")
       (xh/parse)
       (tei/hiccup->entity tei/manuscript-search-kvs))
 
 
   (try
-    (d/transact! (conn)
+    (d/transact! (d/get-conn db-path schema)
                  [(-> (io/file "test/Data/Prayers/xml/AM08-0075_063r.xml")
                       (xh/parse)
                       (tei/hiccup->entity tei/manuscript-search-kvs))])
@@ -90,22 +106,23 @@
       (prn e)))
 
   ;; delete an entity
-  (d/transact! (conn) [[:db/retractEntity 1]])
+  (d/transact! (d/get-conn db-path schema) [[:db/retractEntity 1]])
 
-  (d/q '[:find ?e ?a ?v
-         :where
-         [?e ?a ?v]]
-       (d/db (conn)))
+  (->> (d/q '[:find ?e ?a ?v
+              :where
+              [?e ?a ?v]]
+            (d/db (d/get-conn db-path schema)))
+       (count))
+
 
   (d/q '[:find ?a ?v
          :in $ ?e
          :where
          [?e ?a ?v]]
-       (d/db (conn))
-       1
-       #_[:tei/name+type ["Mary" "person"]])
+       (d/db (d/get-conn db-path schema))
+       [:tei/name+type ["Mary" "person"]])
 
   (do
-    (d/close (conn))
+    (d/close (d/get-conn db-path schema))
     (run! io/delete-file (reverse (file-seq (io/file db-path)))))
   #_.)

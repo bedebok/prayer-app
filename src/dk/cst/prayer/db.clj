@@ -18,6 +18,10 @@
                     :db/unique    :db.unique/identity
                     :db/doc       (str "The xml:id is reused to identify TEI documents.")}
 
+   :tei/text       {:db/valueType :db.type/string
+                    :db/fulltext  true
+                    :db/doc       "The text of the document, enabling full-text search."}
+
    :tei/title      {:db/valueType   :db.type/string
                     :db/cardinality :db.cardinality/one}
    :tei/settlement {:db/valueType   :db.type/string
@@ -114,6 +118,14 @@
             (d/db (d/get-conn db-path schema)))
        (count))
 
+
+  ;; Test full-text search
+  (d/q '[:find ?e ?a ?v
+         :in $ ?q
+         :where [(fulltext $ ?q)
+                 [[?e ?a ?v]]]]
+       (d/db (d/get-conn db-path schema))
+       "heren")
 
   (d/q '[:find ?a ?v
          :in $ ?e

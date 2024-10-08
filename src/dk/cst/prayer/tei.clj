@@ -134,7 +134,11 @@
          (apply merge-with (fn [v1 v2]
                              (if (sequential? v1)
                                (into v1 v2)
-                               (merge v1 v2)))))))
+                               (merge v1 v2))))
+
+         ;; The raw document text is included to facilitate full-text search.
+         ;; This is enabled in the db schema definition for :tei/text.
+         (merge {:tei/text (h/hiccup->text hiccup tei-conversion)}))))
 
 (comment
   (tei-description (tei-ref :sourceDesc))

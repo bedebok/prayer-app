@@ -46,12 +46,13 @@
            (match/has-parent (match/tag :msItem)))
     [:tei/msItem 'recursive]]
 
-   [:msItem
-    (fn [node]
-      (let [{:keys [class]} (elem/attr node)
-            class' (attr-parts class)]
-        (when class'
-          {:tei/class class'})))]
+   ;; TODO: captures entire node, so not working correctly currently
+   #_[:msItem
+      (fn [node]
+        (let [{:keys [class]} (elem/attr node)
+              class' (attr-parts class)]
+          (when class'
+            {:tei/class class'})))]
 
    ;; TODO: should also match {:to true}, but currently the TEI files have errors
    [[:locus {:from true}]
@@ -60,17 +61,30 @@
         (cond-> {:tei/from from}
           to (assoc :tei/to to))))]
 
-   [[:title {:xml/id true}]
-    (fn [node]
-      (let [{:keys [xml/id]} (elem/attr node)
-            title (first (elem/children node))]
-        {:tei/title title
-         :xml/id    id}))]
-
    [[:textLang {:mainLang true}]
     (fn [node]
       (let [{:keys [mainLang]} (elem/attr node)]
-        {:tei/mainLang mainLang}))]])
+        {:tei/mainLang mainLang}))]
+
+   ;; TODO: :xml/id or :key? Or nothing, e.g. certain <msItem> in catalogue
+   [:title #_[:title {:xml/id true}]
+    (fn [node]
+      (let [{:keys [xml/id]} (elem/attr node)
+            title (first (elem/children node))]
+        (cond-> {:tei/title title}
+          id (merge {:xml/id id}))))]
+
+   [:rubric
+    (fn [node]
+      {:tei/rubric [(h/hiccup->text node tei-conversion)]})]
+
+   [:incipit
+    (fn [node]
+      {:tei/incipit [(h/hiccup->text node tei-conversion)]})]
+
+   [:explicit
+    (fn [node]
+      {:tei/explicit [(h/hiccup->text node tei-conversion)]})]])
 
 (def manuscript-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
@@ -145,6 +159,8 @@
          ;; This data can be transacted into a Datomic-compatible db
          ;; e.g. Datalevin in our case.
          (apply merge-with (fn [v1 v2]
+                             ;; TODO: better exception handling when type doesn't match
+                             ;;       e.g. strings being merged.
                              (if (sequential? v1)
                                (into v1 v2)
                                (merge v1 v2))))
@@ -157,7 +173,7 @@
 
 (comment
   (tei-description (tei-ref :sourceDesc))
-  (tei-description (tei-ref :msItem))
+  (tei-description (tei-ref :rubric))
 
   ;; test text conversion on a full HTML document
   (-> (tei-ref :sourceDesc)

@@ -40,6 +40,12 @@
                     :db/cardinality :db.cardinality/one}
    :tei/to         {:db/valueType   :db.type/string
                     :db/cardinality :db.cardinality/one}
+   :tei/rubric     {:db/valueType   :db.type/string
+                    :db/cardinality :db.cardinality/many}
+   :tei/incipit    {:db/valueType   :db.type/string
+                    :db/cardinality :db.cardinality/many}
+   :tei/explicit   {:db/valueType   :db.type/string
+                    :db/cardinality :db.cardinality/many}
 
    :tei/entity     {:db/cardinality :db.cardinality/one
                     :db/valueType   :db.type/ref

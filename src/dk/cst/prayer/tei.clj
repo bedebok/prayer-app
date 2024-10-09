@@ -25,6 +25,12 @@
                (match/hiccup [:span {:class "label" :xml/lang nil}])))
       (h/hiccup->text h/html-conversion)))
 
+(defn attr-parts
+  "Explode an `attr-val` into its constituent parts."
+  [attr-val]
+  (when attr-val
+    (str/split (str/trim attr-val) #"\s+")))
+
 ;; TODO: punctuation not working great, maybe postprocess?
 (def tei-conversion
   {:conversions {:teiHeader      zip/remove
@@ -39,6 +45,13 @@
   [[(match :msItem
            (match/has-parent (match/tag :msItem)))
     [:tei/msItem 'recursive]]
+
+   [:msItem
+    (fn [node]
+      (let [{:keys [class]} (elem/attr node)
+            class' (attr-parts class)]
+        (when class'
+          {:tei/class class'})))]
 
    ;; TODO: should also match {:to true}, but currently the TEI files have errors
    [[:locus {:from true}]
@@ -138,7 +151,7 @@
 
          ;; The raw document text is included to facilitate full-text search.
          ;; This is enabled in the db schema definition for :tei/text.
-         (merge (if-let [text (h/hiccup->text hiccup tei-conversion)]
+         (merge (if-let [text (not-empty (h/hiccup->text hiccup tei-conversion))]
                   {:tei/text text}
                   {})))))
 
@@ -166,7 +179,7 @@
   ;; TODO: "test/Data/Prayers/xml/AM08-0073_237v.xml" and  "test/Data/Catalogue/xml/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0075_063r.org
-  (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
+  (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
       (xh/parse)
       (hiccup->entity manuscript-search-kvs))
   #_.)

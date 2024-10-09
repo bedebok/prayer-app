@@ -34,6 +34,8 @@
    :tei/msItem     {:db/cardinality :db.cardinality/many
                     :db/valueType   :db.type/ref
                     :db/isComponent true}
+   :tei/class      {:db/cardinality :db.cardinality/many
+                    :db/valueType   :db.type/string}
    :tei/from       {:db/valueType   :db.type/string
                     :db/cardinality :db.cardinality/one}
    :tei/to         {:db/valueType   :db.type/string

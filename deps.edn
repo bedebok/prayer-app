@@ -7,7 +7,7 @@
            dk.cst/xml-hiccup         {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
                                       :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
            dk.cst/hiccup-tools       {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
-                                      :sha     "72492166d8afe9da3795d37d478f3bae1768b476"}}
+                                      :sha     "837dee29f91460979814cc7e474eda86d1d6412a"}}
 
  ;; https://github.com/juji-io/datalevin/blob/master/doc/install.md
  :aliases {:jvm-base {:jvm-opts ["--add-opens=java.base/java.nio=ALL-UNNAMED"

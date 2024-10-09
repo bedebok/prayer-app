@@ -78,9 +78,7 @@
        (reverse)
        (run! io/delete-file)))
 
-
-;; TODO: add full-text search
-(defn ->db
+(defn build-db!
   [files-path db-path]
   (let [files           (xml-files files-path)
         hiccup->entity' #(tei/hiccup->entity % tei/manuscript-search-kvs)
@@ -94,7 +92,7 @@
 
 (comment
   (xml-files files-path)
-  (->db files-path db-path)
+  (build-db! files-path db-path)
 
   (-> (io/file "test/Data/Prayers/xml/Holm-A42_032r.xml")
       (xh/parse)
@@ -118,6 +116,9 @@
             (d/db (d/get-conn db-path schema)))
        (count))
 
+  ;; Get full entities and their subcomponents back.
+  (d/touch (d/entity (d/db (d/get-conn db-path schema)) 1))
+  (d/touch (d/entity (d/db (d/get-conn db-path schema)) 64))
 
   ;; Test full-text search
   (d/q '[:find ?e ?a ?v
@@ -132,7 +133,7 @@
          :where
          [?e ?a ?v]]
        (d/db (d/get-conn db-path schema))
-       [:tei/name+type ["Mary" "person"]])
+       1)
 
   (do
     (d/close (d/get-conn db-path schema))

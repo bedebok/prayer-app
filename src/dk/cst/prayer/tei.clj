@@ -138,7 +138,9 @@
 
          ;; The raw document text is included to facilitate full-text search.
          ;; This is enabled in the db schema definition for :tei/text.
-         (merge {:tei/text (h/hiccup->text hiccup tei-conversion)}))))
+         (merge (if-let [text (h/hiccup->text hiccup tei-conversion)]
+                  {:tei/text text}
+                  {})))))
 
 (comment
   (tei-description (tei-ref :sourceDesc))

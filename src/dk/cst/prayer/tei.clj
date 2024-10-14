@@ -33,26 +33,27 @@
 
 ;; TODO: punctuation not working great, maybe postprocess?
 (def tei-conversion
-  {:conversions {:teiHeader      zip/remove
-                 #{:head :p :pb} z/surround-lb
-                 :w              z/insert-space
-                 :lb             z/append-lb}
+  {:conversions {:teiHeader                               zip/remove
+                 #{:head :p :pb}                          z/surround-lb
+                 :w                                       z/insert-space
+                 #{:lb :title :rubric :incipit :explicit} z/append-lb}
    :postprocess str/trim})
 
 ;; Since the order matters, this part of the search is written as kvs
 (def msItem-search-kvs
   "The [matcher process] kvs for doing a recursive sweep of <msItem> elements."
-  [[(match :msItem
+  [;; Capture the attributes from <msItem>.
+   ;; This should take place before the recursive sub-search defined below.
+   [(with-meta (match :msItem) {:on-match :continue})
+    (fn [node]
+      (let [{:keys [class]} (elem/attr node)
+            class' (attr-parts class)]
+        (when class'
+          {:tei/class class'})))]
+
+   [(match :msItem
            (match/has-parent (match/tag :msItem)))
     [:tei/msItem 'recursive]]
-
-   ;; TODO: captures entire node, so not working correctly currently
-   #_[:msItem
-      (fn [node]
-        (let [{:keys [class]} (elem/attr node)
-              class' (attr-parts class)]
-          (when class'
-            {:tei/class class'})))]
 
    ;; TODO: should also match {:to true}, but currently the TEI files have errors
    [[:locus {:from true}]
@@ -117,6 +118,16 @@
                                    :tei/type      type}
                       :tei/label  label}]}))]
 
+   ;; Capture the attributes from <msItem>.
+   ;; As this relies on special behaviour, it should take place before the
+   ;; sub-search defined below as that removes the tree from the current search.
+   [(with-meta (match :msItem) {:on-match :continue})
+    (fn [node]
+      (let [{:keys [class]} (elem/attr node)
+            class' (attr-parts class)]
+        (when class'
+          {:tei/class class'})))]
+
    ;; Marks the sub-search of a variable depth tree of <msItem> elements.
    [(match :msItem
            (match/has-parent (match/tag :msContents)))
@@ -128,7 +139,7 @@
   (let [matchers (map-indexed (fn [n [matcher _]]
                                 [n (match matcher)]) search-kvs)
         fns      (map-indexed (fn [n [_ process]] [n process]) search-kvs)
-        result   (h/search hiccup matchers :exhaustive false)]
+        result   (h/search hiccup matchers :on-match :skip-tree)]
     (->> fns
 
          (mapcat (fn [[k process]]
@@ -198,4 +209,9 @@
   (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
       (xh/parse)
       (hiccup->entity manuscript-search-kvs))
+
+  (-> (get msItem-search-kvs 0))
+
+
   #_.)
+

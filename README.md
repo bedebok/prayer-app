@@ -16,7 +16,10 @@ The project defines the following entities which map to the TEI standard in the 
 * **catalogue**: a digital document created by the researchers that contains either a detailed table of **text**, **work**, or **manuscript** entities.
   * In TEI → the manuscript tags are repurposed for this special entity, such that `msIdentifier` is used to identify the **catalogue** entity and `msItem` contains each item/row in the table.
 
-Seán Vrieland maintains an [overview of the TEI files](https://github.com/bedebok/Data/blob/main/Prayers/xml/README.org) too.
+Seán Vrieland maintains overviews of the TEI files too:
+
+- [Prayers](https://github.com/bedebok/Data/blob/main/Prayers/xml/README.org)
+- [Catalogue](https://github.com/bedebok/Data/blob/main/Catalogue/xml/README.org)
 
 ### Architecture
 I am compiling [a list of various libraries under consideration](https://github.com/stars/simongray/lists/when-danes-prayed-in-german).

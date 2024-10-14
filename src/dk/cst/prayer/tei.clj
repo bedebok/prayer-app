@@ -6,7 +6,8 @@
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.zip :as z]
             [dk.cst.hiccup-tools.match :as match :refer [match]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:import [java.io File]))
 
 (defn tei-ref
   [tag]
@@ -33,12 +34,14 @@
 
 ;; TODO: punctuation not working great, maybe postprocess?
 (def tei-conversion
-  {:conversions {:teiHeader                               zip/remove
-                 #{:head :p :pb}                          z/surround-lb
-                 :w                                       z/insert-space
-                 #{:lb :title :rubric :incipit :explicit} z/append-lb}
+  {:conversions {:teiHeader      zip/remove
+                 #{:head :p :pb} z/surround-lb
+                 :w              z/insert-space
+                 :lb             z/append-lb}
    :postprocess str/trim})
 
+;; TODO: figure out what the hell Seán means and how to model the IDs
+;; TODO: add any new attributes to the Datalog schema
 ;; Since the order matters, this part of the search is written as kvs
 (def msItem-search-kvs
   "The [matcher process] kvs for doing a recursive sweep of <msItem> elements."
@@ -67,13 +70,14 @@
       (let [{:keys [mainLang]} (elem/attr node)]
         {:tei/mainLang mainLang}))]
 
-   ;; TODO: :xml/id or :key? Or nothing, e.g. certain <msItem> in catalogue
-   [:title #_[:title {:xml/id true}]
+   [:title
     (fn [node]
-      (let [{:keys [xml/id]} (elem/attr node)
-            title (first (elem/children node))]
-        (cond-> {:tei/title title}
-          id (merge {:xml/id id}))))]
+      (let [{:keys [xml/id corresp key]} (elem/attr node)]
+        ;; TODO: what about the title label?
+        (cond-> {}
+          id (assoc :tei/key id)                            ; TODO: remove when XML files are fixed?
+          corresp (assoc :tei/corresp corresp)
+          key (assoc :tei/key key))))]
 
    [:rubric
     (fn [node]
@@ -89,12 +93,14 @@
 
 (def manuscript-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
-  [[(match [:idno {:xml/id true}]
+  [[(match :idno
            (match/has-parent (match/tag :msIdentifier)))
     (fn [node]
-      (let [{:keys [xml/id]} (elem/attr node)]
-        ;; TODO: do this properly
-        {:xml/id id}))]
+      (let [{:keys [xml/id corresp key]} (elem/attr node)]
+        (cond-> {}
+          id (assoc :xml/id id)
+          corresp (assoc :tei/corresp corresp)
+          key (assoc :tei/key key))))]
 
    [(match [:settlement {:key true}]
            (match/has-parent (match/tag :msIdentifier)))
@@ -117,6 +123,26 @@
                                    :tei/name      key
                                    :tei/type      type}
                       :tei/label  label}]}))]
+
+   ;; TODO: ensure that these exist in prototypical files
+   ;; These sentence references seem to be another type of named entity.
+   [(with-meta (match [:s {:n true :type true}]) {:on-match :continue})
+    (fn [node]
+      (let [{:keys [type n]} (elem/attr node)
+            label (h/hiccup->text node tei-conversion)]
+        ;; NOTE: upserts require both composite & constituent parts!
+        {:tei/named [{:tei/entity {:tei/name+type [n type]
+                                   :tei/name      n
+                                   :tei/type      type}
+                      :tei/label  label}]}))]
+
+   ;; The raw document text is included to facilitate full-text search.
+   ;; This is enabled in the db schema definition for :tei/text.
+   ;; Note that search continues after matching the <text> node!
+   [(with-meta (match :text) {:on-match :continue})
+    (fn [node]
+      (when-let [text (not-empty (h/hiccup->text node tei-conversion))]
+        {:tei/text text}))]
 
    ;; Capture the attributes from <msItem>.
    ;; As this relies on special behaviour, it should take place before the
@@ -176,11 +202,25 @@
                                (into v1 v2)
                                (merge v1 v2))))
 
-         ;; The raw document text is included to facilitate full-text search.
-         ;; This is enabled in the db schema definition for :tei/text.
-         (merge (if-let [text (not-empty (h/hiccup->text hiccup tei-conversion))]
-                  {:tei/text text}
-                  {})))))
+         ;; Keep Hiccup for every component, mostly for debugging right now.
+         ;; TODO: should recursive subsearches be removed from parent? (duplication)
+         (merge {:xml/node hiccup}))))
+
+(defn file->entity
+  "Convert a `file` into a Datom entity based on `search-kvs`."
+  [^File file]
+  (merge (hiccup->entity (xh/parse file) manuscript-search-kvs)
+         {:xml/src      (slurp file)
+          :xml/filename (.getName file)}))
+
+(defn dev-view
+  "Recursively remove clutter from entity `m` (for development)."
+  [m]
+  (clojure.walk/postwalk
+    #(if (map? %)
+       (dissoc % :xml/node :tei/text)
+       %)
+    m))
 
 (comment
   (tei-description (tei-ref :sourceDesc))
@@ -201,17 +241,15 @@
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
   (-> (io/file "test/Data/Prayers/xml/AM08-0075_063r.xml")
       (xh/parse)
-      (hiccup->entity manuscript-search-kvs))
+      (hiccup->entity manuscript-search-kvs)
+      (dev-view))
 
   ;; TODO: "test/Data/Prayers/xml/AM08-0073_237v.xml" and  "test/Data/Catalogue/xml/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0075_063r.org
   (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
       (xh/parse)
-      (hiccup->entity manuscript-search-kvs))
-
-  (-> (get msItem-search-kvs 0))
-
-
+      (hiccup->entity manuscript-search-kvs)
+      (dev-view))
   #_.)
 

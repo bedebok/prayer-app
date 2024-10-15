@@ -39,6 +39,8 @@
                  :lb z/append-lb}
    :postprocess str/trim})
 
+;; TODO: figure out what the hell Seán means and how to model the IDs
+;; TODO: add any new attributes to the Datalog schema
 (def docid-attr
   (fn [node]
     (let [{:keys [xml/id corresp key]} (elem/attr node)]

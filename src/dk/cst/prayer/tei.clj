@@ -36,8 +36,16 @@
   {:conversions {:teiHeader                               zip/remove
                  #{:head :p :pb}                          z/surround-lb
                  :w                                       z/insert-space
-                 #{:lb :title :rubric :incipit :explicit} z/append-lb}
+                 :lb z/append-lb}
    :postprocess str/trim})
+
+(def docid-attr
+  (fn [node]
+    (let [{:keys [xml/id corresp key]} (elem/attr node)]
+      (cond-> {}
+        id (assoc :xml/id id)
+        corresp (assoc :tei/corresp id)
+        key (assoc :tei/key key)))))
 
 ;; Since the order matters, this part of the search is written as kvs
 (def msItem-search-kvs
@@ -67,13 +75,11 @@
       (let [{:keys [mainLang]} (elem/attr node)]
         {:tei/mainLang mainLang}))]
 
-   ;; TODO: :xml/id or :key? Or nothing, e.g. certain <msItem> in catalogue
-   [:title #_[:title {:xml/id true}]
+   [:title
     (fn [node]
-      (let [{:keys [xml/id]} (elem/attr node)
-            title (first (elem/children node))]
-        (cond-> {:tei/title title}
-          id (merge {:xml/id id}))))]
+      (merge
+        (docid-attr node)
+        {:tei/title (first (elem/children node))}))]
 
    [:rubric
     (fn [node]
@@ -89,12 +95,9 @@
 
 (def manuscript-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
-  [[(match [:idno {:xml/id true}]
+  [[(match :idno
            (match/has-parent (match/tag :msIdentifier)))
-    (fn [node]
-      (let [{:keys [xml/id]} (elem/attr node)]
-        ;; TODO: do this properly
-        {:xml/id id}))]
+    docid-attr]
 
    [(match [:settlement {:key true}]
            (match/has-parent (match/tag :msIdentifier)))
@@ -117,6 +120,14 @@
                                    :tei/name      key
                                    :tei/type      type}
                       :tei/label  label}]}))]
+
+   ;; The raw document text is included to facilitate full-text search.
+   ;; This is enabled in the db schema definition for :tei/text.
+   ;; Note that search continues after matching the <text> node!
+   [(with-meta (match :text) {:on-match :continue})
+    (fn [node]
+      (when-let [text (not-empty (h/hiccup->text node tei-conversion))]
+        {:tei/text text}))]
 
    ;; Capture the attributes from <msItem>.
    ;; As this relies on special behaviour, it should take place before the
@@ -174,13 +185,7 @@
                              ;;       e.g. strings being merged.
                              (if (sequential? v1)
                                (into v1 v2)
-                               (merge v1 v2))))
-
-         ;; The raw document text is included to facilitate full-text search.
-         ;; This is enabled in the db schema definition for :tei/text.
-         (merge (if-let [text (not-empty (h/hiccup->text hiccup tei-conversion))]
-                  {:tei/text text}
-                  {})))))
+                               (merge v1 v2)))))))
 
 (comment
   (tei-description (tei-ref :sourceDesc))
@@ -209,9 +214,5 @@
   (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
       (xh/parse)
       (hiccup->entity manuscript-search-kvs))
-
-  (-> (get msItem-search-kvs 0))
-
-
   #_.)
 

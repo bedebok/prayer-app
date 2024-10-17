@@ -14,7 +14,13 @@
 
 
 (def schema
-  {:xml/id         {:db/valueType :db.type/string
+  {:xml/src        {:db/valueType :db.type/string
+                    :db/doc       "The XML source code of the entity."}
+   :xml/filename   {:db/valueType :db.type/string
+                    :db/doc       "The filename of the document entity."}
+   :xml/node       {:db/doc "The Hiccup node that is the source of this entity."}
+
+   :xml/id         {:db/valueType :db.type/string
                     :db/unique    :db.unique/identity
                     :db/doc       (str "The xml:id is used to identify canonical works.")}
    :tei/corresp    {:db/valueType :db.type/string
@@ -93,14 +99,13 @@
 
 (defn build-db!
   [files-path db-path]
-  (let [files           (xml-files files-path)
-        hiccup->entity' #(tei/hiccup->entity % tei/manuscript-search-kvs)
-        entities        (map (comp hiccup->entity' xh/parse) files)
+  (let [files    (xml-files files-path)
+        entities (map tei/file->entity files)
         ;; TODO: kills old db first (make this a bit more elegant)
-        conn            (do
-                          (d/close (d/get-conn db-path schema))
-                          (rmdir db-path)
-                          (d/get-conn db-path schema))]
+        conn     (do
+                   (d/close (d/get-conn db-path schema))
+                   (rmdir db-path)
+                   (d/get-conn db-path schema))]
     (d/transact! conn entities)))
 
 (defn top-items

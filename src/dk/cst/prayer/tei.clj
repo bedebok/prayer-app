@@ -6,7 +6,8 @@
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.zip :as z]
             [dk.cst.hiccup-tools.match :as match :refer [match]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:import [java.io File]))
 
 (defn tei-ref
   [tag]
@@ -195,7 +196,18 @@
                              ;;       e.g. strings being merged.
                              (if (sequential? v1)
                                (into v1 v2)
-                               (merge v1 v2)))))))
+                               (merge v1 v2))))
+
+         ;; Keep Hiccup for every component, mostly for debugging right now.
+         ;; TODO: should recursive subsearches be removed from parent? (duplication)
+         (merge {:xml/node hiccup}))))
+
+(defn file->entity
+  "Convert a `file` into a Datom entity based on `search-kvs`."
+  [^File file]
+  (merge (hiccup->entity (xh/parse file) manuscript-search-kvs)
+         {:xml/src      (slurp file)
+          :xml/filename (.getName file)}))
 
 (comment
   (tei-description (tei-ref :sourceDesc))

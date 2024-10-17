@@ -103,6 +103,18 @@
                           (d/get-conn db-path schema))]
     (d/transact! conn entities)))
 
+(defn top-items
+  "Get the top-level <msItem> data, i.e. not the children."
+  [db]
+  (->> (d/q '[:find [?e ...]
+              :where
+              (not [?gpe :tei/msItem ?pe])                  ; top-level
+              [?pe :tei/msItem ?e]
+              [?e :tei/key ?key]]
+            (d/db (d/get-conn db-path schema)))
+       (map (fn [id]
+              (d/touch (d/entity db id))))))
+
 (comment
   (xml-files files-path)
   (build-db! files-path db-path)
@@ -138,6 +150,8 @@
          :where
          [?e :tei/key ?v]]
        (d/db (d/get-conn db-path schema)))
+
+  (top-items (d/db (d/get-conn db-path schema)))
 
   ;; Test full-text search
   (d/q '[:find ?e ?a ?v

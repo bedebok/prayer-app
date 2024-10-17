@@ -16,7 +16,12 @@
 (def schema
   {:xml/id         {:db/valueType :db.type/string
                     :db/unique    :db.unique/identity
-                    :db/doc       (str "The xml:id is reused to identify TEI documents.")}
+                    :db/doc       (str "The xml:id is used to identify canonical works.")}
+   :tei/corresp    {:db/valueType :db.type/string
+                    :db/unique    :db.unique/identity
+                    :db/doc       (str "The tei:corresp is used to identify instances of text.")}
+   :tei/key        {:db/valueType :db.type/string
+                    :db/doc       (str "The tei:key is used to link a text to a canonical work.")}
 
    :tei/text       {:db/valueType :db.type/string
                     :db/fulltext  true
@@ -127,6 +132,12 @@
   ;; Get full entities and their subcomponents back.
   (d/touch (d/entity (d/db (d/get-conn db-path schema)) 1))
   (d/touch (d/entity (d/db (d/get-conn db-path schema)) 64))
+
+  ;; Test retrieval of works (canonical texts)
+  (d/q '[:find [?v ...]
+         :where
+         [?e :tei/key ?v]]
+       (d/db (d/get-conn db-path schema)))
 
   ;; Test full-text search
   (d/q '[:find ?e ?a ?v

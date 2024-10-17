@@ -33,10 +33,10 @@
 
 ;; TODO: punctuation not working great, maybe postprocess?
 (def tei-conversion
-  {:conversions {:teiHeader                               zip/remove
-                 #{:head :p :pb}                          z/surround-lb
-                 :w                                       z/insert-space
-                 :lb z/append-lb}
+  {:conversions {:teiHeader      zip/remove
+                 #{:head :p :pb} z/surround-lb
+                 :w              z/insert-space
+                 :lb             z/append-lb}
    :postprocess str/trim})
 
 ;; TODO: figure out what the hell Seán means and how to model the IDs
@@ -46,7 +46,7 @@
     (let [{:keys [xml/id corresp key]} (elem/attr node)]
       (cond-> {}
         id (assoc :xml/id id)
-        corresp (assoc :tei/corresp id)
+        corresp (assoc :tei/corresp corresp)
         key (assoc :tei/key key)))))
 
 ;; Since the order matters, this part of the search is written as kvs
@@ -79,9 +79,12 @@
 
    [:title
     (fn [node]
-      (merge
-        (docid-attr node)
-        {:tei/title (first (elem/children node))}))]
+      (let [{:keys [xml/id corresp key]} (elem/attr node)]
+        ;; TODO: what about the title label?
+        (cond-> {}
+          id (assoc :tei/key id)                            ; TODO: remove when XML files are fixed?
+          corresp (assoc :tei/corresp corresp)
+          key (assoc :tei/key key))))]
 
    [:rubric
     (fn [node]
@@ -99,7 +102,12 @@
   "The core [matcher process] kvs for initiating a TEI data search."
   [[(match :idno
            (match/has-parent (match/tag :msIdentifier)))
-    docid-attr]
+    (fn [node]
+      (let [{:keys [xml/id corresp key]} (elem/attr node)]
+        (cond-> {}
+          id (assoc :xml/id id)
+          corresp (assoc :tei/corresp corresp)
+          key (assoc :tei/key key))))]
 
    [(match [:settlement {:key true}]
            (match/has-parent (match/tag :msIdentifier)))

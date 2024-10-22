@@ -40,8 +40,6 @@
                  :lb             z/append-lb}
    :postprocess str/trim})
 
-;; TODO: figure out what the hell Seán means and how to model the IDs
-;; TODO: add any new attributes to the Datalog schema
 ;; Since the order matters, this part of the search is written as kvs
 (def msItem-search-kvs
   "The [matcher process] kvs for doing a recursive sweep of <msItem> elements."
@@ -70,14 +68,13 @@
       (let [{:keys [mainLang]} (elem/attr node)]
         {:tei/mainLang mainLang}))]
 
+   ;; Capture references to canonical works.
    [:title
     (fn [node]
-      (let [{:keys [xml/id corresp key]} (elem/attr node)]
+      (let [{:keys [key]} (elem/attr node)]
         ;; TODO: what about the title label?
-        (cond-> {}
-          id (assoc :tei/key id)                            ; TODO: remove when XML files are fixed?
-          corresp (assoc :tei/corresp corresp)
-          key (assoc :tei/key key))))]
+        (when key
+          {:tei/key key})))]
 
    [:rubric
     (fn [node]
@@ -93,14 +90,17 @@
 
 (def manuscript-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
-  [[(match :idno
-           (match/has-parent (match/tag :msIdentifier)))
+  [[(with-meta (match :TEI) {:on-match :continue})
     (fn [node]
-      (let [{:keys [xml/id corresp key]} (elem/attr node)]
-        (cond-> {}
-          id (assoc :xml/id id)
-          corresp (assoc :tei/corresp corresp)
-          key (assoc :tei/key key))))]
+      (let [{:keys [xml/id type]} (elem/attr node)]
+        {:bedebok/id       id
+         :bedebok/type type}))]
+
+   ;; Only used for human-readable shelfmarks, e.g. for displaying on a website.
+   [:idno
+    (fn [node]
+      (let [idno (first (elem/children node))]
+        {:tei/idno idno}))]
 
    [(match [:settlement {:key true}]
            (match/has-parent (match/tag :msIdentifier)))
@@ -118,11 +118,12 @@
     (fn [node]
       (let [{:keys [type key]} (elem/attr node)
             label (h/hiccup->text node tei-conversion)]
-        ;; NOTE: upserts require both composite & constituent parts!
-        {:tei/named [{:tei/entity {:tei/name+type [key type]
-                                   :tei/name      key
-                                   :tei/type      type}
-                      :tei/label  label}]}))]
+        (when (and key type)
+          ;; NOTE: upserts require both composite & constituent parts!
+          {:tei/named [(cond-> {:tei/entity {:tei/name+type [key type]
+                                             :tei/name      key
+                                             :tei/type      type}}
+                         label (assoc :bedebok/label label))]})))]
 
    ;; TODO: ensure that these exist in prototypical files
    ;; These sentence references seem to be another type of named entity.
@@ -131,10 +132,10 @@
       (let [{:keys [type n]} (elem/attr node)
             label (h/hiccup->text node tei-conversion)]
         ;; NOTE: upserts require both composite & constituent parts!
-        {:tei/named [{:tei/entity {:tei/name+type [n type]
-                                   :tei/name      n
-                                   :tei/type      type}
-                      :tei/label  label}]}))]
+        {:tei/named [(cond-> {:tei/entity {:tei/name+type [key type]
+                                           :tei/name      key
+                                           :tei/type      type}}
+                       label (assoc :bedebok/label label))]}))]
 
    ;; The raw document text is included to facilitate full-text search.
    ;; This is enabled in the db schema definition for :tei/text.
@@ -142,7 +143,7 @@
    [(with-meta (match :text) {:on-match :continue})
     (fn [node]
       (when-let [text (not-empty (h/hiccup->text node tei-conversion))]
-        {:tei/text text}))]
+        {:bedebok/text text}))]
 
    ;; Capture the attributes from <msItem>.
    ;; As this relies on special behaviour, it should take place before the
@@ -204,21 +205,21 @@
 
          ;; Keep Hiccup for every component, mostly for debugging right now.
          ;; TODO: should recursive subsearches be removed from parent? (duplication)
-         (merge {:xml/node hiccup}))))
+         (merge {:file/node hiccup}))))
 
 (defn file->entity
   "Convert a `file` into a Datom entity based on `search-kvs`."
   [^File file]
   (merge (hiccup->entity (xh/parse file) manuscript-search-kvs)
-         {:xml/src      (slurp file)
-          :xml/filename (.getName file)}))
+         {:file/src      (slurp file)
+          :file/name (.getName file)}))
 
 (defn dev-view
   "Recursively remove clutter from entity `m` (for development)."
   [m]
   (clojure.walk/postwalk
     #(if (map? %)
-       (dissoc % :xml/node :tei/text)
+       (dissoc % :file/node :tei/text)
        %)
     m))
 
@@ -239,7 +240,7 @@
 
   ;; Metadata retrieval from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
-  (-> (io/file "test/Data/Prayers/xml/AM08-0075_063r.xml")
+  (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
       (xh/parse)
       (hiccup->entity manuscript-search-kvs)
       (dev-view))

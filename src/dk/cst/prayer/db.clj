@@ -14,24 +14,35 @@
 
 
 (def schema
-  {:xml/src        {:db/valueType :db.type/string
+  {;; Meta attributes about the relevant file and XML nodes.
+   :file/src       {:db/valueType :db.type/string
                     :db/doc       "The XML source code of the entity."}
-   :xml/filename   {:db/valueType :db.type/string
+   :file/name      {:db/valueType :db.type/string
                     :db/doc       "The filename of the document entity."}
-   :xml/node       {:db/doc "The Hiccup node that is the source of this entity."}
+   :file/node      {:db/doc "The Hiccup node that is the source of this entity."}
 
-   :xml/id         {:db/valueType :db.type/string
+   ;; Core entity IDs and references.
+   :bedebok/id     {:db/valueType :db.type/string
                     :db/unique    :db.unique/identity
-                    :db/doc       (str "The xml:id is used to identify canonical works.")}
+                    :db/doc       (str "Used to identify each of the three core entities.")}
    :tei/corresp    {:db/valueType :db.type/string
                     :db/unique    :db.unique/identity
-                    :db/doc       (str "The tei:corresp is used to identify instances of text.")}
+                    :db/doc       (str "Used to reference text instances within manuscripts.")}
    :tei/key        {:db/valueType :db.type/string
-                    :db/doc       (str "The tei:key is used to link a text to a canonical work.")}
+                    :db/doc       (str "Used to reference canonical works.")}
 
-   :tei/text       {:db/valueType :db.type/string
-                    :db/fulltext  true
-                    :db/doc       "The text of the document, enabling full-text search."}
+   ;; NOTE: keeping doc type separate from :tei/type as that expects a composite tuple.
+   :bedebok/type   {:db/valueType :db.type/string}
+
+   ;; Plain text stored for search.
+   :bedebok/text   {:db/valueType   :db.type/string
+                    :db/cardinality :db.cardinality/one
+                    :db/fulltext    true
+                    :db/doc         "The plain text of the document."}
+   :bedebok/label  {:db/valueType   :db.type/string
+                    :db/cardinality :db.cardinality/many
+                    :db/fulltext    true
+                    :db/doc         "A human-readable label for an entity."}
 
    :tei/title      {:db/valueType   :db.type/string
                     :db/cardinality :db.cardinality/one}
@@ -51,6 +62,9 @@
                     :db/cardinality :db.cardinality/one}
    :tei/to         {:db/valueType   :db.type/string
                     :db/cardinality :db.cardinality/one}
+
+   ;; These attributes form a sort of summary of a prayer.
+   ;; TODO: should it one-to-one for each language?
    :tei/rubric     {:db/valueType   :db.type/string
                     :db/cardinality :db.cardinality/many}
    :tei/incipit    {:db/valueType   :db.type/string
@@ -79,9 +93,7 @@
    :tei/ref        {:db/cardinality :db.cardinality/many
                     :db/valueType   :db.type/ref
                     :db/isComponent true
-                    :db/doc         (str "A literary reference.")}
-   :tei/label      {:db/cardinality :db.cardinality/many
-                    :db/valueType   :db.type/string}})
+                    :db/doc         (str "A literary reference.")}})
 
 (defn xml-files
   "Fetch XML File objects recursively from a starting `dir`."

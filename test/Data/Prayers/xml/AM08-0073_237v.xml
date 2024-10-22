@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<TEI xmlns="http://www.tei-c.org/ns/1.0" type="text" xml:id="AM08-0073-237v">
   <teiHeader>
     <fileDesc>
       <titleStmt>
@@ -10,10 +10,10 @@
       </publicationStmt>
       <sourceDesc>
         <msDesc>
-          <msIdentifier>
+          <msIdentifier corresp="AM08-0073">
             <settlement key="KBH"/>
             <repository key="AMS"/>
-            <idno corresp="AM08-0073">AM 73 8vo</idno>
+            <idno type="shelfmark">AM 73 8vo</idno>
           </msIdentifier>
           <msContents>
             <msItem>

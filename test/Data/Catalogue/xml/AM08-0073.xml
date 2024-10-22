@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/css" href="msDesc.css"?>
-<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<TEI xmlns="http://www.tei-c.org/ns/1.0" type="manuscript" xml:id="AM08-0073">
   <teiHeader>
     <fileDesc>
       <titleStmt>
@@ -14,7 +14,7 @@
           <msIdentifier>
             <settlement key="KBH"/>
             <repository key="AMS"/>
-            <idno xml:id="AM08-0073">AM 73 8vo</idno>
+            <idno type="manuscript">AM 73 8vo</idno>
           </msIdentifier>
           <head>
             A fifteenth-century book of hours in Low German with multiple full-page miniatures. It contains added prayers in Danish.
@@ -250,7 +250,7 @@
               </msItem>
             </msItem>
             <!-- MORE MS ITEMS HERE -->
-            <msItem class="prayer">
+            <msItem class="prayer" corresp="AM08-0073-237v">
               <locus from="237v" to="238v"/>
               <title key="MAGNIFICAT">Magnificat</title>
               <rubric><hi>M</hi>agnificat</rubric>

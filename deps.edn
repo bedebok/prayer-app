@@ -1,4 +1,5 @@
-{:deps    {org.clojure/clojure          {:mvn/version "1.12.0"}
+{:paths   ["src"]
+ :deps    {org.clojure/clojure          {:mvn/version "1.12.0"}
 
            datalevin/datalevin          {:mvn/version "0.9.10"}
 
@@ -6,11 +7,15 @@
            io.pedestal/pedestal.route   {:mvn/version "0.7.1"}
            io.pedestal/pedestal.jetty   {:mvn/version "0.7.1"}
 
+           io.github.escherize/huff     {:mvn/version "0.2.12"}
+
            dk.cst/xml-hiccup            {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
                                          :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
            dk.cst/hiccup-tools          {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
                                          :sha     "f9cb8ef5a22b393e2514bdcbb1b4b5ba1b08eb5a"}}
+ :aliases {:frontend {:extra-deps {thheller/shadow-cljs   {:mvn/version "2.28.18"}
+                                   no.cjohansen/replicant {:mvn/version "0.2024.10.07"}}}
 
- ;; https://github.com/juji-io/datalevin/blob/master/doc/install.md
- :aliases {:jvm-base {:jvm-opts ["--add-opens=java.base/java.nio=ALL-UNNAMED"
+           ;; https://github.com/juji-io/datalevin/blob/master/doc/install.md
+           :jvm-base {:jvm-opts ["--add-opens=java.base/java.nio=ALL-UNNAMED"
                                  "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"]}}}

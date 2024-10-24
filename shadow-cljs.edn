@@ -1,0 +1,7 @@
+{:dependencies [[no.cjohansen/replicant "0.2024.10.07"]]
+ :source-paths ["src"]
+ :dev-http     {9876 {:root "public"}}
+ :builds       {:app {:target     :browser
+                      :output-dir "public/js"
+                      :asset-path "/js"
+                      :modules    {:main {:entries [dk.cst.prayer.web.app]}}}}}

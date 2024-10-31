@@ -1,9 +1,8 @@
 (ns dk.cst.prayer.web.service
-  (:require [clojure.string :as str]
-            [huff2.core :as h]
+  (:require [huff2.core :as h]
             [io.pedestal.http :as http]
-            [io.pedestal.http.route :as route]
-            [io.pedestal.http.ring-middlewares :as middleware])
+            [reitit.http :as rh]
+            [reitit.pedestal :as rp])
   (:import [java.util Date])
   (:gen-class))
 
@@ -63,23 +62,11 @@
   (->handler nil))
 
 (defn routes
-  []
-  (route/expand-routes
-    #{}))
-
-(defn remove-trailing-slash
-  [s]
-  (if (and (str/ends-with? s "/") (not= s "/"))
-    (subs s 0 (dec (count s)))
-    s))
-
-(def trailing-slash
-  (io.pedestal.interceptor/interceptor
-    {:name  ::trailing-slash
-     :enter (fn [ctx]
-              (-> ctx
-                  (update-in [:request :uri] remove-trailing-slash)
-                  (update-in [:request :path-info] remove-trailing-slash)))}))
+  [conf]
+  ["/"
+   ["api/:endpoint" {:get {:handler (constantly {:status 200
+                                                 :body   "empty"})}}]
+   ["*" {:get {:handler (->handler conf)}}]])
 
 (defn ->service-map
   [conf]
@@ -92,22 +79,25 @@
                :font-src    "'self'"
                :style-src   "'self' 'unsafe-inline'"
                :base-uri    "'self'"})]
-    (-> {::http/routes         #((deref #'routes))
+    (-> {::http/routes         []                           ; empty, uses reitit
          ::http/type           :jetty
          ::http/host           "0.0.0.0"
          ::http/port           3456
-         ::http/resource-path  "/public"
+         ::http/resource-path  "public"
          ::http/secure-headers {:content-security-policy-settings csp}}
 
         ;; Extending default interceptors here.
         (http/default-interceptors)
-        (update ::http/interceptors #(cons %2 %1) trailing-slash)
-        (update ::http/interceptors conj middleware/cookies)
 
-        ;; Make sure we can communicate with the Shadow CLJS app during dev.
-        (cond->
-          ;; TODO: make this conditional for prod
-          true (assoc ::http/allowed-origins (constantly true))))))
+        ;; The Pedestal router is replaced with reitit.
+        ;; https://github.com/metosin/reitit/blob/master/doc/http/pedestal.md
+        (rp/replace-last-interceptor
+          (rp/routing-interceptor
+            ;; NOTE that {:conflicts nil} is what makes the wildcard route work!
+            (rh/router (routes conf) {:conflicts nil})))
+
+        ;; Interceptors only available during dev.
+        (cond-> development? (http/dev-interceptors)))))
 
 (defn start []
   (let [service-map (->service-map @conf)]

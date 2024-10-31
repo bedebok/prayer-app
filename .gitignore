@@ -5,7 +5,7 @@
 test/db
 
 /node_modules/
-public/js
+resources/public/js
 
 /target
 /checkouts

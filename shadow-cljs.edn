@@ -1,8 +1,8 @@
 {:deps     {:aliases [:frontend]}
- :dev-http {9876 {:root    "public"
+ :dev-http {9876 {:root    "resources/public"
                   :handler dk.cst.prayer.web.service/shadow-handler}}
  :builds   {:app {:target            :browser
-                  :output-dir        "public/js"
+                  :output-dir        "resources/public/js"
                   :asset-path        "/js"
                   :module-hash-names true
                   :modules           {:main {:init-fn dk.cst.prayer.web.app/init!}}}}}

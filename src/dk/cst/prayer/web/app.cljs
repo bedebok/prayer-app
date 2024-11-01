@@ -1,20 +1,38 @@
 (ns dk.cst.prayer.web.app
   (:require [replicant.dom :as d]
+            [lambdaisland.fetch :as fetch]
+            [reitit.coercion.malli]
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe :refer [href]]))
 
+;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
+
 (def routes
-  [["/{*path}" :noop]])
+  [["/"]
+   ["/entity/:id" {:name       ::entity
+                   :parameters {:path {:id int?}}
+                   :handler    (fn [{:keys [parameters]}]
+
+                                 ;; TODO: fix, broken
+                                 ;;       I think it's because the backend reitit doesn't serve resources
+                                 (let [id (get-in parameters [:path :id])]
+                                   (-> (fetch/get (str "/api/entity/" id))
+                                       (.then prn))))}]])
 
 (defn on-navigate
-  [x]
-  (prn 'on-navigate x))
+  [{:keys [data] :as m}]
+  (when-let [handler (:handler data)]
+    (handler m)))
+
+(def router
+  (rf/router
+    routes
+    {:conflicts nil
+     :data      {:coercion reitit.coercion.malli/coercion}}))
 
 (defn set-up-navigation!
   []
-  (rfe/start! (rf/router routes)
-              on-navigate
-              {:use-fragment false}))
+  (rfe/start! router on-navigate {:use-fragment false}))
 
 (def el
   (js/document.getElementById "app"))
@@ -24,13 +42,13 @@
             [:ul.cards
              [:li {:replicant/key 1
                    :on            {:click [:whatever]}}
-              [:a {:href "/1"} "Item #1"]]
+              [:a {:href "/entity/1"} "Item #1"]]
              [:li {:replicant/key 2}
-              [:a {:href "/2"} "Item #2"]]
+              [:a {:href "/entity/2"} "Item #2"]]
              [:li {:replicant/key 3}
-              [:a {:href "/3"} "Item #3"]]
+              [:a {:href "/entity/3"} "Item #3"]]
              [:li {:replicant/key 4}
-              [:a {:href "/4"} "Item #4"]]]))
+              [:a {:href "/entity/4"} "Item #4"]]]))
 
 (defn ^:dev/after-load init!
   []

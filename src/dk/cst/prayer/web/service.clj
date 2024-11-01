@@ -1,6 +1,12 @@
 (ns dk.cst.prayer.web.service
-  (:require [huff2.core :as h]
+  (:require [clojure.edn :as edn]
+            [huff2.core :as h]
+            [datalevin.core :as d]
+            [dk.cst.prayer.db :as db]
             [io.pedestal.http :as http]
+            [reitit.http.coercion :as httpc]
+            [com.wsscode.transito :as transito]
+            [reitit.coercion.malli]
             [reitit.http :as rh]
             [reitit.pedestal :as rp])
   (:import [java.util Date])
@@ -61,12 +67,46 @@
 (def shadow-handler
   (->handler nil))
 
+(def with-conn
+  {:enter (fn [ctx]
+            (assoc-in ctx [:request :conn] (d/get-conn db/db-path db/schema)))
+   :exit  (fn [{:keys [conn] :as ctx}]
+            (d/close-db conn)
+            (update ctx :request dissoc :conn))})
+
+
+;; Example code: https://github.com/metosin/reitit/blob/master/examples/pedestal-swagger/src/example/server.clj
+;; TODO: set up content negotiation (e.g. transit, edn)
+;; TODO: make a working entity route
 (defn routes
   [conf]
   ["/"
-   ["api/:endpoint" {:get {:handler (constantly {:status 200
-                                                 :body   "empty"})}}]
+   ["api/"
+    ["entity/:id"
+     {:get {:interceptors [with-conn]
+            :parameters   {:path {:id int?}}
+            :handler      (fn [{:keys [conn parameters]}]
+                            (let [id (get-in parameters [:path :id])
+                                  e  (d/entity (d/db conn) id)]
+                              ;; As Datalevin seems to have a bug where entity
+                              ;; always non-empty, we need to check this.
+                              (if (> (count (keys e)) 1)
+                                {:status  200
+                                 :headers {"Content-Type" "application/transit+json"}
+
+                                 ;; TODO: use a proper solution to datafy
+                                 ;;       (need to wait for a fix in Datalevin)
+                                 :body    (-> (d/touch e)
+                                              (str)
+                                              (edn/read-string)
+                                              (transito/write-str))}
+
+                                {:status 404})))}}]]
    ["*" {:get {:handler (->handler conf)}}]])
+
+(defn routes-fn
+  [conf]
+  (routes conf))
 
 (defn ->service-map
   [conf]
@@ -94,7 +134,12 @@
         (rp/replace-last-interceptor
           (rp/routing-interceptor
             ;; NOTE that {:conflicts nil} is what makes the wildcard route work!
-            (rh/router (routes conf) {:conflicts nil})))
+            (rh/router (routes conf)
+                       {:conflicts nil
+                        :data      {:coercion reitit.coercion.malli/coercion
+                                    :interceptors
+                                    [(httpc/coerce-response-interceptor)
+                                     (httpc/coerce-request-interceptor)]}})))
 
         ;; Interceptors only available during dev.
         (cond-> development? (http/dev-interceptors)))))

@@ -1,13 +1,14 @@
 {:paths   ["src" "resources"]
  :deps    {org.clojure/clojure          {:mvn/version "1.12.0"}
 
-           datalevin/datalevin          {:mvn/version "0.9.10"}
+           datalevin/datalevin          {:mvn/version "0.9.12"}
 
            io.pedestal/pedestal.service {:mvn/version "0.7.1"}
            io.pedestal/pedestal.route   {:mvn/version "0.7.1"}
            io.pedestal/pedestal.jetty   {:mvn/version "0.7.1"}
            metosin/reitit               {:mvn/version "0.7.2"}
            metosin/reitit-pedestal      {:mvn/version "0.7.2"}
+           com.wsscode/transito         {:mvn/version "2021.07.04"}
 
            ;; https://github.com/taoensso/telemere/wiki/3-Config#java-logging
            org.slf4j/slf4j-api          {:mvn/version "2.0.16"}
@@ -21,6 +22,7 @@
            dk.cst/hiccup-tools          {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
                                          :sha     "f9cb8ef5a22b393e2514bdcbb1b4b5ba1b08eb5a"}}
  :aliases {:frontend {:extra-deps {thheller/shadow-cljs   {:mvn/version "2.28.18"}
+                                   lambdaisland/fetch     {:mvn/version "1.5.83"}
                                    no.cjohansen/replicant {:mvn/version "0.2024.10.07"}}}
 
            ;; https://github.com/juji-io/datalevin/blob/master/doc/install.md

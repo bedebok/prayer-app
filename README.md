@@ -43,14 +43,17 @@ The database only needs to be read-only, so it is ephemeral, created on-demand o
 I am compiling [a list of various libraries under consideration](https://github.com/stars/simongray/lists/when-danes-prayed-in-german).
 
 #### Pedestal
-I am using Pedestal again since I have much experience with it, so there is a lot of code and experience that can be re-applied.
+I am using Pedestal once more to make the web service since I have much experience with it, so there is a lot of code and experience that can be re-applied.
 
 #### Reitit
 I use Reitit in the frontend since it is the mainstream choice for a full-featured frontend SPA router + I have previous experience using it.
 
-The use of Reitit in the backend this time (as opposed to Pedestal's router) is primarily motivated by Reitit's improved handling of wildcard routes, such that I don't need to prepend every SPA route with e.g. `/app` to delegate everything but the API to the frontend.
+While it would be nice to only focus on a single router model, the use of Reitit in the backend isn't advisable at this time. Reitit's does have an improved handling of wildcard routes and it handles trailing slashes by default, but it loses out in the following ways:
 
-Another advantage of Reitit in the backend is the Metosin library ecosystem built around it. Many of these could have relevant applications.
+- poor handling of static files, at least when combined with Pedestal/interceptors
+- no way to represent the routes as a function like in Pedestal (helps to shorten the development feedback loop)
+
+One advantage of Reitit in the backend is the Metosin library ecosystem built around it, e.g. for coercion. Many of these could have relevant applications. It is possible that some of these could still be used directly with Pedestal, though.
 
 #### Transito
 I am using Transito again since its primary value proposition (CLJV encoding/decoding of transit) still applies.

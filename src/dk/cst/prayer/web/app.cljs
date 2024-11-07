@@ -7,14 +7,11 @@
 
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
+;; TODO: do some kind of mirroring in the backend
 (def routes
-  [["/"]
-   ["/entity/:id" {:name       ::entity
+  [["/entity/:id" {:name       ::entity
                    :parameters {:path {:id int?}}
                    :handler    (fn [{:keys [parameters]}]
-
-                                 ;; TODO: fix, broken
-                                 ;;       I think it's because the backend reitit doesn't serve resources
                                  (let [id (get-in parameters [:path :id])]
                                    (-> (fetch/get (str "/api/entity/" id))
                                        (.then prn))))}]])

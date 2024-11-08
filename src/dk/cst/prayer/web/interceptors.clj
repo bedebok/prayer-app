@@ -32,8 +32,8 @@
 (def entity
   (interceptor
     {:name  ::entity
-     :enter (fn [{:keys [db] :as ctx}]
-              (let [id 1 #_(get-in parameters [:path :id])
+     :enter (fn [{:keys [db request] :as ctx}]
+              (let [id (parse-long (get-in request [:path-params :id]))
                     e  (d/entity db id)]
                 (update
                   ctx :response merge

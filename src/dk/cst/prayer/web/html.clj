@@ -15,7 +15,7 @@
 (defn- cb
   "Decorate the supplied `path` with a cache busting string."
   [path]
-  (str path "?" init-hash))
+  (str path "?v=" (abs init-hash)))
 
 (defn index-hiccup
   [negotiated-language]
@@ -37,6 +37,7 @@
        ;; Rather than having an extra endpoint that the SPA needs to access, these
        ;; values are passed on to the SPA along with the compiled main.js code.
        (str "var negotiatedLanguage = '" (pr-str negotiated-language) "';\n"
+            "var initHash = '" init-hash "';\n"
             "var proxyPrefix = '" proxy-prefix "';\n"
             "var inDevelopmentEnvironment = " development? ";\n")]
       [:script {:src (proxied-cb (str "/js/" main-js))}]]]))

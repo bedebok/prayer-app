@@ -1,44 +1,27 @@
 (ns dk.cst.prayer.web.app
+  "The main namespace of the frontend single-page app."
   (:require [clojure.edn :as edn]
+            [dk.cst.prayer.web.app.event :as event]
+            [dk.cst.prayer.web.app.state :refer [state]]
+            [dk.cst.prayer.web.app.api :as api]
+            [dk.cst.prayer.web.shared :as shared]
             [replicant.dom :as d]
-            [lambdaisland.fetch :as fetch]
-            [reitit.coercion.malli]
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe :refer [href]]))
 
-(defonce state
-  (atom {}))
-
-(defn add-entity!
-  [id e]
-  (when-not (empty? e)
-    (swap! state assoc id e)))
-
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
-
-;; TODO: do some kind of path mirroring in the backend
-(def routes
-  [["/entity/:id"
-    {:name       ::entity
-     :parameters {:path {:id int?}}
-     :handler    (fn [{:keys [parameters]}]
-                   (let [id (get-in parameters [:path :id])]
-                     ;; TODO: swap built-in fetch transit parsing for transito?
-                     (when-not (get @state [:entities id])
-                       (-> (fetch/get (str "/api/entity/" id))
-                           ;; TODO: handle 404 explicitly
-                           (.then #(add-entity! id (:body %)))))))}]])
 
 (defn on-navigate
   [{:keys [data] :as m}]
-  (when-let [handler (:handler data)]
-    (handler m)))
+  (swap! state assoc :location (:name data))
+  (when-let [handler (:handle data)]
+    (api/handle m handler)))
 
+;; TODO: should ignore final slash
 (def router
   (rf/router
-    routes
-    {:conflicts nil
-     :data      {:coercion reitit.coercion.malli/coercion}}))
+    shared/frontend-routes
+    {:conflicts nil}))
 
 (defn set-up-navigation!
   []
@@ -51,7 +34,7 @@
   [state]
   (d/render el
             [:div
-             [:button {:on {:click [:reset-state]}}
+             [:button {:on {:click [::event/reset-state]}}
               "reset"]
              [:ul.cards
               [:li {:replicant/key 1
@@ -71,19 +54,18 @@
   (set-up-navigation!)
 
   ;; Replicant (rendering and events).
-  (d/set-dispatch!
-    (fn [replicant-data handler-data]
-      (when (= handler-data [:reset-state])
-        (reset! state {}))))
+  (d/set-dispatch! event/handle)
   (render @state)
   (add-watch state ::render (fn [_ _ _ state] (render state)))
 
   ;; Load old session state ONLY IF we're running the same version of the app.
   (when-let [hash (.getItem (.-localStorage js/window) "initHash")]
     (when (not= hash (when (exists? js/initHash) js/initHash))
-      (some->> (.getItem (.-localStorage js/window) "state")
-               (edn/read-string)
-               (reset! state))))
+      (some-> (.-localStorage js/window)
+              (.getItem "state")
+              (edn/read-string)
+              (assoc :location (:location @state))
+              (->> (reset! state)))))
 
   ;; Store state for next session.
   (js/window.addEventListener
@@ -91,4 +73,4 @@
     (fn []
       (doto (.-localStorage js/window)
         (.setItem "hash" (when (exists? js/initHash) js/initHash))
-        (.setItem "state" (pr-str @state))))))
+        (.setItem "state" (pr-str (dissoc @state :location)))))))

@@ -1,7 +1,8 @@
-(ns dk.cst.prayer.web.interceptors
+(ns dk.cst.prayer.web.service.interceptor
+  "Pedestal interceptors for the backend web service."
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
-            [dk.cst.prayer.web.html :as html]
+            [dk.cst.prayer.web.service.html :as html]
             [com.wsscode.transito :as transito]
             [io.pedestal.interceptor :refer [interceptor]]
             [datalevin.core :as d]

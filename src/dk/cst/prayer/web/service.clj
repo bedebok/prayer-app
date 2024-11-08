@@ -1,27 +1,43 @@
 (ns dk.cst.prayer.web.service
-  (:require [dk.cst.prayer.web.html :as html]
-            [dk.cst.prayer.web.interceptors :as ic]
+  "The main namespace of the backend web service."
+  (:require [dk.cst.prayer.web.service.html :as html]
+            [dk.cst.prayer.web.service.interceptor :as ic]
+            [dk.cst.prayer.web.shared :as shared]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route])
   (:gen-class))
 
-(def development?                                           ; TODO: implement
-  true)
-
 (defonce server (atom nil))
 
-(def constraints
-  {:id #"[0-9]+"})
+(def api-routes
+  #{["/api/entity/:id" :get [ic/with-db ic/entity] :route-name ::entity]})
 
-(defn routes
-  []
+(defn backend-route
+  "Add common parts to a Pedestal API `route`."
+  [[path :as route]]
+  (if-let [constraints (shared/path->constraints path)]
+    (into route [:constraints constraints])
+    route))
+
+(defn frontend-route
+  "Turn a Reitit frontend route into a Pedestal route (backend mirror)."
+  [[path & {:keys [name]} :as route]]
+  (if-let [constraints (shared/path->constraints path)]
+    [path :get [ic/app] :route-name name :constraints constraints]
+    [path :get [ic/app] :route-name name]))
+
+(def routes
   (route/expand-routes
-    #{["/api/entity/:id" :get [ic/with-db ic/entity] :constraints constraints]
-      ["/entity/:id" :get [ic/app] :constraints constraints]}))
+    (set (into (map backend-route api-routes)
+               (map frontend-route shared/frontend-routes)))))
+
+(defn current-routes
+  []
+  routes)
 
 (defn ->service-map
   []
-  (let [csp (if development?
+  (let [csp (if shared/development?
               {:default-src "'self' 'unsafe-inline' 'unsafe-eval' localhost:* 0.0.0.0:* ws://localhost:* ws://0.0.0.0:* mac:* ws://mac:*"}
               {:default-src "'none'"
                :script-src  "'self' 'unsafe-inline'"        ; unsafe-eval possibly only needed for dev main.js
@@ -30,7 +46,7 @@
                :font-src    "'self'"
                :style-src   "'self' 'unsafe-inline'"
                :base-uri    "'self'"})]
-    (-> {::http/routes         #((deref #'routes))
+    (-> {::http/routes         #((deref #'current-routes))
          ::http/type           :jetty
          ::http/host           "0.0.0.0"
          ::http/port           3456
@@ -41,7 +57,7 @@
         (http/default-interceptors)
         (update ::http/interceptors #(cons %2 %1) ic/trailing-slash)
 
-        (cond-> development? (http/dev-interceptors)))))
+        (cond-> shared/development? (http/dev-interceptors)))))
 
 (def shadow-handler
   html/app-handler)

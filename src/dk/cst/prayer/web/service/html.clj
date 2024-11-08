@@ -1,9 +1,8 @@
-(ns dk.cst.prayer.web.html
-  (:require [huff2.core :as h])
+(ns dk.cst.prayer.web.service.html
+  "Server-side HTML generation."
+  (:require [huff2.core :as h]
+            [dk.cst.prayer.web.shared :as shared])
   (:import [java.util Date]))
-
-(def development?                                           ; TODO: implement
-  true)
 
 (def main-js                                                ; TODO: implement (see Glossematics or clarin-tei)
   "main.js")
@@ -27,7 +26,8 @@
       [:meta {:charset "utf-8"}]
       [:meta {:name    "viewport"
               :content "width=device-width, initial-scale=1.0"}]
-      [:title (str (when development? "(dev) ") "When Danes Prayed in German")]
+      [:title (str (when shared/development? "(dev) ")
+                   "When Danes Prayed in German")]
       #_[:link {:rel "icon" :href (proxied-cb "/images/favicon.svg")}]
       #_[:link {:rel "mask-icon" :href (proxied-cb "/images/favicon.svg") :color "#a02c2c"}]
       #_[:link {:rel "stylesheet" :href (proxied-cb "/css/main.css")}]]
@@ -39,7 +39,7 @@
        (str "var negotiatedLanguage = '" (pr-str negotiated-language) "';\n"
             "var initHash = '" init-hash "';\n"
             "var proxyPrefix = '" proxy-prefix "';\n"
-            "var inDevelopmentEnvironment = " development? ";\n")]
+            "var inDevelopmentEnvironment = " shared/development? ";\n")]
       [:script {:src (proxied-cb (str "/js/" main-js))}]]]))
 
 (def index-html

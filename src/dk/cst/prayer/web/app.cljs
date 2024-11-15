@@ -12,10 +12,12 @@
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
 (defn on-navigate
-  [{:keys [data] :as m}]
+  [{:keys [data] :as req}]
   (swap! state assoc :location (:name data))
-  (when-let [handler (:handle data)]
-    (api/handle m handler)))
+  ;; Replace Reitit coercion with our own that we can also use in the backend.
+  (let [coerced-req (shared/coerce-request req)]            ; TODO: log errors?
+    (when-let [handler (:handle data)]
+      (api/handle coerced-req handler))))
 
 ;; TODO: should ignore final slash
 (def router

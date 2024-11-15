@@ -9,8 +9,8 @@
     (swap! state assoc id e)))
 
 (defn fetch-entity
-  [{:keys [parameters]}]
-  (let [id (get-in parameters [:path :id])]
+  [{:keys [params]}]
+  (let [{:keys [id]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get @state [:entities id])
       (-> (fetch/get (str "/api/entity/" id))

@@ -10,7 +10,7 @@
 (defonce server (atom nil))
 
 (def api-routes
-  #{["/api/entity/:id" :get [ic/with-db ic/entity] :route-name ::entity]})
+  #{["/api/entity/:id" :get [ic/entity] :route-name ::entity]})
 
 (defn backend-route
   "Add common parts to a Pedestal API `route`."
@@ -56,6 +56,7 @@
         ;; Extending default interceptors here.
         (http/default-interceptors)
         (update ::http/interceptors #(cons %2 %1) ic/trailing-slash)
+        (update ::http/interceptors concat [ic/coercion ic/with-db])
 
         (cond-> shared/development? (http/dev-interceptors)))))
 

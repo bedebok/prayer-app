@@ -3,6 +3,7 @@
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
             [dk.cst.prayer.web.service.html :as html]
+            [dk.cst.prayer.web.shared :as shared]
             [com.wsscode.transito :as transito]
             [io.pedestal.interceptor :refer [interceptor]]
             [datalevin.core :as d]
@@ -21,6 +22,11 @@
                     (update-in [:request :uri] remove-trailing-slash)
                     (update-in [:request :path-info] remove-trailing-slash)))})))
 
+(def coercion
+  (interceptor
+    {:name  ::coercion
+     :enter (fn [ctx] (update ctx :request shared/coerce-request))}))
+
 (def with-db
   (interceptor
     {:name  ::with-db
@@ -34,7 +40,7 @@
   (interceptor
     {:name  ::entity
      :enter (fn [{:keys [db request] :as ctx}]
-              (let [id (parse-long (get-in request [:path-params :id]))
+              (let [id (get-in request [:params :id])
                     e  (d/entity db id)]
                 (update
                   ctx :response merge

@@ -17,6 +17,25 @@
       (update-vals :constraint)
       (not-empty)))
 
+(defn coerce-params
+  [params]
+  (->> (for [[k v] params]
+         (let [{:keys [constraint coerce]} (get coercion k)]
+           ;; Only apply constraints in ClojureScript here as constraints are
+           ;; already applied at the route level in Pedestal.
+           #?(:cljs (when (and constraint (not (re-matches constraint v)))
+                      (throw (ex-info (str k " constraint did not match: " v)
+                                      {:params   params
+                                       :coercion coercion}))))
+           (if coerce
+             [k (coerce v)]
+             [k v])))
+       (into {})))
+
+(defn coerce-request
+  [{:keys [path-params query-params] :as req}]
+  (assoc req :params (coerce-params (merge path-params query-params))))
+
 (def frontend-routes
   "Reitit routes for the frontend (also shared with the backend)."
   [["/" {:name ::main}]

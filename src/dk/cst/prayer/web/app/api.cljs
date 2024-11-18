@@ -6,13 +6,13 @@
 (defn add-entity
   [id e]
   (when-not (empty? e)
-    (swap! state assoc id e)))
+    (swap! state assoc-in [:entities id] e)))
 
 (defn fetch-entity
   [{:keys [params]}]
   (let [{:keys [id]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
-    (when-not (get @state [:entities id])
+    (when-not (get-in @state [:entities id])
       (-> (fetch/get (str "/api/entity/" id))
           ;; TODO: handle 404 explicitly
           (.then #(add-entity id (:body %)))))))

@@ -30,7 +30,8 @@
                    "When Danes Prayed in German")]
       #_[:link {:rel "icon" :href (proxied-cb "/images/favicon.svg")}]
       #_[:link {:rel "mask-icon" :href (proxied-cb "/images/favicon.svg") :color "#a02c2c"}]
-      #_[:link {:rel "stylesheet" :href (proxied-cb "/css/main.css")}]]
+      [:link {:rel "stylesheet" :href (proxied-cb "/css/main.css")}]
+      [:link {:rel "stylesheet" :href (proxied-cb "/css/tei.css")}]]
      [:body
       [:div#app]
       [:script

@@ -5,4 +5,4 @@
 (defn handle
   [replicant-data handler-data]
   (condp = handler-data
-    [::reset-state] (reset! state {})))
+    [::reset-state] (swap! state select-keys [:location])))

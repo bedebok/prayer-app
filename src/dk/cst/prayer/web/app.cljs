@@ -5,6 +5,7 @@
             [dk.cst.prayer.web.app.state :refer [state]]
             [dk.cst.prayer.web.app.api :as api]
             [dk.cst.prayer.web.shared :as shared]
+            [dk.cst.prayer.web.app.component :as c]
             [replicant.dom :as d]
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe :refer [href]]))
@@ -13,9 +14,10 @@
 
 (defn on-navigate
   [{:keys [data] :as req}]
-  (swap! state assoc :location (:name data))
   ;; Replace Reitit coercion with our own that we can also use in the backend.
   (let [coerced-req (shared/coerce-request req)]            ; TODO: log errors?
+    (swap! state assoc :location {:name   (:name data)
+                                  :params (:params coerced-req)})
     (when-let [handler (:handle data)]
       (api/handle coerced-req handler))))
 
@@ -34,21 +36,7 @@
 
 (defn render
   [state]
-  (d/render el
-            [:div
-             [:button {:on {:click [::event/reset-state]}}
-              "reset"]
-             [:ul.cards
-              [:li {:replicant/key 1
-                    :on            {:click [:whatever]}}
-               [:a {:href "/entity/1"} "Item #1"]]
-              [:li {:replicant/key 2}
-               [:a {:href "/entity/2"} "Item #2"]]
-              [:li {:replicant/key 3}
-               [:a {:href "/entity/3"} "Item #3"]]
-              [:li {:replicant/key 4}
-               [:a {:href "/entity/4"} "Item #4"]]]
-             [:pre (with-out-str (cljs.pprint/pprint state))]]))
+  (d/render el (c/page state)))
 
 (defn ^:dev/after-load init!
   []

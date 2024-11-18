@@ -176,7 +176,7 @@
          :where [(fulltext $ ?q)
                  [[?e ?a ?v]]]]
        (d/db (d/get-conn db-path schema))
-       "heren")
+       "geist")
 
   (d/q '[:find ?a ?v
          :in $ ?e

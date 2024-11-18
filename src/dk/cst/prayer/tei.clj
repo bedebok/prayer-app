@@ -1,6 +1,7 @@
 (ns dk.cst.prayer.tei
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
+            [clojure.walk :as walk]
             [dk.cst.hiccup-tools.elem :as elem]
             [dk.cst.xml-hiccup :as xh]
             [dk.cst.hiccup-tools.hiccup :as h]
@@ -24,7 +25,7 @@
   (-> (xh/parse html)
       (h/get (match/has-child
                (match/hiccup [:span {:class "label" :xml/lang nil}])))
-      (h/hiccup->text h/html-conversion)))
+      (h/hiccup->text h/html-text)))
 
 (defn attr-parts
   "Explode an `attr-val` into its constituent parts."
@@ -34,7 +35,7 @@
 
 ;; TODO: punctuation not working great, maybe postprocess?
 (def tei-conversion
-  {:conversions {:teiHeader      zip/remove
+  {:single      {:teiHeader      zip/remove
                  #{:head :p :pb} z/surround-lb
                  :w              z/insert-space
                  :lb             z/append-lb}
@@ -93,7 +94,7 @@
   [[(with-meta (match :TEI) {:on-match :continue})
     (fn [node]
       (let [{:keys [xml/id type]} (elem/attr node)]
-        {:bedebok/id       id
+        {:bedebok/id   id
          :bedebok/type type}))]
 
    ;; Only used for human-readable shelfmarks, e.g. for displaying on a website.
@@ -160,6 +161,23 @@
            (match/has-parent (match/tag :msContents)))
     [:tei/msItem msItem-search-kvs]]])
 
+(def tei-html
+  ;; Structural changes that emit valid HTML go here.
+  {:single [[:teiHeader zip/remove]
+            [:lb (fn [loc] (let [[& rem] (zip/node loc)]
+                             (zip/replace loc (into [:br] rem))))]
+
+            ;; Anything not matched above is turned into custom HTML elements.
+            [(match/any) z/html-safe]]
+
+   ;; Other changes go here (NOTE: outer matchers must match custom elements!)
+   :multi  {#{:tei-w :tei-pc} (fn [loc]
+                                (if-let [right (zip/right loc)]
+                                  (if ((match/tag :pc) right)
+                                    loc
+                                    (zip/insert-right loc " "))
+                                  loc))}})
+
 (defn hiccup->entity
   "Convert TEI `hiccup` into an Datom entity based on a `search-kvs`."
   [hiccup search-kvs]
@@ -203,15 +221,16 @@
                                (into v1 v2)
                                (merge v1 v2))))
 
-         ;; Keep Hiccup for every component, mostly for debugging right now.
+         ;; Keep Hiccup for every component for display purposes.
          ;; TODO: should recursive subsearches be removed from parent? (duplication)
-         (merge {:file/node hiccup}))))
+         (merge {:file/node (binding [z/*custom-element-prefix* "tei"]
+                              (h/reshape hiccup tei-html))}))))
 
 (defn file->entity
   "Convert a `file` into a Datom entity based on `search-kvs`."
   [^File file]
   (merge (hiccup->entity (xh/parse file) manuscript-search-kvs)
-         {:file/src      (slurp file)
+         {#_#_:file/src (slurp file)
           :file/name (.getName file)}))
 
 (defn dev-view
@@ -234,9 +253,10 @@
 
   ;; test text conversion on a TEI body
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
-  (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
-      (xh/parse)
-      (h/hiccup->text tei-conversion))
+  (binding [z/*custom-element-prefix* "tei"]
+    (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
+        (xh/parse)
+        (h/reshape tei-html)))
 
   ;; Metadata retrieval from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org

@@ -51,7 +51,7 @@
                      :headers {"Content-Type" "application/transit+json"}
 
                      ;; TODO: use a proper solution to datafy
-                     ;;       (need to wait for a fix in Datalevin)
+                     ;; https://github.com/juji-io/datalevin/issues/292
                      :body    (-> (d/touch e)
                                   (str)
                                   (edn/read-string)

@@ -167,7 +167,7 @@
 (def tei-html
   ;; Structural changes that emit valid HTML go here.
   {:single [[:teiHeader zip/remove]
-            [:lb (fn [loc] (let [[& rem] (zip/node loc)]
+            [:lb (fn [loc] (let [[_ & rem] (zip/node loc)]
                              (zip/replace loc (into [:br] rem))))]
 
             ;; Anything not matched above is turned into custom HTML elements.

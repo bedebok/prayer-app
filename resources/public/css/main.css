@@ -1,0 +1,22 @@
+section.pages {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    width: fit-content;
+}
+
+article.page {
+    border: 1px solid black;
+    min-width: fit-content;
+    padding: 2ch;
+}
+
+article.page + article.page {
+    margin-top: 2ch;
+}
+
+article.page header {
+    text-align: right;
+    font-size: 80%;
+    color: grey;
+}

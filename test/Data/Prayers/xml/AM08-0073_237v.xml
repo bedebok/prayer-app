@@ -30,6 +30,7 @@
   </teiHeader>
   <text>
     <body>
+      <pb n="237v"/>  <!-- initial pb missing; inserted by [sg] -->
       <div type="rubric">
         <p>
           <w xml:id="AM08-0073_237v.7.1">Magnificat</w>

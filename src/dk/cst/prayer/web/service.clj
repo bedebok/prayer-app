@@ -10,7 +10,8 @@
 (defonce server (atom nil))
 
 (def api-routes
-  #{["/api/entity/:id" :get [ic/entity] :route-name ::entity]})
+  #{["/api/entity/:id" :get [ic/entity] :route-name ::entity]
+    ["/api/index/:type" :get [ic/index] :route-name ::index]})
 
 (defn backend-route
   "Add common parts to a Pedestal API `route`."

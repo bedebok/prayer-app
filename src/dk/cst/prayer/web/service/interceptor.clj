@@ -58,6 +58,26 @@
                                   (transito/write-str))}
                     {:status 404}))))}))
 
+(def index
+  (interceptor
+    {:name  ::index
+     :enter (fn [{:keys [db request] :as ctx}]
+              (let [type (get-in request [:params :type])
+                    res  (d/q '[:find ?e ?id
+                                :in $ ?type
+                                :where
+                                [?e :bedebok/type ?type]
+                                [?e :bedebok/id ?id]]
+                              db
+                              type)]
+                (update
+                  ctx :response merge
+                  (if (not (empty? res))
+                    {:status  200
+                     :headers {"Content-Type" "application/transit+json"}
+                     :body    (transito/write-str (sort-by second res))}
+                    {:status 404}))))}))
+
 (def app
   (interceptor
     {:name  ::app

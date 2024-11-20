@@ -185,6 +185,14 @@
        (d/db (d/get-conn db-path schema))
        1)
 
+  (d/q '[:find ?e ?id
+         :in $ ?type
+         :where
+         [?e :bedebok/type ?type]
+         [?e :bedebok/id ?id]]
+       (d/db (d/get-conn db-path schema))
+       "manuscript")
+
   (do
     (d/close (d/get-conn db-path schema))
     (run! io/delete-file (reverse (file-seq (io/file db-path)))))

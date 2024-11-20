@@ -45,11 +45,18 @@
     ;; TODO: for dev usage, remove eventually
     [:pre (str entity)]))
 
+(defn index-display
+  [index]
+  [:ul
+   (for [[e id] index]
+     [:li [:a {:href (str "/entity/" e)} id]])])
+
 (defn content
   [{:keys [location] :as state}]
   (let [{:keys [name params]} location]
     (condp = name
-      ::page/entity (entity-display (get-in state [:entities (:id params)])))))
+      ::page/entity (entity-display (get-in state [:entities (:id params)]))
+      ::page/index (index-display (get-in state [:index (:type params)])))))
 
 (defn page
   [state]

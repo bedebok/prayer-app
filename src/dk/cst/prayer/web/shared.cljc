@@ -6,8 +6,9 @@
   true)
 
 (def coercion
-  {:id {:constraint #"[0-9]+"
-        :coerce     parse-long}})
+  {:id   {:constraint #"[0-9]+"
+          :coerce     parse-long}
+   #_#_:type {:constraint #"\w+"}})
 
 (defn path->constraints
   [path]
@@ -40,4 +41,6 @@
   "Reitit routes for the frontend (also shared with the backend)."
   [["/" {:name ::main}]
    ["/entity/:id" {:name   ::entity
-                   :handle [::api/fetch-entity]}]])
+                   :handle [::api/fetch-entity]}]
+   ["/index/:type" {:name   ::index
+                    :handle [::api/fetch-index]}]])

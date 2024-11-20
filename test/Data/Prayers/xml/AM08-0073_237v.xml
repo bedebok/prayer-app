@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TEI xmlns="http://www.tei-c.org/ns/1.0" type="text" xml:id="AM08-0073-237v">
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="AM08-0073_237v" type="text">
   <teiHeader>
     <fileDesc>
       <titleStmt>
-        <title>Magnificat</title>
+        <title>Magnificat</title> <!-- Title for display -->
+        <respStmt> <!-- Info about encoding -->
+          <resp when="2024">Catalogue</resp>
+          <persName key="SDV">Seán D. Vrieland</persName>
+        </respStmt>
       </titleStmt>
       <publicationStmt>
         <authority>When Danes Prayed in German</authority>
       </publicationStmt>
       <sourceDesc>
         <msDesc>
-          <msIdentifier corresp="AM08-0073">
-            <settlement key="KBH"/>
-            <repository key="AMS"/>
-            <idno type="shelfmark">AM 73 8vo</idno>
+          <msIdentifier>
+            <idno corresp="AM08-0073"/> <!-- Corresponds to xml:id="AM08-0073" in catalogue file -->
           </msIdentifier>
           <msContents>
             <msItem>
               <locus from="237v" to="238v"/>
-              <title key="MAGNIFICAT">Magnificat</title>
+              <title key="MAGNIFICAT">Magnificat</title> <!-- @key connects it to a (possible) work-file -->
               <textLang mainLang="gml"/>
             </msItem>
           </msContents>
@@ -28,187 +30,195 @@
   </teiHeader>
   <text>
     <body>
-      <div type="main">
-        <head>
-          <w xml:lang="la"><hi rend="2">M</hi>agnificat</w> 
-        </head>
+      <div type="rubric">
         <p>
+          <w xml:id="AM08-0073_237v.7.1">Magnificat</w>
           <lb n="7"/>
-          <w><supplied>M</supplied>yne</w>
-          <w>sele</w>
-          <w>grote</w>
-          <w>den</w>
-          <w>herren</w>
-          <lb n="8"/>
-          <w><hi>U</hi>nde </w>
-          <w>my<ex>n</ex></w>
-          <w>geist</w>
-          <w>hoghe</w>
-          <w>syk</w>
-          <w>yn</w>
-          <lb n="9"/>
-          <w>gode</w>
-          <w>myneme</w>
-          <w>heile</w>
-          <w><hi rend="1">W</hi>ente</w>
-          <hi>he</hi>
-          <lb n="10"/>
-          <w>heft</w>
-          <w>an</w>
-          <w>geseen</w>
-          <w>de</w>
-          <w>otmodicheit</w>
-          <w>sy<lb n="11"/>ner</w>
-          <w>dernen</w>
-          <w>dar</w>
-          <w>v<ex>m</ex>me</w>
-          <w>scal</w>
-          <w>my</w>
-          <w>sa<lb n="12"/>lich</w>
-          <w>spreke<ex>n</ex></w>
-          <w>alle</w>
-          <w>slechte</w>
-          <w><hi rend="1">W</hi>ente</w>
-          <lb n="13"/>
-          <w>de</w>
-          <w>dar</w>
-          <w>weldig</w>
-          <w>is</w>
-          <w>de</w>
-          <w>heft</w>
-          <w>gedan</w>
-          <lb n="14"/>
-          <w>grote</w>
-          <w>dynk</w>
-          <w>vn<ex>de</ex></w>
-          <w>syn</w>
-          <w>name</w>
-          <w>de</w>
-          <w>is</w>
-          <pb n="238r"/>
-          <lb n="1"/>
-          <w>hilligh</w>
-          <w><hi rend="1">U</hi>nde</w>
-          <w>syne</w>
-          <w>barmher<lb n="2"/>ticheit</w>
-          <w>is</w>
-          <w>van</w>
-          <w>selchte</w>
-          <w>to</w>
-          <w>slechte<ex>n</ex></w>
-          <lb n="3"/>
-          <w>den</w>
-          <w>de</w>
-          <w>ene</w>
-          <w>vruchte</w>
-          <w><hi rend="1">H</hi>e</w>
-          <w>heft</w>
-          <w>wel<lb n="4"/>de</w>
-          <w>gedan</w>
-          <w>yn</w>
-          <w>syneme</w>
-          <w>arme</w>
-          <w>he</w>
-          <lb n="5"/>
-          <w>vorstorede</w>
-          <w>de</w>
-          <w>houerdege<ex>n</ex></w>
-          <w>in</w>
-          <w>deme</w>
-          <lb n="6"/>
-          <w>danke<ex>n</ex></w>
-          <w>sines</w>
-          <w>herte<ex>n</ex></w>
-          <w><hi rend="1">H</hi>e</w>
-          <w>settede</w>
-          <w>de</w>
-          <lb n="7"/>
-          <w>weldege<ex>n</ex></w>
-          <w>van</w>
-          <w>deme</w>
-          <w>stole</w>
-          <w>vn<ex>de</ex></w>
-          <w>ho<lb n="8"/>gede</w>
-          <w>de</w>
-          <w>otmodigen</w>
-          <w><hi rend="1">H</hi>e</w>
-          <w>voruul<lb n="9"/>lede</w>
-          <w>de</w>
-          <w>hungergen</w>
-          <w>mit</w>
-          <w>gude<ex>n</ex></w>
-          <w>dinge<ex>n</ex></w>
-          <lb n="10"/><w>vnde</w>
-          <w>leet</w>
-          <w>de</w>
-          <w>riken</w>
-          <w>ydel</w>
-          <w><hi rend="1">H</hi>e</w>
-          <w>vnt<lb n="11"/>fenk</w>
-          <w>syn</w>
-          <w>kynt</w>
-          <name type="place" key="Israel">
-            <w>israhel</w>
-          </name>
-          <w>he</w>
-          <w>dachte</w>
-          <lb n="12"/>
-          <w>syner</w>
-          <w>barmherticheit</w>
-          <w><hi rend="1">A</hi>lso</w>
-          <w>he</w>
-          <lb n="13"/>
-          <w>gesproken</w>
-          <w>heft</w>
-          <w>to</w>
-          <w>vnsen</w>
-          <w>verdere<ex>n</ex></w>
-          <lb n="14"/>
-          <name type="pers" key="Abraham">
-            <w>abrahame</w>
-          </name>
-          <w>to</w>
-          <w>eweliken</w>
-          <w>syme</w>
-          <lb n="15"/>
-          <w>slechte</w>
-          <w><hi rend="1">H</hi>ere</w>
-          <w>gif</w>
-          <w>en</w>
-          <w>de</w>
-          <w>ewige</w>
-          <pb n="238v"/>
-          <lb n="1"/>
-          <w>rouwe</w>
-          <pc>:</pc>
-          <w>vnde</w>
-          <w>lat</w>
-          <w>en</w>
-          <w>shine<ex>n</ex></w>
-          <w>dyn</w>
-          <w>e<lb n="2"/>wige</w>
-          <w>licht</w>
-          <pc>.</pc>
         </p>
       </div>
-      <div type="antiphone">
-        <head><w>an<ex>tiphonia</ex></w></head>
-        <p><w>Wy</w>
-          <w>biddet</w>
-          <w>dyne</w>
-          <w>vrou<lb n="3"/>de</w>
-          <w>gude</w>
-          <w>dat</w>
-          <w>du</w>
-          <w>en</w>
-          <w>geuest</w>
-          <w>lichte</w>
-          <w>vnde</w>
-          <lb n="4"/>
-          <w>rouwe</w>
-          <w>gewonynge</w>
-          <pc>.</pc>
+      <div type="text">
+        <p>
+          <w xml:id="AM08-0073_237v.8.1"><hi rend="2 red blue">M</hi>yne</w>
+          <w xml:id="AM08-0073_237v.8.2">sele</w>
+          <w xml:id="AM08-0073_237v.8.3">grote</w>
+          <w xml:id="AM08-0073_237v.8.4">den</w>
+          <w xml:id="AM08-0073_237v.8.5">herren</w>
+          <lb n="8"/>
+          <w xml:id="AM08-0073_237v.9.1"><hi rend="blue">U</hi>nde</w>
+          <w xml:id="AM08-0073_237v.9.2">my<ex>n</ex></w>
+          <w xml:id="AM08-0073_237v.9.3">geist</w>
+          <w xml:id="AM08-0073_237v.9.4">hoghe</w>
+          <w xml:id="AM08-0073_237v.9.5">syk</w>
+          <w xml:id="AM08-0073_237v.9.6">yn</w>
+          <lb n="9"/>
+          <w xml:id="AM08-0073_237v.10.1">gode</w>
+          <w xml:id="AM08-0073_237v.10.2">myneme</w>
+          <w xml:id="AM08-0073_237v.10.3">heile</w>
+          <w xml:id="AM08-0073_237v.10.4"><hi rend="red">W</hi>ente</w>
+          <w xml:id="AM08-0073_237v.10.5">he</w>
+          <lb n="10"/>
+          <w xml:id="AM08-0073_237v.11.1">heft</w>
+          <w xml:id="AM08-0073_237v.11.2">an</w>
+          <w xml:id="AM08-0073_237v.11.3">geseen</w>
+          <w xml:id="AM08-0073_237v.11.4">de</w>
+          <w xml:id="AM08-0073_237v.11.5">otmodicheit</w>
+          <w xml:id="AM08-0073_237v.11.6">sy<lb n="11"/>ner</w>
+          <w xml:id="AM08-0073_237v.12.2">dernen</w>
+          <w xml:id="AM08-0073_237v.12.3">dar</w>
+          <w xml:id="AM08-0073_237v.12.4">v<ex>m</ex>me</w>
+          <w xml:id="AM08-0073_237v.12.5">scal</w>
+          <w xml:id="AM08-0073_237v.12.6">my</w>
+          <w xml:id="AM08-0073_237v.12.7">sa<lb n="12"/>lich</w>
+          <w xml:id="AM08-0073_237v.13.2">spreke<ex>n</ex></w>
+          <w xml:id="AM08-0073_237v.13.3">alle</w>
+          <w xml:id="AM08-0073_237v.13.4">slechte</w>
+          <w xml:id="AM08-0073_237v.13.5"><hi rend="blue">W</hi>ente</w>
+          <lb n="13"/>
+          <w xml:id="AM08-0073_237v.14.1">de</w>
+          <w xml:id="AM08-0073_237v.14.2">dar</w>
+          <w xml:id="AM08-0073_237v.14.3">weldig</w>
+          <w xml:id="AM08-0073_237v.14.4">is</w>
+          <w xml:id="AM08-0073_237v.14.5">de</w>
+          <w xml:id="AM08-0073_237v.14.6">heft</w>
+          <w xml:id="AM08-0073_237v.14.7">gedan</w>
+          <lb n="14"/>
+          <w xml:id="AM08-0073_237v.15.1">grote</w>
+          <w xml:id="AM08-0073_237v.15.2">dynk</w>
+          <w xml:id="AM08-0073_237v.15.3">vn<ex>de</ex></w>
+          <w xml:id="AM08-0073_237v.15.4">syn</w>
+          <w xml:id="AM08-0073_237v.15.5">name</w>
+          <w xml:id="AM08-0073_237v.15.6">de</w>
+          <w xml:id="AM08-0073_237v.15.7">is</w>
+          <lb n="15"/>
+          <pb n="238r"/>
+          <lb n="1"/>
+          <w xml:id="AM08-0073_238r.2.1">hilligh</w>
+          <w xml:id="AM08-0073_238r.2.2"><hi rend="red">U</hi>nde</w>
+          <w xml:id="AM08-0073_238r.2.3">syne</w>
+          <w xml:id="AM08-0073_238r.2.4">barmher<lb n="2"/>ticheit</w>
+          <w xml:id="AM08-0073_238r.3.2">is</w>
+          <w xml:id="AM08-0073_238r.3.3">van</w>
+          <w xml:id="AM08-0073_238r.3.4">selchte</w>
+          <w xml:id="AM08-0073_238r.3.5">to</w>
+          <w xml:id="AM08-0073_238r.3.6">slechte<ex>n</ex></w>
+          <lb n="3"/>
+          <w xml:id="AM08-0073_238r.4.1">den</w>
+          <w xml:id="AM08-0073_238r.4.2">de</w>
+          <w xml:id="AM08-0073_238r.4.3">ene</w>
+          <w xml:id="AM08-0073_238r.4.4">vruchte</w>
+          <w xml:id="AM08-0073_238r.4.5"><hi rend="blue">H</hi>e</w>
+          <w xml:id="AM08-0073_238r.4.6">heft</w>
+          <w xml:id="AM08-0073_238r.4.7">wel<lb n="4"/>de</w>
+          <w xml:id="AM08-0073_238r.5.2">gedan</w>
+          <w xml:id="AM08-0073_238r.5.3">yn</w>
+          <w xml:id="AM08-0073_238r.5.4">syneme</w>
+          <w xml:id="AM08-0073_238r.5.5">arme</w>
+          <w xml:id="AM08-0073_238r.5.6">he</w>
+          <lb n="5"/>
+          <w xml:id="AM08-0073_238r.6.1">vorstorede</w>
+          <w xml:id="AM08-0073_238r.6.2">de</w>
+          <w xml:id="AM08-0073_238r.6.3">houerdege<ex>n</ex></w>
+          <w xml:id="AM08-0073_238r.6.4">in</w>
+          <w xml:id="AM08-0073_238r.6.5">deme</w>
+          <lb n="6"/>
+          <w xml:id="AM08-0073_238r.7.1">danke<ex>n</ex></w>
+          <w xml:id="AM08-0073_238r.7.2">sines</w>
+          <w xml:id="AM08-0073_238r.7.3">herte<ex>n</ex></w>
+          <w xml:id="AM08-0073_238r.7.4"><hi rend="red">H</hi>e</w>
+          <w xml:id="AM08-0073_238r.7.5">settede</w>
+          <w xml:id="AM08-0073_238r.7.6">de</w>
+          <lb n="7"/>
+          <w xml:id="AM08-0073_238r.8.1">weldege<ex>n</ex></w>
+          <w xml:id="AM08-0073_238r.8.2">van</w>
+          <w xml:id="AM08-0073_238r.8.3">deme</w>
+          <w xml:id="AM08-0073_238r.8.4">stole</w>
+          <w xml:id="AM08-0073_238r.8.5">vn<ex>de</ex></w>
+          <w xml:id="AM08-0073_238r.8.6">ho<lb n="8"/>gede</w>
+          <w xml:id="AM08-0073_238r.9.2">de</w>
+          <w xml:id="AM08-0073_238r.9.3">otmodigen</w>
+          <w xml:id="AM08-0073_238r.9.4"><hi rend="blue">H</hi>e</w>
+          <w xml:id="AM08-0073_238r.9.5">voruul<lb n="9"/>lede</w>
+          <w xml:id="AM08-0073_238r.10.2">de</w>
+          <w xml:id="AM08-0073_238r.10.3">hungergen</w>
+          <w xml:id="AM08-0073_238r.10.4">mit</w>
+          <w xml:id="AM08-0073_238r.10.5">gude<ex>n</ex></w>
+          <w xml:id="AM08-0073_238r.10.6">dinge<ex>n</ex></w>
+          <lb n="10"/>
+          <w xml:id="AM08-0073_238r.11.1">vnde</w>
+          <w xml:id="AM08-0073_238r.11.2">leet</w>
+          <w xml:id="AM08-0073_238r.11.3">de</w>
+          <w xml:id="AM08-0073_238r.11.4">riken</w>
+          <w xml:id="AM08-0073_238r.11.5">ydel</w>
+          <w xml:id="AM08-0073_238r.11.6"><hi rend="red">H</hi>e</w>
+          <w xml:id="AM08-0073_238r.11.7">vnt<lb n="11"/>fenk</w>
+          <w xml:id="AM08-0073_238r.12.2">syn</w>
+          <w xml:id="AM08-0073_238r.12.3">kynt</w>
+          <w xml:id="AM08-0073_238r.12.4">israhel</w>
+          <w xml:id="AM08-0073_238r.12.5">he</w>
+          <w xml:id="AM08-0073_238r.12.6">dachte</w>
+          <lb n="12"/>
+          <w xml:id="AM08-0073_238r.13.1">syner</w>
+          <w xml:id="AM08-0073_238r.13.2">barmherticheit</w>
+          <w xml:id="AM08-0073_238r.13.3"><hi rend="blue">A</hi>lso</w>
+          <w xml:id="AM08-0073_238r.13.4">he</w>
+          <lb n="13"/>
+          <w xml:id="AM08-0073_238r.14.1">gesproken</w>
+          <w xml:id="AM08-0073_238r.14.2">heft</w>
+          <w xml:id="AM08-0073_238r.14.3">to</w>
+          <w xml:id="AM08-0073_238r.14.4">vnsen</w>
+          <w xml:id="AM08-0073_238r.14.5">verdere<ex>n</ex></w>
+          <lb n="14"/>
+          <w xml:id="AM08-0073_238r.15.1">abrahame</w>
+          <w xml:id="AM08-0073_238r.15.2">to</w>
+          <w xml:id="AM08-0073_238r.15.3">eweliken</w>
+          <w xml:id="AM08-0073_238r.15.4">syme</w>
+          <lb n="15"/>
+          <w xml:id="AM08-0073_238r.16.1">slechte</w>
+          <w xml:id="AM08-0073_238r.16.2"><hi rend="red">H</hi>ere</w>
+          <w xml:id="AM08-0073_238r.16.3">gif</w>
+          <w xml:id="AM08-0073_238r.16.4">en</w>
+          <w xml:id="AM08-0073_238r.16.5">de</w>
+          <w xml:id="AM08-0073_238r.16.6">ewige</w>
+          <lb n="16"/>
+          <pb n="238v"/>
+          <lb n="1"/>
+          <w xml:id="AM08-0073_238v.2.1">rouwe:</w>
+          <w xml:id="AM08-0073_238v.2.2">vnde</w>
+          <w xml:id="AM08-0073_238v.2.3">lat</w>
+          <w xml:id="AM08-0073_238v.2.4">en</w>
+          <w xml:id="AM08-0073_238v.2.5">shine<ex>n</ex></w>
+          <w xml:id="AM08-0073_238v.2.6">dyn</w>
+          <w xml:id="AM08-0073_238v.2.7">e<lb n="2"/>wige</w>
+          <w xml:id="AM08-0073_238v.3.2">licht.</w>
+          <lb n="3"/>
         </p>
+      </div>
+      <div type="antiphon">
+        <p> </p>
+        <div type="rubric">
+          <p>
+            <w xml:id="AM08-0073_238v.4.1">an<ex>tiphonia</ex></w>
+            <lb n="4"/>
+          </p>
+        </div>
+        <div type="text">
+          <p>
+            <w xml:id="AM08-0073_238v.5.1">Wy</w>
+            <w xml:id="AM08-0073_238v.5.2">biddet</w>
+            <w xml:id="AM08-0073_238v.5.3">dyne</w>
+            <w xml:id="AM08-0073_238v.5.4">vrou<lb n="5"/>de</w>
+            <w xml:id="AM08-0073_238v.6.2">gude</w>
+            <w xml:id="AM08-0073_238v.6.3">dat</w>
+            <w xml:id="AM08-0073_238v.6.4">du</w>
+            <w xml:id="AM08-0073_238v.6.5">en</w>
+            <w xml:id="AM08-0073_238v.6.6">geuest</w>
+            <w xml:id="AM08-0073_238v.6.7">lichte</w>
+            <w xml:id="AM08-0073_238v.6.8">vnde</w>
+            <lb n="6"/>
+            <w xml:id="AM08-0073_238v.7.1">rouwe</w>
+            <w xml:id="AM08-0073_238v.7.2">gewonynge.</w>
+          </p>
+        </div>
       </div>
     </body>
   </text>

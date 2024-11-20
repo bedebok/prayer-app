@@ -100,8 +100,11 @@
    ;; Only used for human-readable shelfmarks, e.g. for displaying on a website.
    [:idno
     (fn [node]
-      (let [idno (first (elem/children node))]
-        {:tei/idno idno}))]
+      (let [idno (first (elem/children node))
+            {:keys [corresp]} (elem/attr node)]
+        (if corresp
+          {:tei/corresp corresp}
+          {:tei/idno idno})))]
 
    [(match [:settlement {:key true}]
            (match/has-parent (match/tag :msIdentifier)))

@@ -5,4 +5,4 @@
                   :output-dir        "resources/public/js"
                   :asset-path        "/js"
                   :module-hash-names true
-                  :modules           {:main {:init-fn dk.cst.prayer.web.app/init!}}}}}
+                  :modules           {:main {:init-fn dk.cst.prayer.web.frontend/init!}}}}}

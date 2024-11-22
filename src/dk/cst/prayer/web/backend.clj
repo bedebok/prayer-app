@@ -1,6 +1,6 @@
-(ns dk.cst.prayer.web.service
+(ns dk.cst.prayer.web.backend
   "The main namespace of the backend web service."
-  (:require [dk.cst.prayer.web.service.interceptor :as ic]
+  (:require [dk.cst.prayer.web.backend.interceptor :as ic]
             [dk.cst.prayer.web.shared :as shared]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route])

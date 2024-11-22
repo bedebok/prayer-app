@@ -1,6 +1,6 @@
-(ns dk.cst.prayer.web.app.api
+(ns dk.cst.prayer.web.frontend.api
   "Handlers for Reitit frontend routing matches."
-  (:require [dk.cst.prayer.web.app.state :refer [state]]
+  (:require [dk.cst.prayer.web.frontend.state :refer [state]]
             [dk.cst.prayer.web.shared :as shared]
             [lambdaisland.fetch :as fetch]))
 

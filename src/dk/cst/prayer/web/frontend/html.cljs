@@ -1,6 +1,6 @@
-(ns dk.cst.prayer.web.app.html
+(ns dk.cst.prayer.web.frontend.html
   "Frontend HTML-generation, returning Replicant-style Hiccup."
-  (:require [dk.cst.prayer.web.app.event :as event]
+  (:require [dk.cst.prayer.web.frontend.event :as event]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.elem :as e]
             [dk.cst.prayer.web.shared :as page]))

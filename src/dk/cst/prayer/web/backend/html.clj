@@ -1,4 +1,4 @@
-(ns dk.cst.prayer.web.service.html
+(ns dk.cst.prayer.web.backend.html
   "Server-side HTML generation."
   (:require [huff2.core :as h]
             [dk.cst.prayer.web.shared :as shared])

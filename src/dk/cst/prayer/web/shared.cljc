@@ -1,6 +1,6 @@
 (ns dk.cst.prayer.web.shared
   "Code shared between the frontend single-page app and backend web service."
-  (:require [dk.cst.prayer.web.app.api :as-alias api]))
+  (:require [dk.cst.prayer.web.frontend.api :as-alias api]))
 
 (def port
   3456)

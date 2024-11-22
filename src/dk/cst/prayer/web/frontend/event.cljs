@@ -1,6 +1,6 @@
-(ns dk.cst.prayer.web.app.event
+(ns dk.cst.prayer.web.frontend.event
   "Handlers for Replicant event dispatches."
-  (:require [dk.cst.prayer.web.app.state :refer [state]]))
+  (:require [dk.cst.prayer.web.frontend.state :refer [state]]))
 
 (defn handle
   [replicant-data handler-data]

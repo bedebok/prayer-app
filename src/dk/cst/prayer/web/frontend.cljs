@@ -1,11 +1,11 @@
-(ns dk.cst.prayer.web.app
+(ns dk.cst.prayer.web.frontend
   "The main namespace of the frontend single-page app."
   (:require [clojure.edn :as edn]
-            [dk.cst.prayer.web.app.event :as event]
-            [dk.cst.prayer.web.app.state :refer [state]]
-            [dk.cst.prayer.web.app.api :as api]
+            [dk.cst.prayer.web.frontend.event :as event]
+            [dk.cst.prayer.web.frontend.state :refer [state]]
+            [dk.cst.prayer.web.frontend.api :as api]
             [dk.cst.prayer.web.shared :as shared]
-            [dk.cst.prayer.web.app.html :as html]
+            [dk.cst.prayer.web.frontend.html :as html]
             [replicant.dom :as d]
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe :refer [href]]))

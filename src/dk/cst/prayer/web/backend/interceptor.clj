@@ -1,8 +1,8 @@
-(ns dk.cst.prayer.web.service.interceptor
+(ns dk.cst.prayer.web.backend.interceptor
   "Pedestal interceptors for the backend web service."
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
-            [dk.cst.prayer.web.service.html :as html]
+            [dk.cst.prayer.web.backend.html :as html]
             [dk.cst.prayer.web.shared :as shared]
             [com.wsscode.transito :as transito]
             [io.pedestal.interceptor :refer [interceptor]]

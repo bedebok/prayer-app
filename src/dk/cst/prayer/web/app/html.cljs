@@ -1,5 +1,5 @@
-(ns dk.cst.prayer.web.app.component
-  "Functions returning Replicant-style Hiccup."
+(ns dk.cst.prayer.web.app.html
+  "Frontend HTML-generation, returning Replicant-style Hiccup."
   (:require [dk.cst.prayer.web.app.event :as event]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.elem :as e]
@@ -30,6 +30,12 @@
         (partition-by #(= :tei-pb (first %)) $)
         (partition 2 $)))
 
+(defn metadata-display
+  [entity]
+  [:table
+   (for [[k v] (dissoc entity :file/node)]
+     [:tr [:td (str k)] [:td (str v)]])])
+
 (defn text-display
   [node]
   [:section.pages
@@ -39,11 +45,13 @@
 
 (defn entity-display
   [{:keys [bedebok/type file/node] :as entity}]
-  (condp = type
-    "text" (text-display node)
+  [:div.columns
+   (condp = type
+     "text" (text-display node)
 
-    ;; TODO: for dev usage, remove eventually
-    [:pre (str entity)]))
+     ;; TODO: for dev usage, remove eventually
+     [:pre (str entity)])
+   (metadata-display entity)])
 
 (defn index-display
   [index]

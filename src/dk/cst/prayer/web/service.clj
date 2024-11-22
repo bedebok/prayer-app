@@ -1,7 +1,6 @@
 (ns dk.cst.prayer.web.service
   "The main namespace of the backend web service."
-  (:require [dk.cst.prayer.web.service.html :as html]
-            [dk.cst.prayer.web.service.interceptor :as ic]
+  (:require [dk.cst.prayer.web.service.interceptor :as ic]
             [dk.cst.prayer.web.shared :as shared]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route])
@@ -47,12 +46,14 @@
                :font-src    "'self'"
                :style-src   "'self' 'unsafe-inline'"
                :base-uri    "'self'"})]
-    (-> {::http/routes         #((deref #'current-routes))
-         ::http/type           :jetty
-         ::http/host           "0.0.0.0"
-         ::http/port           3456
-         ::http/resource-path  "public"
-         ::http/secure-headers {:content-security-policy-settings csp}}
+    (-> {::http/routes          #((deref #'current-routes))
+         ::http/type            :jetty
+         ::http/host            shared/host
+         ::http/port            shared/port
+         ::http/resource-path   "public"
+         ::http/secure-headers  {:content-security-policy-settings csp}
+         ::http/allowed-origins (when shared/development?
+                                  (constantly true))}
 
         ;; Extending default interceptors here.
         (http/default-interceptors)
@@ -60,9 +61,6 @@
         (update ::http/interceptors concat [ic/coercion ic/with-db])
 
         (cond-> shared/development? (http/dev-interceptors)))))
-
-(def shadow-handler
-  html/app-handler)
 
 (defn start []
   (let [service-map (->service-map)]

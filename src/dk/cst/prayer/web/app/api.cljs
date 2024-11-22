@@ -1,6 +1,7 @@
 (ns dk.cst.prayer.web.app.api
   "Handlers for Reitit frontend routing matches."
   (:require [dk.cst.prayer.web.app.state :refer [state]]
+            [dk.cst.prayer.web.shared :as shared]
             [lambdaisland.fetch :as fetch]))
 
 (defn add-entity
@@ -18,7 +19,7 @@
   (let [{:keys [id]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:entities id])
-      (-> (fetch/get (str "/api/entity/" id))
+      (-> (fetch/get (shared/api-path "/api/entity/" id))
           ;; TODO: handle 404 explicitly
           (.then #(add-entity id (:body %)))))))
 
@@ -27,7 +28,7 @@
   (let [{:keys [type]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:index type])
-      (-> (fetch/get (str "/api/index/" type))
+      (-> (fetch/get (shared/api-path "/api/index/" type))
           ;; TODO: handle 404 explicitly
           (.then #(add-index type (:body %)))))))
 

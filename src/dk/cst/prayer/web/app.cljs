@@ -5,7 +5,7 @@
             [dk.cst.prayer.web.app.state :refer [state]]
             [dk.cst.prayer.web.app.api :as api]
             [dk.cst.prayer.web.shared :as shared]
-            [dk.cst.prayer.web.app.component :as c]
+            [dk.cst.prayer.web.app.html :as html]
             [replicant.dom :as d]
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe :refer [href]]))
@@ -36,7 +36,7 @@
 
 (defn render
   [state]
-  (d/render el (c/page state)))
+  (d/render el (html/page state)))
 
 (defn ^:dev/after-load init!
   []

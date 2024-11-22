@@ -2,6 +2,22 @@
   "Code shared between the frontend single-page app and backend web service."
   (:require [dk.cst.prayer.web.app.api :as-alias api]))
 
+(def port
+  3456)
+
+(def host
+  "localhost")
+
+(def protocol
+  "http://")
+
+(def api-prefix
+  (str protocol host ":" port))
+
+(defn api-path
+  [& path]
+  (apply str api-prefix path))
+
 (def development?
   true)
 

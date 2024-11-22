@@ -1,6 +1,6 @@
-{:deps     {:aliases [:frontend]}
+{:deps     {:aliases [:frontend :dev]}
  :dev-http {9876 {:root    "resources/public"
-                  :handler dk.cst.prayer.web.service/shadow-handler}}
+                  :handler user/shadow-handler}}
  :builds   {:app {:target            :browser
                   :output-dir        "resources/public/js"
                   :asset-path        "/js"

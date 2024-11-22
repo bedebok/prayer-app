@@ -22,9 +22,7 @@
   true)
 
 (def coercion
-  {:id   {:constraint #"[0-9]+"
-          :coerce     parse-long}
-   #_#_:type {:constraint #"\w+"}})
+  {:type {:constraint #"text|manuscript"}})                 ; TODO: expand
 
 (defn path->constraints
   [path]
@@ -56,7 +54,11 @@
 (def frontend-routes
   "Reitit routes for the frontend (also shared with the backend)."
   [["/" {:name ::main}]
-   ["/entity/:id" {:name   ::entity
-                   :handle [::api/fetch-entity]}]
-   ["/index/:type" {:name   ::index
-                    :handle [::api/fetch-index]}]])
+   ["/texts" {:name   ::text-index
+              :handle [::api/fetch-index "text"]}]
+   ["/manuscripts" {:name   ::manuscript-index
+                    :handle [::api/fetch-index "manuscript"]}]
+   ["/texts/:id" {:name   ::text
+                  :handle [::api/fetch-entity]}]
+   ["/manuscripts/:id" {:name   ::manuscript
+                        :handle [::api/fetch-entity]}]])

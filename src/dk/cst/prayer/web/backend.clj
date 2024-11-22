@@ -2,6 +2,7 @@
   "The main namespace of the backend web service."
   (:require [dk.cst.prayer.web.backend.interceptor :as ic]
             [dk.cst.prayer.web.shared :as shared]
+            [dk.cst.prayer.db :as db]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route])
   (:gen-class))
@@ -9,7 +10,7 @@
 (defonce server (atom nil))
 
 (def api-routes
-  #{["/api/entity/:id" :get [ic/entity] :route-name ::entity]
+  #{["/api/entity/:id" :get [ic/with-entity ic/entity] :route-name ::entity]
     ["/api/index/:type" :get [ic/index] :route-name ::index]})
 
 (defn backend-route
@@ -84,6 +85,8 @@
 
 (comment
   @conf
-  (restart)
+  (do
+    (db/build-db! db/files-path db/db-path)
+    (restart))
   (stop-dev)
   #_.)

@@ -152,11 +152,20 @@
   ;; delete an entity
   (d/transact! (d/get-conn db-path schema) [[:db/retractEntity 1]])
 
-  (->> (d/q '[:find ?e ?a ?v
+  (->> (d/q '[:find ?e .
+              :in $ ?id
               :where
-              [?e ?a ?v]]
-            (d/db (d/get-conn db-path schema)))
-       (count))
+              [?e :bedebok/id ?id]]
+            (d/db (d/get-conn db-path schema))
+            "AM08-0073_237v"))
+
+  (d/q '[:find ?e .
+         :in $ ?id
+         :where
+         [?e :bedebok/id ?id]]
+       (d/db (d/get-conn db-path schema))
+       "AM08-0073_237v")
+
 
   ;; Get full entities and their subcomponents back.
   (d/touch (d/entity (d/db (d/get-conn db-path schema)) 1))

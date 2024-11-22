@@ -10,15 +10,13 @@
   [:nav
    [:button {:on {:click [::event/reset-state]}}
     "reset"]
-   [:ul.cards
-    [:li {:replicant/key 1}
-     [:a {:href "/entity/1"} "Item #1"]]
+   [:ul
     [:li {:replicant/key 2}
-     [:a {:href "/entity/2"} "Item #2"]]
+     [:a {:href "/"} "Main"]]
+    [:li {:replicant/key 2}
+     [:a {:href "/texts"} "Texts"]]
     [:li {:replicant/key 3}
-     [:a {:href "/entity/3"} "Item #3"]]
-    [:li {:replicant/key 4}
-     [:a {:href "/entity/4"} "Item #4"]]]
+     [:a {:href "/manuscripts"} "Manuscripts"]]]
    [:details [:summary "state"]
     [:pre (with-out-str (cljs.pprint/pprint state))]]])
 
@@ -45,26 +43,29 @@
 
 (defn entity-display
   [{:keys [bedebok/type file/node] :as entity}]
-  [:div.columns
+  [:div.grid
    (condp = type
      "text" (text-display node)
 
      ;; TODO: for dev usage, remove eventually
-     [:pre (str entity)])
+     [:pre (with-out-str (cljs.pprint/pprint entity))])
    (metadata-display entity)])
 
 (defn index-display
-  [index]
+  [type index]
   [:ul
    (for [[e id] index]
-     [:li [:a {:href (str "/entity/" e)} id]])])
+     [:li [:a {:href (str "/" type "s/" id)} id]])])
 
 (defn content
   [{:keys [location] :as state}]
   (let [{:keys [name params]} location]
     (condp = name
-      ::page/entity (entity-display (get-in state [:entities (:id params)]))
-      ::page/index (index-display (get-in state [:index (:type params)])))))
+      ::page/main [:p "main page"]
+      ::page/text (entity-display (get-in state [:entities (:id params)]))
+      ::page/manuscript (entity-display (get-in state [:entities (:id params)]))
+      ::page/text-index (index-display "text" (get-in state [:index "text"]))
+      ::page/manuscript-index (index-display "manuscript" (get-in state [:index "manuscript"])))))
 
 (defn page
   [state]

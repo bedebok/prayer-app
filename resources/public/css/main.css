@@ -20,3 +20,10 @@ article.page header {
     font-size: 80%;
     color: grey;
 }
+
+/* TODO: read up on CSS grid... or use flexbox instead? */
+.grid {
+    display: grid;
+    column-gap: 24px;
+    grid-template-columns: auto minmax(auto, 1fr);
+}

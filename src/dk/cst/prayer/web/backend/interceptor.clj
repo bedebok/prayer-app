@@ -36,12 +36,22 @@
               (d/close-db db)
               (dissoc ctx :db))}))
 
-(def entity
+(def with-entity
   (interceptor
     {:name  ::entity
      :enter (fn [{:keys [db request] :as ctx}]
-              (let [id (get-in request [:params :id])
-                    e  (d/entity db id)]
+              (assoc ctx :id (->> (d/q '[:find ?e .
+                                         :in $ ?id
+                                         :where
+                                         [?e :bedebok/id ?id]]
+                                       db
+                                       (get-in request [:params :id])))))}))
+
+(def entity
+  (interceptor
+    {:name  ::entity
+     :enter (fn [{:keys [db id] :as ctx}]
+              (let [e (d/entity db id)]
                 (update
                   ctx :response merge
                   ;; As Datalevin seems to have a bug where entity

@@ -65,6 +65,7 @@
                      :body    (-> (d/touch e)
                                   (str)
                                   (edn/read-string)
+                                  (dissoc :bedebok/text :db/id) ; clean
                                   (transito/write-str))}
                     {:status 404}))))}))
 

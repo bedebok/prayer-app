@@ -1,9 +1,14 @@
 (ns dk.cst.prayer.web.frontend.html
   "Frontend HTML-generation, returning Replicant-style Hiccup."
-  (:require [dk.cst.prayer.web.frontend.event :as event]
+  (:require [cljs.pprint :refer [pprint]]
+            [dk.cst.prayer.web.frontend.event :as event]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.elem :as e]
             [dk.cst.prayer.web.shared :as page]))
+
+(defn pp
+  [x]
+  (with-out-str (pprint x)))
 
 (defn nav
   [state]
@@ -28,11 +33,33 @@
         (partition-by #(= :tei-pb (first %)) $)
         (partition 2 $)))
 
+(defn msitem-display
+  [{:keys [file/node tei/to tei/from tei/key tei/mainLang tei/msItem]
+    :as   msitem}]
+  [:section.msitem
+   [:table
+    [:tr [:td "node"] [:td node]]
+    [:tr [:td "key"] [:td key]]
+    [:tr [:td "language"] [:td mainLang]]
+    [:tr [:td "locus"] [:td (str from " ⋯ " to)]]
+    (when msItem
+      [:tr [:td "msItem"] [:td (for [msitem msItem]
+                                 (msitem-display msitem))]])
+    [:tr [:td "DEV"] [:td {:style {:color     "#AAA"
+                                   :font-size "10px"}}
+                      [:pre (pp msitem)]]]]])
+
 (defn metadata-display
   [entity]
   [:table
    (for [[k v] (dissoc entity :file/node)]
-     [:tr [:td (str k)] [:td (str v)]])])
+     [:tr [:td (str k)] [:td (condp = k
+                               :tei/msItem
+                               (for [msitem v]
+                                 (msitem-display msitem))
+
+                               ;; else
+                               (str v))]])])
 
 (defn text-display
   [node]
@@ -48,7 +75,7 @@
      "text" (text-display node)
 
      ;; TODO: for dev usage, remove eventually
-     [:pre (with-out-str (cljs.pprint/pprint entity))])
+     [:pre (pp entity)])
    (metadata-display entity)])
 
 (defn index-display

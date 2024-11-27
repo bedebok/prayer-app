@@ -57,8 +57,8 @@
            (match/has-parent (match/tag :msItem)))
     [:tei/msItem 'recursive]]
 
-   ;; TODO: should also match {:to true}, but currently the TEI files have errors
-   [[:locus {:from true}]
+   [[:locus {:from true
+             :to   true}]
     (fn [node]
       (let [{:keys [from to]} (elem/attr node)]
         (cond-> {:tei/from from}

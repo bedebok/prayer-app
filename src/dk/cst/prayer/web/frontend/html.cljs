@@ -39,7 +39,7 @@
   [:section.msitem
    [:table
     [:tr [:td "node"] [:td node]]
-    [:tr [:td "key"] [:td key]]
+    [:tr [:td "key"] [:td [:a {:href (str "/works/" key)} key]]]
     [:tr [:td "language"] [:td mainLang]]
     [:tr [:td "locus"] [:td (str from " ⋯ " to)]]
     (when msItem
@@ -78,6 +78,15 @@
      [:pre (pp entity)])
    (metadata-display entity)])
 
+(defn work-display
+  [work]
+
+  (for [[type ids] (sort-by first work)]
+    [:dl
+     type
+     (for [id ids]
+       [:dd [:a {:href (str "/" type "s/" id)} id]])]))
+
 (defn index-display
   [type index]
   [:ul
@@ -89,6 +98,7 @@
   (let [{:keys [name params]} location]
     (condp = name
       ::page/main [:p "main page"]
+      ::page/work (work-display (get-in state [:works (:id params)]))
       ::page/text (entity-display (get-in state [:entities (:id params)]))
       ::page/manuscript (entity-display (get-in state [:entities (:id params)]))
       ::page/text-index (index-display "text" (get-in state [:index "text"]))

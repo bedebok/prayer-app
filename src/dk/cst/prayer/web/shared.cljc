@@ -58,6 +58,8 @@
               :handle [::api/fetch-index "text"]}]
    ["/manuscripts" {:name   ::manuscript-index
                     :handle [::api/fetch-index "manuscript"]}]
+   ["/works/:id" {:name   ::work
+                  :handle [::api/fetch-work]}]
    ["/texts/:id" {:name   ::text
                   :handle [::api/fetch-entity]}]
    ["/manuscripts/:id" {:name   ::manuscript

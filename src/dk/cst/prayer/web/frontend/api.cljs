@@ -9,6 +9,11 @@
   (when-not (empty? e)
     (swap! state assoc-in [:entities id] e)))
 
+(defn add-work
+  [id work]
+  (when-not (empty? work)
+    (swap! state assoc-in [:works id] work)))
+
 (defn add-index
   [type kvs]
   (when-not (empty? kvs)
@@ -23,6 +28,15 @@
           ;; TODO: handle 404 explicitly
           (.then #(add-entity id (:body %)))))))
 
+(defn fetch-work
+  [{:keys [params]}]
+  (let [{:keys [id]} params]
+    ;; TODO: swap built-in fetch transit parsing for transito?
+    (when-not (get-in @state [:works id])
+      (-> (fetch/get (shared/api-path "/api/work/" id))
+          ;; TODO: handle 404 explicitly
+          (.then #(add-work id (:body %)))))))
+
 (defn fetch-index
   [type]
     ;; TODO: swap built-in fetch transit parsing for transito?
@@ -35,5 +49,6 @@
   [req handler-data]
   (condp = handler-data
     [::fetch-entity] (fetch-entity req)
+    [::fetch-work] (fetch-work req)
     [::fetch-index "text"] (fetch-index "text")
     [::fetch-index "manuscript"] (fetch-index "manuscript")))

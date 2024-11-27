@@ -69,9 +69,36 @@
                                   (transito/write-str))}
                     {:status 404}))))}))
 
-(def index
+(def by-work
   (interceptor
-    {:name  ::index
+    {:name  ::by-work
+     :enter (fn [{:keys [db request] :as ctx}]
+              (let [work (get-in request [:params :work])
+                    res  (-> (d/q '[:find ?id ?type
+                                    :in $ ?work
+                                    :where
+                                    [?e :tei/msItem ?msItem]
+                                    [?e :bedebok/type ?type]
+                                    (or [?e :bedebok/type "text"]
+                                        [?e :bedebok/type "manuscript"])
+                                    [?msitem :tei/key ?work]
+                                    [?e :bedebok/id ?id]]
+                                  db
+                                  work)
+                             (->> (group-by second))
+                             (update-vals (fn [kvs]
+                                            (sort (map first kvs)))))]
+                (update
+                  ctx :response merge
+                  (if (not (empty? res))
+                    {:status  200
+                     :headers {"Content-Type" "application/transit+json"}
+                     :body    (transito/write-str res)}
+                    {:status 404}))))}))
+
+(def by-type
+  (interceptor
+    {:name  ::by-type
      :enter (fn [{:keys [db request] :as ctx}]
               (let [type (get-in request [:params :type])
                     res  (d/q '[:find ?e ?id

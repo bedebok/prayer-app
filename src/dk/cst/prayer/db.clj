@@ -172,9 +172,14 @@
   (d/touch (d/entity (d/db (d/get-conn db-path schema)) 64))
 
   ;; Test retrieval of works (canonical texts)
-  (d/q '[:find [?v ...]
+  (d/q '[:find ?id ?type
          :where
-         [?e :tei/key ?v]]
+         [?e :tei/msItem ?msItem]
+         [?e :bedebok/type ?type]
+         (or [?e :bedebok/type "text"]
+             [?e :bedebok/type "manuscript"])
+         [?msitem :tei/key "MAGNIFICAT"]
+         [?e :bedebok/id ?id]]
        (d/db (d/get-conn db-path schema)))
 
   (top-items (d/db (d/get-conn db-path schema)))

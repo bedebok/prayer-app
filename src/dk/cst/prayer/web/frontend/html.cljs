@@ -33,18 +33,29 @@
         (partition-by #(= :tei-pb (first %)) $)
         (partition 2 $)))
 
+(defn locus
+  [from to]
+  (str from " ⋯ " to))
+
+(declare msitem-display)
+
+(defn msitem-node
+  [{:keys [file/node tei/to tei/from tei/key tei/mainLang tei/msItem]
+    :as   msitem}]
+  (cond->> (into [:article.page [:header (locus from to)]] node)
+    msItem (into (for [{:keys [tei/to tei/from] :as msitem} msItem]
+                   [:details [:summary (locus from to)]
+                    (msitem-display msitem)]))))
+
 (defn msitem-display
   [{:keys [file/node tei/to tei/from tei/key tei/mainLang tei/msItem]
     :as   msitem}]
   [:section.msitem
    [:table
-    [:tr [:td "node"] [:td node]]
+    [:tr [:td "node"] [:td (msitem-node msitem)]]
     [:tr [:td "key"] [:td [:a {:href (str "/works/" key)} key]]]
     [:tr [:td "language"] [:td mainLang]]
     [:tr [:td "locus"] [:td (str from " ⋯ " to)]]
-    (when msItem
-      [:tr [:td "msItem"] [:td (for [msitem msItem]
-                                 (msitem-display msitem))]])
     [:tr [:td "DEV"] [:td {:style {:color     "#AAA"
                                    :font-size "10px"}}
                       [:pre (pp msitem)]]]]])

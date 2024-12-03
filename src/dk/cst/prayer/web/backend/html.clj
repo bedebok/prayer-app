@@ -1,7 +1,7 @@
 (ns dk.cst.prayer.web.backend.html
   "Server-side HTML generation."
   (:require [huff2.core :as h]
-            [dk.cst.prayer.web.shared :as shared])
+            [dk.cst.prayer.web :as web])
   (:import [java.util Date]))
 
 (def main-js                                                ; TODO: implement (see Glossematics or clarin-tei)
@@ -23,7 +23,7 @@
     [:meta {:charset "utf-8"}]
     [:meta {:name    "viewport"
             :content "width=device-width, initial-scale=1.0"}]
-    [:title (str (when shared/development? "(dev) ")
+    [:title (str (when web/development? "(dev) ")
                  "When Danes Prayed in German")]
     #_[:link {:rel "icon" :href (cb "/images/favicon.svg")}]
     #_[:link {:rel "mask-icon" :href (cb "/images/favicon.svg") :color "#a02c2c"}]

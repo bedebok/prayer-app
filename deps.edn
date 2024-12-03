@@ -19,7 +19,7 @@
            dk.cst/xml-hiccup            {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
                                          :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
            dk.cst/hiccup-tools          {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
-                                         :sha     "d798917be7a85e7d669ac5bed09a571d118c26d9"}}
+                                         :sha     "82914a8c3981949ce9e8bdf0069d54b5088060ae"}}
  :aliases {:dev      {:extra-paths ["dev/src"]}
            :frontend {:extra-deps {thheller/shadow-cljs   {:mvn/version "2.28.18"}
                                    lambdaisland/fetch     {:mvn/version "1.5.83"}

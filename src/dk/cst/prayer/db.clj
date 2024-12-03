@@ -15,85 +15,94 @@
 
 (def schema
   {;; Meta attributes about the relevant file and XML nodes.
-   :file/src       {:db/valueType :db.type/string
-                    :db/doc       "The XML source code of the entity."}
-   :file/name      {:db/valueType :db.type/string
-                    :db/doc       "The filename of the document entity."}
-   :file/node      {:db/doc "The Hiccup node that is the source of this entity."}
+   :file/src          {:db/valueType :db.type/string
+                       :db/doc       "The XML source code of the entity."}
+   :file/name         {:db/valueType :db.type/string
+                       :db/doc       "The filename of the document entity."}
+   :file/node         {:db/doc "The Hiccup node that is the source of this entity."}
 
    ;; Core entity IDs and references.
-   :bedebok/id     {:db/valueType :db.type/string
-                    :db/unique    :db.unique/identity
-                    :db/doc       (str "Used to identify each of the three core entities.")}
-   :tei/corresp    {:db/valueType :db.type/string
-                    :db/unique    :db.unique/identity
-                    :db/doc       (str "Used to reference text instances within manuscripts.")}
-   :tei/key        {:db/valueType :db.type/string
-                    :db/doc       (str "Used to reference canonical works.")}
+   :bedebok/id        {:db/valueType :db.type/string
+                       :db/unique    :db.unique/identity
+                       :db/doc       (str "Used to identify each of the three core entities.")}
+   :tei/corresp       {:db/valueType :db.type/string
+                       :db/unique    :db.unique/identity
+                       :db/doc       (str "Used to reference a text or manuscript within a manuscript or text.")}
+   :tei/key           {:db/valueType :db.type/string
+                       :db/doc       (str "Used to reference canonical works.")}
 
    ;; NOTE: keeping doc type separate from :tei/type as that expects a composite tuple.
-   :bedebok/type   {:db/valueType :db.type/string}
+   :bedebok/type      {:db/valueType :db.type/string}
 
    ;; Plain text stored for search.
-   :bedebok/text   {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one
-                    :db/fulltext    true
-                    :db/doc         "The plain text of the document."}
-   :bedebok/label  {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/many
-                    :db/fulltext    true
-                    :db/doc         "A human-readable label for an entity."}
+   :bedebok/text      {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/fulltext    true
+                       :db/doc         "The plain text of the document."}
+   :bedebok/label     {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many
+                       :db/fulltext    true
+                       :db/doc         "A human-readable label for an entity."}
 
-   :tei/title      {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
-   :tei/settlement {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
-   :tei/mainLang   {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
-   :tei/repository {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
+   :tei/title         {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
+   :tei/settlement    {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
+   :tei/mainLang      {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
+   :tei/repository    {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
 
-   :tei/msItem     {:db/cardinality :db.cardinality/many
-                    :db/valueType   :db.type/ref
-                    :db/isComponent true}
-   :tei/class      {:db/cardinality :db.cardinality/many
-                    :db/valueType   :db.type/string}
-   :tei/from       {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
-   :tei/to         {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
+   :tei/origDate      {:db/cardinality :db.cardinality/one}
+   :tei/origPlace     {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true}
+
+   :tei/collationItem {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true}
+   :tei/msItem        {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true}
+   :tei/class         {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/string}
+   :tei/from          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
+   :tei/to            {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
 
    ;; These attributes form a sort of summary of a prayer.
    ;; TODO: should it one-to-one for each language?
-   :tei/rubric     {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/many}
-   :tei/incipit    {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/many}
-   :tei/explicit   {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/many}
+   :tei/rubric        {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many}
+   :tei/incipit       {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many}
+   :tei/explicit      {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many}
 
-   :tei/entity     {:db/cardinality :db.cardinality/one
-                    :db/valueType   :db.type/ref
-                    :db/doc         (str "For internal entities appearing across the documents "
-                                         "such as named entities or biblical references. "
-                                         "Multiple references to an entity are allowed, "
-                                         "but only a single entity exists.")}
-   :tei/name       {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
-   :tei/type       {:db/valueType   :db.type/string
-                    :db/cardinality :db.cardinality/one}
-   :tei/name+type  {:db/valueType   :db.type/tuple
-                    :db/tupleAttrs  [:tei/name :tei/type]
-                    :db/cardinality :db.cardinality/one
-                    :db/unique      :db.unique/identity}
-   :tei/named      {:db/cardinality :db.cardinality/many
-                    :db/valueType   :db.type/ref
-                    :db/isComponent true
-                    :db/doc         (str "A named entity reference.")}
-   :tei/ref        {:db/cardinality :db.cardinality/many
-                    :db/valueType   :db.type/ref
-                    :db/isComponent true
-                    :db/doc         (str "A literary reference.")}})
+   ;; TODO: maybe rename to :bedebok/entity since this't in the TEI standard?
+   :tei/entity        {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/doc         (str "For internal entities appearing across the documents "
+                                            "such as named entities or biblical references. "
+                                            "Multiple references to an entity are allowed, "
+                                            "but only a single entity exists.")}
+   :tei/name          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
+   :tei/type          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one}
+   :tei/name+type     {:db/valueType   :db.type/tuple
+                       :db/tupleAttrs  [:tei/name :tei/type]
+                       :db/cardinality :db.cardinality/one
+                       :db/unique      :db.unique/identity}
+   :tei/named         {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         (str "A named entity reference.")}
+   :tei/ref           {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         (str "A literary reference.")}})
 
 (defn xml-files
   "Fetch XML File objects recursively from a starting `dir`."
@@ -138,14 +147,14 @@
 
   (-> (io/file "test/Data/Prayers/xml/Holm-A42_032r.xml")
       (xh/parse)
-      (tei/hiccup->entity tei/manuscript-search-kvs))
+      (tei/hiccup->entity tei/tei-search-kvs))
 
 
   (try
     (d/transact! (d/get-conn db-path schema)
                  [(-> (io/file "test/Data/Prayers/xml/AM08-0075_063r.xml")
                       (xh/parse)
-                      (tei/hiccup->entity tei/manuscript-search-kvs))])
+                      (tei/hiccup->entity tei/tei-search-kvs))])
     (catch Exception e
       (prn e)))
 

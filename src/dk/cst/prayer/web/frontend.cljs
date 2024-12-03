@@ -1,10 +1,10 @@
 (ns dk.cst.prayer.web.frontend
   "The main namespace of the frontend single-page app."
   (:require [clojure.edn :as edn]
+            [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.frontend.event :as event]
             [dk.cst.prayer.web.frontend.state :refer [state]]
             [dk.cst.prayer.web.frontend.api :as api]
-            [dk.cst.prayer.web.shared :as shared]
             [dk.cst.prayer.web.frontend.html :as html]
             [replicant.dom :as d]
             [reitit.frontend :as rf]
@@ -15,7 +15,7 @@
 (defn on-navigate
   [{:keys [data] :as req}]
   ;; Replace Reitit coercion with our own that we can also use in the backend.
-  (let [coerced-req (shared/coerce-request req)]            ; TODO: log errors?
+  (let [coerced-req (web/coerce-request req)]               ; TODO: log errors?
     (swap! state assoc :location {:name   (:name data)
                                   :params (:params coerced-req)})
     (when-let [handler (:handle data)]
@@ -24,7 +24,7 @@
 ;; TODO: should ignore final slash
 (def router
   (rf/router
-    shared/frontend-routes
+    web/frontend-routes
     {:conflicts nil}))
 
 (defn set-up-navigation!

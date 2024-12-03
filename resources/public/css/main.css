@@ -21,9 +21,33 @@ article.page header {
     color: grey;
 }
 
+table {
+    border: 1px solid black;
+}
+
+/* useful for debugging */
+table + table {
+    margin-top: 12px;
+}
+
+tbody.msItem {
+    background: lightblue;
+}
+
+
+tbody.collationItem {
+    background: lightgreen;
+}
+
 /* TODO: read up on CSS grid... or use flexbox instead? */
 .grid {
     display: grid;
     column-gap: 24px;
     grid-template-columns: auto minmax(auto, 1fr);
+}
+
+pre {
+    min-width: 50vw;
+    max-width: 67vw;
+    overflow: scroll;
 }

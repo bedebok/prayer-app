@@ -1,4 +1,4 @@
-(ns dk.cst.prayer.web.shared
+(ns dk.cst.prayer.web
   "Code shared between the frontend single-page app and backend web service."
   (:require [dk.cst.prayer.web.frontend.api :as-alias api]))
 

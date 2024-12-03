@@ -1,7 +1,7 @@
 (ns dk.cst.prayer.web.frontend.api
   "Handlers for Reitit frontend routing matches."
-  (:require [dk.cst.prayer.web.frontend.state :refer [state]]
-            [dk.cst.prayer.web.shared :as shared]
+  (:require [dk.cst.prayer.web :as web]
+            [dk.cst.prayer.web.frontend.state :refer [state]]
             [lambdaisland.fetch :as fetch]))
 
 (defn add-entity
@@ -24,7 +24,7 @@
   (let [{:keys [id]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:entities id])
-      (-> (fetch/get (shared/api-path "/api/entity/" id))
+      (-> (fetch/get (web/api-path "/api/entity/" id))
           ;; TODO: handle 404 explicitly
           (.then #(add-entity id (:body %)))))))
 
@@ -33,15 +33,15 @@
   (let [{:keys [id]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:works id])
-      (-> (fetch/get (shared/api-path "/api/work/" id))
+      (-> (fetch/get (web/api-path "/api/work/" id))
           ;; TODO: handle 404 explicitly
           (.then #(add-work id (:body %)))))))
 
 (defn fetch-index
   [type]
-    ;; TODO: swap built-in fetch transit parsing for transito?
+  ;; TODO: swap built-in fetch transit parsing for transito?
   (when-not (get-in @state [:index type])
-    (-> (fetch/get (shared/api-path "/api/index/" type))
+    (-> (fetch/get (web/api-path "/api/index/" type))
         ;; TODO: handle 404 explicitly
         (.then #(add-index type (:body %))))))
 

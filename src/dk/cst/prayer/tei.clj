@@ -1,4 +1,5 @@
 (ns dk.cst.prayer.tei
+  "Patterns/functions for scraping data from the project TEI files."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
             [clojure.walk :as walk]
@@ -23,8 +24,7 @@
 (defn tei-description
   [html]
   (-> (xh/parse html)
-      (h/get (match/has-child
-               (match/hiccup [:span {:class "label" :xml/lang nil}])))
+      (h/get (match/has-child [:span {:class "label" :xml/lang nil}]))
       (h/hiccup->text h/html-text)))
 
 (defn attr-parts
@@ -41,10 +41,19 @@
                  :lb             z/append-lb}
    :postprocess str/trim})
 
+(defn inner-text
+  "Store the inner text of the matched node under `k`."
+  [k & [k2]]
+  (fn [node]
+    (when-let [text (h/hiccup->text node tei-conversion)]
+      (if k2
+        {k {k2 text}}
+        {k text}))))
+
 ;; Since the order matters, this part of the search is written as kvs
 (def msItem-search-kvs
   "The [matcher process] kvs for doing a recursive sweep of <msItem> elements."
-  [;; Capture the attributes from <msItem>.
+  [;; Capture the attributes from <msItem> itself.
    ;; This should take place before the recursive sub-search defined below.
    [(with-meta (match :msItem) {:on-match :continue})
     (fn [node]
@@ -53,8 +62,9 @@
         (when class'
           {:tei/class class'})))]
 
-   [(match :msItem
-           (match/has-parent (match/tag :msItem)))
+   ;; Continues the same sub-search if other <msItem> elements are found inside
+   ;; the parent <msItem> element.
+   [(match :msItem (match/has-parent :msItem))
     [:tei/msItem 'recursive]]
 
    [[:locus {:from true
@@ -89,13 +99,43 @@
     (fn [node]
       {:tei/explicit [(h/hiccup->text node tei-conversion)]})]])
 
-(def manuscript-search-kvs
+(def collationItem-search-kvs
+  "The [matcher process] kvs for doing a recursive sweep of <item> elements
+  found inside the <collation><list>...</list></collation> structure."
+  [;; Capture the attributes from <item> itself.
+   ;; This should take place before the recursive sub-search defined below.
+   [(with-meta (match :item) {:on-match :continue})
+    (fn [node]
+      (let [{:keys [n]} (elem/attr node)]
+        (when n
+          {:tei/n n})))]
+
+   ;; Continues the same sub-search if other <item> elements are found inside
+   ;; the parent <item> element.
+   [(match :item (match/has-parent :list))
+    [:tei/collationItem 'recursive]]
+
+   [[:locus {:from true
+             :to   true}]
+    (fn [node]
+      (let [{:keys [from to]} (elem/attr node)]
+        (cond-> {:tei/from from}
+          to (assoc :tei/to to))))]
+
+   [:desc
+    (fn [node]
+      {:tei/desc (h/hiccup->text node tei-conversion)})]])
+
+(def tei-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
   [[(with-meta (match :TEI) {:on-match :continue})
     (fn [node]
       (let [{:keys [xml/id type]} (elem/attr node)]
         {:bedebok/id   id
          :bedebok/type type}))]
+
+   [:title
+    (inner-text :tei/title)]
 
    ;; Only used for human-readable shelfmarks, e.g. for displaying on a website.
    [:idno
@@ -106,14 +146,58 @@
           {:tei/corresp corresp}
           {:tei/idno idno})))]
 
-   [(match [:settlement {:key true}]
-           (match/has-parent (match/tag :msIdentifier)))
+   [:head
+    (inner-text :tei/head)]
+
+   [:summary
+    (inner-text :tei/summary)]
+
+   ;; We first capture the description as text; the data inside comes after.
+   [(with-meta (match :origin) {:on-match :continue})
+    (inner-text :tei/origin)]
+
+   [(match [:origPlace {:key true}] (match/has-parent :origin))
+    (fn [node]
+      (let [{:keys [key]} (elem/attr node)
+            title (first (elem/children node))]
+        {:tei/origPlace {:tei/key   key
+                         :tei/title title}}))]
+
+   [(match :origDate (match/has-parent :origin))
+    (fn [node]
+      (let [attr (elem/attr node)
+            title (first (elem/children node))]
+        ;; TODO: discover finite list of attr keys, add them to the schema
+        {:tei/origDate (-> attr
+                           (update-keys (fn [k] (keyword "tei" (name k))))
+                           (merge {:tei/title title}))}))]
+
+   [(with-meta (match [:supportDesc {:material true}]) {:on-match :continue})
+    (fn [node]
+      (let [{:keys [material]} (elem/attr node)]
+        {:tei/material material}))]
+
+   [:support
+    (inner-text :tei/support)]
+
+   ;; TODO: what is this value? what should be done about it?
+   #_[:extent
+      (fn [node])]
+
+   #_[:dimensions]
+
+   [:height
+    (inner-text :tei/dimensions :tei/height)]
+
+   [:width
+    (inner-text :tei/dimensions :tei/width)]
+
+   [(match [:settlement {:key true}] (match/has-parent :msIdentifier))
     (fn [node]
       (let [{:keys [key]} (elem/attr node)]
         {:tei/settlement key}))]
 
-   [(match [:repository {:key true}]
-           (match/has-parent (match/tag :msIdentifier)))
+   [(match [:repository {:key true}] (match/has-parent :msIdentifier))
     (fn [node]
       (let [{:keys [key]} (elem/attr node)]
         {:tei/repository key}))]
@@ -149,6 +233,9 @@
       (when-let [text (not-empty (h/hiccup->text node tei-conversion))]
         {:bedebok/text text}))]
 
+   [(match :item (match/has-parent (match :list (match/has-parent :collation))))
+    [:tei/collationItem collationItem-search-kvs]]
+
    ;; Capture the attributes from <msItem>.
    ;; As this relies on special behaviour, it should take place before the
    ;; sub-search defined below as that removes the tree from the current search.
@@ -160,8 +247,7 @@
           {:tei/class class'})))]
 
    ;; Marks the sub-search of a variable depth tree of <msItem> elements.
-   [(match :msItem
-           (match/has-parent (match/tag :msContents)))
+   [(match :msItem (match/has-parent :msContents))
     [:tei/msItem msItem-search-kvs]]])
 
 (def tei-html
@@ -232,14 +318,14 @@
 (defn file->entity
   "Convert a `file` into a Datom entity based on `search-kvs`."
   [^File file]
-  (merge (hiccup->entity (xh/parse file) manuscript-search-kvs)
+  (merge (hiccup->entity (xh/parse file) tei-search-kvs)
          {#_#_:file/src (slurp file)
           :file/name (.getName file)}))
 
 (defn dev-view
   "Recursively remove clutter from entity `m` (for development)."
   [m]
-  (clojure.walk/postwalk
+  (walk/postwalk
     #(if (map? %)
        (dissoc % :file/node :tei/text)
        %)
@@ -265,7 +351,7 @@
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
   (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
       (xh/parse)
-      (hiccup->entity manuscript-search-kvs)
+      (hiccup->entity tei-search-kvs)
       (dev-view))
 
   ;; TODO: "test/Data/Prayers/xml/AM08-0073_237v.xml" and  "test/Data/Catalogue/xml/AM08-0073.xml" use the same ID!!
@@ -273,7 +359,7 @@
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0075_063r.org
   (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
       (xh/parse)
-      (hiccup->entity manuscript-search-kvs)
+      (hiccup->entity tei-search-kvs)
       (dev-view))
   #_.)
 

@@ -1,7 +1,7 @@
 (ns dk.cst.prayer.web.backend
   "The main namespace of the backend web service."
-  (:require [dk.cst.prayer.web.backend.interceptor :as ic]
-            [dk.cst.prayer.web.shared :as shared]
+  (:require [dk.cst.prayer.web :as web]
+            [dk.cst.prayer.web.backend.interceptor :as ic]
             [dk.cst.prayer.db :as db]
             [io.pedestal.http :as http]
             [io.pedestal.http.route :as route])
@@ -17,21 +17,24 @@
 (defn backend-route
   "Add common parts to a Pedestal API `route`."
   [[path :as route]]
-  (if-let [constraints (shared/path->constraints path)]
+  (if-let [constraints (web/path->constraints path)]
     (into route [:constraints constraints])
     route))
 
 (defn frontend-route
-  "Turn a Reitit frontend route into a Pedestal route (backend mirror)."
+  "Turn a Reitit frontend route into a Pedestal route.
+
+  This mirrors the frontend route in the backend such that any route that can be
+  created by the frontend single-page app is also reachable in the backend."
   [[path & {:keys [name]} :as route]]
-  (if-let [constraints (shared/path->constraints path)]
+  (if-let [constraints (web/path->constraints path)]
     [path :get [ic/app] :route-name name :constraints constraints]
     [path :get [ic/app] :route-name name]))
 
 (def routes
   (route/expand-routes
     (set (into (map backend-route api-routes)
-               (map frontend-route shared/frontend-routes)))))
+               (map frontend-route web/frontend-routes)))))
 
 (defn current-routes
   []
@@ -39,7 +42,7 @@
 
 (defn ->service-map
   []
-  (let [csp (if shared/development?
+  (let [csp (if web/development?
               {:default-src "'self' 'unsafe-inline' 'unsafe-eval' localhost:* 0.0.0.0:* ws://localhost:* ws://0.0.0.0:* mac:* ws://mac:*"}
               {:default-src "'none'"
                :script-src  "'self' 'unsafe-inline'"        ; unsafe-eval possibly only needed for dev main.js
@@ -50,11 +53,11 @@
                :base-uri    "'self'"})]
     (-> {::http/routes          #((deref #'current-routes))
          ::http/type            :jetty
-         ::http/host            shared/host
-         ::http/port            shared/port
+         ::http/host            web/host
+         ::http/port            web/port
          ::http/resource-path   "public"
          ::http/secure-headers  {:content-security-policy-settings csp}
-         ::http/allowed-origins (when shared/development?
+         ::http/allowed-origins (when web/development?
                                   (constantly true))}
 
         ;; Extending default interceptors here.
@@ -62,7 +65,7 @@
         (update ::http/interceptors #(cons %2 %1) ic/trailing-slash)
         (update ::http/interceptors concat [ic/coercion ic/with-db])
 
-        (cond-> shared/development? (http/dev-interceptors)))))
+        (cond-> web/development? (http/dev-interceptors)))))
 
 (defn start []
   (let [service-map (->service-map)]

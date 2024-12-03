@@ -2,8 +2,8 @@
   "Pedestal interceptors for the backend web service."
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
+            [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.backend.html :as html]
-            [dk.cst.prayer.web.shared :as shared]
             [com.wsscode.transito :as transito]
             [io.pedestal.interceptor :refer [interceptor]]
             [datalevin.core :as d]
@@ -25,7 +25,7 @@
 (def coercion
   (interceptor
     {:name  ::coercion
-     :enter (fn [ctx] (update ctx :request shared/coerce-request))}))
+     :enter (fn [ctx] (update ctx :request web/coerce-request))}))
 
 (def with-db
   (interceptor

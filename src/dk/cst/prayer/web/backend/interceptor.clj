@@ -81,7 +81,7 @@
                                     [?e :bedebok/type ?type]
                                     (or [?e :bedebok/type "text"]
                                         [?e :bedebok/type "manuscript"])
-                                    [?msitem :tei/key ?work]
+                                    [?msItem :tei/key ?work]
                                     [?e :bedebok/id ?id]]
                                   db
                                   work)

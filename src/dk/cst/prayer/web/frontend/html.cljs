@@ -36,14 +36,14 @@
 
 (defn list-view
   [coll]
-  (apply str (interpose ", " (sort coll))))
+  (interpose ", " (sort coll)))
 
 ;; TODO: properly implement sorting rules, e.g. for stuff like "94r" to "95r"
-(defn locus-sort
-  [entities]
-  (sort-by :tei/locus entities))
+(def locus-order
+  (juxt (comp :tei/from :tei/locus)
+        (comp :tei/to :tei/locus)))
 
-(declare metadata-view)
+(declare table-view)
 
 (defn in
   [x y]
@@ -51,7 +51,7 @@
     (get x y)
     (= x y)))
 
-(defn metadata-tr-view
+(defn table-tr-view
   [bedebok-type [k v]]
   ;; NOTE: we are overloading the :bedebok/type value with keywords to better
   ;; decipher other keys during the recursive build of the frontend views.
@@ -60,13 +60,8 @@
     [:tr
      [:td (str k)]
      [:td (condp in k
-            :tei/msItem
-            (for [msitem (locus-sort v)]
-              (metadata-view (assoc msitem :bedebok/type k)))
-
-            :tei/collationItem
-            (for [collation-item (locus-sort v)]
-              (metadata-view (assoc collation-item :bedebok/type k)))
+            #{:tei/msItem :tei/collationItem}
+            (apply table-view (map #(assoc % :bedebok/type k) v))
 
             :tei/locus
             (locus-view v)
@@ -74,7 +69,7 @@
             ;; Put simple inline tables here.
             #{:tei/dimensions :tei/origDate :tei/origPlace}
             [:table
-             (map (partial metadata-tr-view k) v)]
+             (map (partial table-tr-view k) v)]
 
             ;; TODO: support other key types through overloaded :bedebok/type
             :tei/key
@@ -98,40 +93,61 @@
              v]
 
             ;; else
-            (if (sequential? v)
+            (if (set? v)
               (list-view v)
               (pp v)))]]))
 
-(defn prepare-entity
-  "Modifies the data of `entity` for display purposes."
+(defn prepare-for-table
+  "Modifies the data of `m` for table display."
   [{:keys [tei/from tei/to]
-    :as   entity}]
-  (-> entity
+    :as   m}]
+  (-> m
       (dissoc :db/id :tei/from :tei/to)
       (cond->
         (or from to) (assoc :tei/locus [from to]))))
 
+(defn table-view
+  [{:keys [bedebok/type db/id] :as m} & ms]
+  (let [metadata-tr-view' (partial table-tr-view type)
+        entity'           (prepare-for-table m)
+        table-data        (some-> entity'
+                                  (dissoc :file/node)
+                                  (not-empty))]
+    (if ms
+      (map table-view (sort-by locus-order (conj ms m)))
+      [:table {:id (str "db-" id)}
+       (map metadata-tr-view' (sort-by first table-data))])))
+
 (defn metadata-view
-  [{:keys [bedebok/type tei/msItem tei/collationItem]
+  [{:keys [tei/msItem tei/collationItem]
     :as   entity}]
-  (let [entity' (prepare-entity entity)]
-    (let [metadata-tr' (partial metadata-tr-view type)]
-      [:table
-       (when-let [metadata (some-> entity'
-                                   (dissoc :file/node :tei/msItem :tei/collationItem)
-                                   (not-empty))]
-         [:tbody.metadata
-          (->> metadata
-               (sort-by first)
-               (map metadata-tr'))])
-       (when msItem
-         [:tbody.msItem (metadata-tr' [:tei/msItem msItem])])
-       (when collationItem
-         [:tbody.collationItem (metadata-tr' [:tei/collationItem collationItem])])])))
+  (list
+    (when-let [metadata (some-> entity
+                                (dissoc :file/node
+                                        :tei/title
+                                        :tei/head
+                                        :tei/msItem
+                                        :tei/collationItem)
+                                (not-empty))]
+      [:section.general
+       [:h2 "General"]
+       (table-view metadata)])
+    (when msItem
+      [:section.msItem
+       [:h2 "msItem"]
+       (->> msItem
+            (map #(assoc % :bedebok/type :tei/msItem))
+            (apply table-view))])
+    (when collationItem
+      [:section.collationItem
+       [:h2 "collationItem"]
+       (->> collationItem
+            (map #(assoc % :bedebok/type :tei/collationItem))
+            (apply table-view))])))
 
 (defn text-view
   [node]
-  [:section.pages
+  [:main.pages
    (for [[pb content] (node->pages node)]
      (let [data-n (-> pb first second :data-n)]
        (into [:article.page [:header data-n] content])))])
@@ -139,17 +155,14 @@
 (defn entity-view
   [{:keys [bedebok/type file/node] :as entity}]
   [:div.grid
-   ;; TODO: only temporarily hidden while debugging
-   #_(condp = type
-       "text" (text-view node)
-
-       ;; TODO: for dev usage, remove eventually
-       [:pre (pp entity)])
-   (metadata-view entity)])
+   (when (= type "text")
+     (text-view node))
+   (if (= type "text")
+     [:aside#metadata (metadata-view entity)]
+     [:main#metadata (metadata-view entity)])])
 
 (defn work-view
   [work]
-
   (for [[type ids] (sort-by first work)]
     [:dl
      type

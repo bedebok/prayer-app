@@ -70,9 +70,10 @@
    [[:locus {:from true
              :to   true}]
     (fn [node]
-      (let [{:keys [from to]} (elem/attr node)]
+      (let [{:keys [from to corresp]} (elem/attr node)]
         (cond-> {:tei/from from}
-          to (assoc :tei/to to))))]
+          to (assoc :tei/to to)
+          corresp (assoc :tei/corresp corresp))))]
 
    [[:textLang {:mainLang true}]
     (fn [node]

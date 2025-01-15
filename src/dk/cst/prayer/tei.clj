@@ -9,7 +9,7 @@
             [dk.cst.hiccup-tools.zip :as z]
             [dk.cst.hiccup-tools.match :as match :refer [match]]
             [clojure.java.io :as io])
-  (:import [java.io File]))
+  (:import [java.io File FileNotFoundException]))
 
 (defn tei-ref
   [tag]
@@ -18,14 +18,16 @@
                     tag
                     (name tag))
                   ".html")
-        html (slurp url)]
+        html (try
+               (slurp url)
+               (catch FileNotFoundException _))]
     html))
 
 (defn tei-description
   [html]
-  (-> (xh/parse html)
-      (h/get (match/has-child [:span {:class "label" :xml/lang nil}]))
-      (h/hiccup->text h/html-text)))
+  (some-> (xh/parse html)
+          (h/get (match/has-child [:span {:class "label" :xml/lang nil}]))
+          (h/hiccup->text h/html-text)))
 
 (defn attr-parts
   "Explode an `attr-val` into its constituent parts."
@@ -166,7 +168,7 @@
 
    [(match :origDate (match/has-parent :origin))
     (fn [node]
-      (let [attr (elem/attr node)
+      (let [attr  (elem/attr node)
             title (first (elem/children node))]
         ;; TODO: discover finite list of attr keys, add them to the schema
         {:tei/origDate (-> attr
@@ -333,7 +335,7 @@
     m))
 
 (comment
-  (tei-description (tei-ref :sourceDesc))
+  (tei-description (tei-ref :textLang))
   (tei-description (tei-ref :rubric))
 
   ;; test text conversion on a full HTML document

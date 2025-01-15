@@ -2,6 +2,7 @@
   "Pedestal interceptors for the backend web service."
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
+            [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.backend.html :as html]
             [com.wsscode.transito :as transito]
@@ -31,7 +32,7 @@
   (interceptor
     {:name  ::with-db
      :enter (fn [ctx]
-              (assoc ctx :db (d/db (d/get-conn db/db-path db/schema))))
+              (assoc ctx :db (d/db (d/get-conn db/db-path static/schema))))
      :leave (fn [{:keys [db] :as ctx}]
               (d/close-db db)
               (dissoc ctx :db))}))

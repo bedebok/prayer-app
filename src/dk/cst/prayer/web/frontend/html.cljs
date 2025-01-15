@@ -1,6 +1,7 @@
 (ns dk.cst.prayer.web.frontend.html
   "Frontend HTML-generation, returning Replicant-style Hiccup."
   (:require [cljs.pprint :refer [pprint]]
+            [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as page]
             [dk.cst.prayer.web.frontend.event :as event]
             [dk.cst.hiccup-tools.hiccup :as h]
@@ -58,7 +59,9 @@
   (when-not (and (= k :bedebok/type)
                  (keyword? v))
     [:tr
-     [:td (str k)]
+     [:td (when-let [doc (static/attr-doc k)]
+            {:title doc})
+      (str k)]
      [:td (condp in k
             #{:tei/msItem :tei/collationItem}
             (apply table-view (map #(assoc % :bedebok/type k) v))

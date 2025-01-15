@@ -77,6 +77,7 @@
                     res  (-> (d/q '[:find ?id ?type
                                     :in $ ?work
                                     :where
+                                    ;; TODO: ?msItem should be recursive to fetch all relevant docs
                                     [?e :tei/msItem ?msItem]
                                     [?e :bedebok/type ?type]
                                     (or [?e :bedebok/type "text"]

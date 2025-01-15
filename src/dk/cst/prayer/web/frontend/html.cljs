@@ -19,8 +19,8 @@
     [:li [:a {:href "/"} "Main"]]
     [:li [:a {:href "/texts"} "Texts"]]
     [:li [:a {:href "/manuscripts"} "Manuscripts"]]]
-   [:details [:summary "state"]
-    [:pre (pp state)]]])
+   #_[:details [:summary "state"]
+      [:pre (pp state)]]])
 
 (defn node->pages
   [node]
@@ -102,7 +102,7 @@
   [{:keys [tei/from tei/to]
     :as   m}]
   (-> m
-      (dissoc :db/id :tei/from :tei/to)
+      (dissoc :db/id :file/node :tei/from :tei/to)
       (cond->
         (or from to) (assoc :tei/locus [from to]))))
 
@@ -122,9 +122,9 @@
   [{:keys [tei/msItem tei/collationItem]
     :as   entity}]
   (list
+    ;; TODO: need to add title, head
     (when-let [metadata (some-> entity
-                                (dissoc :file/node
-                                        :tei/title
+                                (dissoc :tei/title
                                         :tei/head
                                         :tei/msItem
                                         :tei/collationItem)
@@ -147,19 +147,27 @@
 
 (defn text-view
   [node]
-  [:main.pages
+  [:section.pages
    (for [[pb content] (node->pages node)]
      (let [data-n (-> pb first second :data-n)]
        (into [:article.page [:header data-n] content])))])
 
+(defn header-view
+  [{:keys [tei/title tei/head] :as entity}]
+  [:header
+   [:h1 title]
+   (when head [:p head])])
+
 (defn entity-view
   [{:keys [bedebok/type file/node] :as entity}]
-  [:div.grid
-   (when (= type "text")
-     (text-view node))
-   (if (= type "text")
-     [:aside#metadata (metadata-view entity)]
-     [:main#metadata (metadata-view entity)])])
+  (list
+    (header-view entity)
+    (if (= type "text")
+      [:main.text
+       (text-view node)
+       [:aside.metadata (metadata-view entity)]]
+      [:main.manuscript
+       [:article.metadata (metadata-view entity)]])))
 
 (defn work-view
   [work]
@@ -190,6 +198,6 @@
   [{:keys [location] :as state}]
   ;; Some kind of ID is needed for replicant to properly re-render
   ;; TODO: is there a better ID?
-  [:article {:id js/window.location.pathname}
+  [:div {:id js/window.location.pathname}
    (nav state)
    (content-view state)])

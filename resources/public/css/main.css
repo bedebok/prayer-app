@@ -40,7 +40,7 @@ tbody.collationItem {
 }
 
 /* TODO: read up on CSS grid... or use flexbox instead? */
-.grid {
+main {
     display: grid;
     column-gap: 24px;
     grid-template-columns: auto minmax(auto, 1fr);

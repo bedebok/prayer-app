@@ -61,7 +61,7 @@
     [:tr
      [:td (when-let [doc (static/attr-doc k)]
             {:title doc})
-      (str k)]
+      (name k)]
      [:td (condp in k
             #{:tei/msItem :tei/collationItem}
             (apply table-view (map #(assoc % :bedebok/type k) v))

@@ -1,3 +1,9 @@
+:root {
+    /* https://github.com/system-fonts/modern-font-stacks#classical-humanist */
+    font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
+    font-weight: normal;
+}
+
 section.pages {
     display: flex;
     flex-direction: column;
@@ -21,13 +27,37 @@ article.page header {
     color: grey;
 }
 
+/* Allows for styling tr. */
 table {
-    border: 1px solid black;
+    border-collapse: collapse;
+    border-left: 4px solid rgba(0,0,0,1);
+    width: 100%;
+}
+
+tr:not(:last-child) {
+  border-bottom: 1px solid rgba(0,0,0,0.33);
+}
+
+table table {
+    border-top: none;
+    border-bottom: none;
+    margin-top: 24px;
+    margin-bottom: 32px;
 }
 
 /* useful for debugging */
 table + table {
-    margin-top: 12px;
+    margin-top: 32px;
+}
+
+tr td:first-child {
+    text-align: right;
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+td {
+    padding: 8px 12px;
 }
 
 tbody.msItem {
@@ -50,4 +80,9 @@ pre {
     min-width: 50vw;
     max-width: 67vw;
     overflow: scroll;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-variant: small-caps;
+    text-align: center;
 }

@@ -121,39 +121,11 @@
       [:table {:id (str "db-" id)}
        (map metadata-tr-view' (sort-by first table-data))])))
 
-(defn metadata-view
-  [{:keys [tei/msItem tei/collationItem]
-    :as   entity}]
-  (list
-    ;; TODO: need to add title, head
-    (when-let [metadata (some-> entity
-                                (dissoc :tei/title
-                                        :tei/head
-                                        :tei/msItem
-                                        :tei/collationItem)
-                                (not-empty))]
-      [:section.general
-       [:h2 "General"]
-       (table-view metadata)])
-    (when msItem
-      [:section.msItem
-       [:h2 "msItem"]
-       (->> msItem
-            (map #(assoc % :bedebok/type :tei/msItem))
-            (apply table-view))])
-    (when collationItem
-      [:section.collationItem
-       [:h2 "collationItem"]
-       (->> collationItem
-            (map #(assoc % :bedebok/type :tei/collationItem))
-            (apply table-view))])))
-
-(defn text-view
+(defn pages-view
   [node]
-  [:section.pages
-   (for [[pb content] (node->pages node)]
-     (let [data-n (-> pb first second :data-n)]
-       (into [:article.page [:header data-n] content])))])
+  (for [[pb content] (node->pages node)]
+    (let [data-n (-> pb first second :data-n)]
+      (into [:article.page [:header data-n] content]))))
 
 (defn header-view
   [{:keys [tei/title tei/head] :as entity}]
@@ -161,16 +133,49 @@
    [:h1 title]
    (when head [:p head])])
 
+(defn- section
+  [title view & [attr]]
+  (when view
+    [:section (when attr attr)
+     [:h2 title]
+     view]))
+
 (defn entity-view
-  [{:keys [bedebok/type file/node] :as entity}]
-  (list
-    (header-view entity)
-    (if (= type "text")
-      [:main.text
-       (text-view node)
-       [:aside.metadata (metadata-view entity)]]
-      [:main.manuscript
-       [:article.metadata (metadata-view entity)]])))
+  [{:keys [bedebok/type file/node tei/msItem tei/collationItem]
+    :as   entity}]
+  (let [general    (some-> entity
+                           (dissoc :tei/title
+                                   :tei/head
+                                   :tei/msItem
+                                   :tei/collationItem)
+                           (not-empty)
+                           (table-view))
+        manuscript (some->> msItem
+                            (map #(assoc % :bedebok/type :tei/msItem))
+                            (not-empty)
+                            (apply table-view))
+        collation  (some->> collationItem
+                            (map #(assoc % :bedebok/type :tei/collationItem))
+                            (not-empty)
+                            (apply table-view))]
+    (list
+      (header-view entity)
+
+      ;; When viewing a text, the pages are centred; when viewing a manuscript,
+      ;; the manuscript items are centred.
+      (if (= type "text")
+        [:main.text
+         (section "Pages" (pages-view node))
+         [:aside.metadata
+          (section "General" general)
+          (section "Manuscript" manuscript)
+          (section "Collation" collation)]]
+
+        [:main.manuscript
+         (section "Manuscript" manuscript)
+         [:aside.metadata
+          (section "General" general)
+          (section "Collation" collation)]]))))
 
 (defn work-view
   [work]

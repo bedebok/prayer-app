@@ -39,12 +39,23 @@
   [coll]
   (interpose ", " (sort coll)))
 
-;; TODO: properly implement sorting rules, e.g. for stuff like "94r" to "95r"
-(def locus-order
-  (juxt (comp :tei/from :tei/locus)
-        (comp :tei/to :tei/locus)))
+(defn locus-parts
+  "Split a `locus-str` into its constituent parts for comparison purposes."
+  [locus-str]
+  (if (string? locus-str)
+    (some-> (re-matches #"(\d+)([rv])?" locus-str)
+            ((fn [[_ n rv]]
+               [(parse-long n) rv])))
+    ;; In case of missing data, we put these cases at the end.
+    ;; TODO: log the missing data
+    [9999 "v"]))
 
-(declare table-view)
+;; This assumes we have put :tei/from and :tei/to into a vector in :tei/locus.
+(def locus-order
+  (juxt (comp locus-parts first :tei/locus)
+        (comp locus-parts second :tei/locus)))
+
+(declare table-views)
 
 (defn in
   [x y]
@@ -64,7 +75,7 @@
       (name k)]
      [:td (condp in k
             #{:tei/msItem :tei/collationItem}
-            (apply table-view (map #(assoc % :bedebok/type k) v))
+            (table-views (map #(assoc % :bedebok/type k) v))
 
             :tei/locus
             (locus-view v)
@@ -98,28 +109,33 @@
             ;; else
             (if (set? v)
               (list-view v)
-              (pp v)))]]))
+              (str v)))]]))
 
 (defn prepare-for-table
   "Modifies the data of `m` for table display."
   [{:keys [tei/from tei/to]
     :as   m}]
-  (-> m
-      (dissoc :db/id :file/node :tei/from :tei/to)
-      (cond->
-        (or from to) (assoc :tei/locus [from to]))))
+  (cond-> m
+    true (dissoc :db/id :file/node :tei/from :tei/to)
+    (or from to) (assoc :tei/locus [from to])))
 
 (defn table-view
-  [{:keys [bedebok/type db/id] :as m} & ms]
+  [{:keys [bedebok/type db/id] :as m}]
   (let [metadata-tr-view' (partial table-tr-view type)
         entity'           (prepare-for-table m)
         table-data        (some-> entity'
                                   (dissoc :file/node)
                                   (not-empty))]
-    (if ms
-      (map table-view (sort-by locus-order (conj ms m)))
-      [:table {:id (str "db-" id)}
-       (map metadata-tr-view' (sort-by first table-data))])))
+    [:table {:id (str "db-" id)}
+     (map metadata-tr-view' (sort-by first table-data))]))
+
+;; For displaying msItems and collation.
+(defn table-views
+  [ms]
+  (->> ms
+       (map prepare-for-table)
+       (sort-by locus-order)
+       (map table-view)))
 
 (defn pages-view
   [node]
@@ -153,11 +169,11 @@
         manuscript (some->> msItem
                             (map #(assoc % :bedebok/type :tei/msItem))
                             (not-empty)
-                            (apply table-view))
+                            (table-views))
         collation  (some->> collationItem
                             (map #(assoc % :bedebok/type :tei/collationItem))
                             (not-empty)
-                            (apply table-view))]
+                            (table-views))]
     (list
       (header-view entity)
 

@@ -70,22 +70,33 @@
                                   (transito/write-str))}
                     {:status 404}))))}))
 
+(def manuscript-ancestor-rule
+  '[[(ancestor ?msItem ?ancestor)
+     [?ancestor :tei/msItem ?msItem]]
+    [(ancestor ?msItem ?ancestor)
+     [?parent :tei/msItem ?msItem]
+     (ancestor ?parent ?ancestor)]])
+
 (def by-work
   (interceptor
     {:name  ::by-work
      :enter (fn [{:keys [db request] :as ctx}]
               (let [work (get-in request [:params :work])
                     res  (-> (d/q '[:find ?id ?type
-                                    :in $ ?work
+                                    :in $ % ?work
                                     :where
-                                    ;; TODO: ?msItem should be recursive to fetch all relevant docs
-                                    [?e :tei/msItem ?msItem]
+                                    ;; Fetching relevant entities by searching
+                                    ;; the tree of manuscript items recursively.
+                                    (ancestor ?msItem ?e)
                                     [?e :bedebok/type ?type]
                                     (or [?e :bedebok/type "text"]
                                         [?e :bedebok/type "manuscript"])
                                     [?msItem :tei/key ?work]
                                     [?e :bedebok/id ?id]]
                                   db
+                                  ;; The % added to the :in clause above
+                                  ;; references the rule set provided below.
+                                  manuscript-ancestor-rule
                                   work)
                              (->> (group-by second))
                              (update-vals (fn [kvs]

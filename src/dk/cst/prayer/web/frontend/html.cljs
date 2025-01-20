@@ -63,6 +63,12 @@
     (get x y)
     (= x y)))
 
+;; TODO: link up with searches, e.g. :tei/settlement "KBH"?
+(defn label-view
+  [k v]
+  (let [label (get-in static/labels [k v] (str v))]
+    label))
+
 (defn table-tr-view
   [bedebok-type [k v]]
   ;; NOTE: we are overloading the :bedebok/type value with keywords to better
@@ -108,8 +114,8 @@
 
             ;; else
             (if (set? v)
-              (list-view v)
-              (str v)))]]))
+              (list-view (map (partial label-view k) v))
+              (label-view k v)))]]))
 
 (defn prepare-for-table
   "Modifies the data of `m` for table display."

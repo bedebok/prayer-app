@@ -115,23 +115,21 @@
                            m))
              {} schema))
 
-;; from https://github.com/bedebok/Data/blob/main/Catalogue/xml/README.org
-(def settlement
-  {"KBH" "Copenhagen"
-   "STH" "Stockholm"
-   "LND" "Lund"
-   "LIN" "Linköping"
-   "ROS" "Roskilde"
-   "KAL" "Kalmar"
-   "UPS" "Uppsala"})
-
-;; from https://github.com/bedebok/Data/blob/main/Catalogue/xml/README.org
-(def repository
-  {"AMS" "Arnamagnæan Collection"
-   "KBK" "Royal Danish Library"
-   "KBS" "National Library of Sweden"
-   "KBB" "Karen Brahe Library"
-   "KSB" "Kalmar City Library"
-   "LSB" "Linköping City Library"
-   "LUB" "Lund University Library"
-   "UUB" "Uppsala University Library"})
+(def labels
+  ;; https://github.com/bedebok/Data/blob/main/Catalogue/xml/README.org
+  {:tei/settlement {"KBH" "Copenhagen"
+                    "STH" "Stockholm"
+                    "LND" "Lund"
+                    "LIN" "Linköping"
+                    "ROS" "Roskilde"
+                    "KAL" "Kalmar"
+                    "UPS" "Uppsala"}
+   ;; https://github.com/bedebok/Data/blob/main/Catalogue/xml/README.org
+   :tei/repository {"AMS" "Arnamagnæan Collection"
+                    "KBK" "Royal Danish Library"
+                    "KBS" "National Library of Sweden"
+                    "KBB" "Karen Brahe Library"
+                    "KSB" "Kalmar City Library"
+                    "LSB" "Linköping City Library"
+                    "LUB" "Lund University Library"
+                    "UUB" "Uppsala University Library"}})

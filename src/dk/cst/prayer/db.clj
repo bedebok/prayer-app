@@ -50,7 +50,30 @@
        (map (fn [id]
               (d/touch (d/entity db id))))))
 
+;; TODO: implement common parsable search query params
+(defn search
+  [db query]
+  (some-> '[:find ?e ?a ?v
+            :in $ ?q
+            :where [(fulltext $ ?q)
+                    [[?e ?a ?v]]]]
+          (d/q db query)
+          (->> (map (fn [[?e _ ?text]]
+                      ;; produce a seq of [?id ?type ?text] vectors
+                      (conj (d/q '[:find [?id ?type]
+                                   :in $ ?e
+                                   :where
+                                   [?e :bedebok/type ?type]
+                                   [?e :bedebok/id ?id]]
+                                 db
+                                 ?e)
+                            ?text)))
+               (group-by second))
+          (update-vals (fn [kvs]
+                         (sort (map first kvs))))))
+
 (comment
+  (search (d/db (d/get-conn db-path static/schema)) "geist")
   (xml-files files-path)
   (build-db! files-path db-path)
 

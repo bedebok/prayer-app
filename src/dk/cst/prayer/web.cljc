@@ -1,6 +1,8 @@
 (ns dk.cst.prayer.web
   "Code shared between the frontend single-page app and backend web service."
-  (:require [dk.cst.prayer.web.frontend.api :as-alias api]))
+  (:require [dk.cst.prayer.web.frontend.api :as-alias api]
+            #?(:cljs [reitit.frontend.easy :as rfe])
+            #?(:cljs [reitit.frontend.history :as rfh])))
 
 (def port
   3456)
@@ -51,6 +53,18 @@
   [{:keys [path-params query-params] :as req}]
   (assoc req :params (coerce-params (merge path-params query-params))))
 
+;; This function was originally copied over from the DanNet source code.
+(defn navigate-to
+  "Navigate to internal `url` using reitit.
+
+  Optionally, specify whether to `replace` the state in history."
+  [url & [replace]]
+  #?(:cljs (let [history @rfe/history]
+             (if replace
+               (.replaceState js/window.history nil "" (rfh/-href history url))
+               (.pushState js/window.history nil "" (rfh/-href history url)))
+             (rfh/-on-navigate history url))))
+
 (def frontend-routes
   "Reitit routes for the frontend (also shared with the backend)."
   [["/" {:name ::main}]
@@ -58,6 +72,8 @@
               :handle [::api/fetch-index "text"]}]
    ["/manuscripts" {:name   ::manuscript-index
                     :handle [::api/fetch-index "manuscript"]}]
+   ["/search/:query" {:name   ::search
+                      :handle [::api/search]}]
    ["/works/:id" {:name   ::work
                   :handle [::api/fetch-work]}]
    ["/texts/:id" {:name   ::text

@@ -12,7 +12,8 @@
 (def api-routes
   #{["/api/entity/:id" :get [ic/with-entity ic/entity] :route-name ::entity]
     ["/api/index/:type" :get [ic/by-type] :route-name ::index]
-    ["/api/work/:work" :get [ic/by-work] :route-name ::work]})
+    ["/api/work/:work" :get [ic/by-work] :route-name ::work]
+    ["/api/search/:query" :get [ic/search] :route-name ::search]})
 
 (defn backend-route
   "Add common parts to a Pedestal API `route`."

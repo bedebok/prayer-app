@@ -109,6 +109,20 @@
                      :body    (transito/write-str res)}
                     {:status 404}))))}))
 
+(def search
+  (interceptor
+    {:name  ::search
+     :enter (fn [{:keys [db request] :as ctx}]
+              (let [query (get-in request [:params :query])
+                    res   (db/search db query)]
+                (update
+                  ctx :response merge
+                  (if (not (empty? res))
+                    {:status  200
+                     :headers {"Content-Type" "application/transit+json"}
+                     :body    (transito/write-str res)}
+                    {:status 404}))))}))
+
 (def by-type
   (interceptor
     {:name  ::by-type

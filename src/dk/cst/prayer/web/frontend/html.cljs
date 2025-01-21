@@ -16,6 +16,9 @@
   [:nav
    [:button {:on {:click [::event/reset-state]}}
     "reset"]
+   [:form {:on {:submit [::event/search]}}
+    [:input {:type "search"
+             :name "query"}]]
    [:ul
     [:li [:a {:href "/"} "Main"]]
     [:li [:a {:href "/texts"} "Texts"]]
@@ -218,6 +221,8 @@
   (let [{:keys [name params]} location]
     (condp = name
       ::page/main [:p "main page"]
+      ;; TODO: make a proper search view
+      ::page/search (work-view (get-in state [:search (:query params)]))
       ::page/work (work-view (get-in state [:works (:id params)]))
       ::page/text (entity-view (get-in state [:entities (:id params)]))
       ::page/manuscript (entity-view (get-in state [:entities (:id params)]))

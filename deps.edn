@@ -16,6 +16,8 @@
 
            io.github.escherize/huff     {:mvn/version "0.2.12"}
 
+           instaparse/instaparse        {:mvn/version "1.5.0"}
+
            dk.cst/xml-hiccup            {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
                                          :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
            dk.cst/hiccup-tools          {:git/url "https://github.com/kuhumcst/hiccup-tools.git"

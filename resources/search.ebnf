@@ -1,0 +1,41 @@
+(*  NOTES
+      - the input query should be have whitespace trimmed at the ends!
+      - ordered choice (using / instead of |) is utilised to ensure correct
+        evaluation of ambiguous queries.
+      - the output is greatly is simplified by hiding unneeded data using <...>
+      - currently this grammar supports parsing:
+        * a single word or multiple words as a query
+        * field:value (or field = value)
+        * AND/OR operators (alternatively: | and &)
+        * grouping of values via parentheses
+        * phrases "such as this one"
+*)
+
+QUERY = QUIRK / NEGATION / EXPRESSION / VALUES / GROUP
+
+(* correct usage of operators *)
+EXPRESSION = OPERAND ( {SPACE} OPERATOR {SPACE} OPERAND )+
+
+(* bad usage of operators, but the input values can still be used *)
+QUIRK = IGNORED OPERAND / OPERAND IGNORED / IGNORED OPERAND IGNORED / IGNORED
+IGNORED = MISPLACED
+<MISPLACED> = OPERATOR {SPACE} MISPLACED* /
+              {SPACE} OPERATOR {SPACE} MISPLACED* /
+              SPACE NOT <MISPLACED*> /
+              NOT {SPACE} OPERATOR {SPACE} MISPLACED*
+
+<OPERAND> = VALUES / GROUP
+NEGATION = <NOT {SPACE}> ( VALUE | GROUP )
+<GROUP> = <'(' {SPACE}> ( EXPRESSION / VALUES / QUIRK ) <{SPACE} ')'>
+<OPERATOR> = AND | OR
+VALUES = VALUE ( {SPACE} VALUE )*
+<VALUE> = NEGATION / PHRASE / FIELD / TOKEN
+FIELD = TOKEN {SPACE} <EQUALS> {SPACE} ( TOKEN | PHRASE )
+
+<PHRASE> = <'"'> #'[^"]+' <'"'>
+EQUALS = ":" | "="
+NOT = <'NOT' | '!' >
+AND = <'AND' | '&' | '&&'>
+OR = <'OR' | '|' | '||'>
+<TOKEN> = !( OPERATOR | NOT ) #'[^\s"|&:=()]+'
+<SPACE> = <#'\s+'>

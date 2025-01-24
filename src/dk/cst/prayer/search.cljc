@@ -7,18 +7,49 @@
   #?(:clj  (slurp "resources/search.ebnf")
      :cljs (resource/inline "lucene.ebnf")))
 
+(defn tag
+  [kset]
+  (fn [x]
+    (when (vector? x)
+      (get kset (first x)))))
+
+(defn interpret*
+  [parse-tree]
+  (when parse-tree
+    (prn parse-tree)
+    (let [[_ [k & vs]] parse-tree]
+      (case k
+        :QUIRK (remove (tag #{:IGNORED}) vs)
+        :NEGATION vs
+        :EXPRESSION vs
+        :VALUES vs))))
+
+(defn interpret
+  [parse-tree]
+  (when parse-tree
+    (prn parse-tree)
+    (let [[_ [k & vs]] parse-tree]
+      (case k
+        :QUIRK (remove (tag #{:IGNORED}) vs)
+        :NEGATION vs
+        :EXPRESSION vs
+        :VALUES vs))))
+
 (defn parse
   [query]
   (some-> (str/trim query)
           (not-empty)
-          (parse*)))
+          (parse*)
+          ;; TODO: only keep the interpret step here while testing
+          (interpret)))
 
 (comment
   (parse "!(this that)")
   (parse "this that")
   (parse "NOT that this")
   (parse "thing NOT (that this)")
-  (parse "NOT AND this that")
+  (parse "NOT AND this that")                               ; TODO: NOT should be preserved
+  (parse "AND this AND that")                               ; TODO
   (parse "AND&|")
   (parse "NOT NOT NOT")
   (parse "NOT AND")

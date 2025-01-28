@@ -1,11 +1,13 @@
 (ns dk.cst.prayer.db
   (:require [clojure.set :as set]
             [clojure.string :as str]
+            [clojure.zip :as zip]
             [datalevin.core :as d]
             [clojure.java.io :as io]
             [dk.cst.xml-hiccup :as xh]
             [dk.cst.prayer.static :as static]
-            [dk.cst.prayer.tei :as tei])
+            [dk.cst.prayer.tei :as tei]
+            [hickory.zip :as hzip])
   (:import [java.io File]))
 
 (def db-path
@@ -107,6 +109,10 @@
           nil
           vs))
 
+(defn search-union
+  [db vs]
+  (apply set/union (map #(search-intersection db %) vs)))
+
 ;; TODO: implement common parsable search query params
 (defn search
   [db query]
@@ -125,7 +131,65 @@
           (update-vals (fn [kvs]
                          (sort (map first kvs))))))
 
+(defn tag
+  [kset]
+  (fn [x]
+    (when (vector? x)
+      (get kset (first x)))))
+
+;; https://stackoverflow.com/questions/16805630/and-or-order-of-operations
+(defn expression-union
+  "Reduce the `vs` of an expression to groups of values separated by OR."
+  [vs]
+  (->> (partition-by (comp boolean #{[:OR]}) vs)
+       (take-nth 2)
+       (map #(remove #{[:AND]} %))))
+
+(defn simplify
+  ([x]
+   (cond
+     (vector? x)
+     (let [[k & vs] x]
+       (case k
+         :QUIRK (->> (remove (tag #{:IGNORED}) vs)
+                     (map simplify))
+         :FIELD {(first vs) (second vs)}
+         :NEGATION (into #{} (map simplify vs))
+         :EXPRESSION (map simplify (expression-union vs))
+         :VALUES (map simplify vs)
+         ;; else
+         (simplify vs)))
+
+     (string? x)
+     x
+
+     :else
+     (map simplify x))))
+
+(defn isearch
+  [hiccup]
+  (let [result (atom [])]
+    (loop [loc (hzip/hiccup-zip hiccup)]
+      (if (zip/end? loc)
+        (not-empty @result)
+        (recur (zip/next (do (let [node (zip/node loc)]
+                               (when (vector? node)
+                                 (let [[k & vs] node]
+                                   (case k
+                                     :QUIRK (->> (remove (tag #{:IGNORED}) vs)
+                                                 (map simplify))
+                                     :FIELD {(first vs) (second vs)}
+                                     :NEGATION (into #{} (map simplify vs))
+                                     :EXPRESSION (map simplify (expression-union vs))
+                                     :VALUES (map simplify vs)
+                                     ;; else
+                                     (simplify vs)))
+                                 (swap! result conj (zip/node loc))))
+                             loc)))))))
+
 (comment
+  (isearch (dk.cst.prayer.search/parse "this OR that"))
+
   (search (d/db (d/get-conn db-path static/schema)) "geist")
   (xml-files files-path)
   (build-db! files-path db-path)

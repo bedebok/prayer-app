@@ -8,19 +8,6 @@
   #?(:clj  (slurp "resources/search.ebnf")
      :cljs (resource/inline "lucene.ebnf")))
 
-(defn tag
-  [kset]
-  (fn [x]
-    (when (vector? x)
-      (get kset (first x)))))
-
-(defn value-type
-  [v]
-  (prn 'value-type v)
-  (if (vector? v)
-    (first v)
-    :TEXT))
-
 (defn parse
   [query]
   (some-> (str/trim query)
@@ -29,6 +16,12 @@
 
 (def parse'
   (comp second parse))
+
+(defn tag
+  [kset]
+  (fn [x]
+    (when (vector? x)
+      (get kset (first x)))))
 
 ;; https://stackoverflow.com/questions/16805630/and-or-order-of-operations
 (defn expression-union

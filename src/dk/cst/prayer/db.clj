@@ -71,6 +71,7 @@
   (or (not-empty (if results
                    (set/intersection results more-results)
                    more-results))
+      ;; Abort when the intersection is empty.
       (reduced nil)))
 
 ;; The phrase search implementation: Datalevin's existing full-text search is
@@ -83,29 +84,33 @@
       (re-pattern)
       (re-find s)))
 
+(defn text-search
+  "Do a case-insensitive full-text search in `db` for the token/phrase `s`."
+  [db s]
+  (when-let [results (find-tokens db s)]                    ; find tokens
+    (if (re-find #"\s" s)                                   ; check if phrase
+      (set (filter #(has-phrase s (first %)) results))      ; filter phrases
+      results)))                                            ; else token result
+
 ;; We need to build this extra bit of machinery to do full-text searches as
 ;;   1) Datalevin currently doesn't support searching for phrases and
 ;;   2) defaults to the UNION of results, not the INTERSECTION.
-(defn full-text-intersection
-  "Find matching entities intersection in `db` for `strs` via full-text search,
-  i.e. `strs` are the strings in the query 's1 AND s2 AND s3' and so on.
-
-  Matching is case-insensitive and searching for phrases is supported."
-  [db strs]
+(defn search-intersection
+  "Find the matching entities intersection in `db` for search query values `vs`,
+  i.e. `vs` are the values in a query such as 'v1 AND v2 AND v3'."
+  [db vs]
   (reduce (fn [acc s]
-            (or (when-let [results (find-tokens db s)]
-                  (letfn [(hit? [[text]] (has-phrase s text))]
-                    (result-intersection acc (if (re-find #"\s" s)
-                                               (set (filter hit? results))
-                                               results))))
+            (or (some->> (text-search db s)
+                         (result-intersection acc))
+                ;; Abort when the intersection is empty.
                 (reduced nil)))
           nil
-          strs))
+          vs))
 
 ;; TODO: implement common parsable search query params
 (defn search
   [db query]
-  (some-> (full-text-intersection db [query])
+  (some-> (search-intersection db [query])
           (->> (map (fn [[?e _ ?text]]
                       ;; produce a seq of [?id ?type ?text] vectors
                       (conj (d/q '[:find [?id ?type]
@@ -124,6 +129,9 @@
   (search (d/db (d/get-conn db-path static/schema)) "geist")
   (xml-files files-path)
   (build-db! files-path db-path)
+
+  (search-intersection (d/db (d/get-conn db-path static/schema))
+                       ["grote den herren"])
 
   (-> (io/file "test/Data/Prayers/xml/Holm-A42_032r.xml")
       (xh/parse)
@@ -188,9 +196,6 @@
        (d/db (d/get-conn db-path static/schema))
        1)
 
-  (full-text-intersection (d/db (d/get-conn db-path static/schema))
-                          ["grote den herren"])
-
   ;; Testing phrase search and "AND".
   (let [db (-> (d/empty-db "/tmp/mydb"
                            {:text {:db/valueType :db.type/string
@@ -205,7 +210,7 @@
                   {:db/id 3,
                    :other 789
                    :text  "Moby Dick is a story of a whale and a man obsessed."}]))]
-    (full-text-intersection db ["Mary" "little lamb" "red as fire"]))
+    (search-intersection db ["Mary" "little lamb" "red as fire"]))
 
   (let [db (-> (d/empty-db "/tmp/mydb"
                            {:text {:db/valueType :db.type/string

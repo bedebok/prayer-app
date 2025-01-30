@@ -335,7 +335,7 @@
     m))
 
 (comment
-  (tei-description (tei-ref :textLang))
+  (tei-description (tei-ref :idno))
   (tei-description (tei-ref :rubric))
 
   ;; test text conversion on a full HTML document

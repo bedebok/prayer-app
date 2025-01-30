@@ -103,19 +103,19 @@
 (deftest test-simplify
   (testing "intersections in intersections should be collapsed"
     (is (= (simplify (parse "1 & ( 2 & (3 & 4) )"))
-           [:QUERY [:INTERSECTION "1" "2" "3" "4"]])))
+           [:INTERSECTION "1" "2" "3" "4"])))
   (testing "double/multiple negations should be collapsed appropriately"
     (is (= (simplify (parse "(1 2 3)"))
            (simplify (parse "!!(1 2 3)"))
            (simplify (parse "!!!!(1 2 3)"))
-           [:QUERY [:INTERSECTION "1" "2" "3"]]))
+           [:INTERSECTION "1" "2" "3"]))
     (is (= (simplify (parse "!(1 2 3)"))
            (simplify (parse "!!!(1 2 3)"))
            (simplify (parse "!!!!!(1 2 3)"))
-           [:QUERY [:NEGATION [:INTERSECTION "1" "2" "3"]]]))
+           [:INTERSECTION [:NEGATION [:INTERSECTION "1" "2" "3"]]]))
     (testing "including complex expressions")
     (is (= (simplify (parse "!!(1 | (!2 3))"))
-           [:QUERY [:UNION "1" [:INTERSECTION [:NEGATION "2"] "3"]]])))
+           [:INTERSECTION [:UNION "1" [:INTERSECTION [:NEGATION "2"] "3"]]])))
   (testing "quirks should be collapsed and misplaced content removed"
     (is (= (simplify (parse "| 1 | 2 & 3 &"))
-           [:QUERY [:UNION "1" [:INTERSECTION "2" "3"]]]))))
+           [:INTERSECTION [:UNION "1" [:INTERSECTION "2" "3"]]]))))

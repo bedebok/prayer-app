@@ -1,13 +1,14 @@
 (ns dk.cst.prayer.db
   (:require [clojure.set :as set]
             [clojure.string :as str]
-            [clojure.zip :as zip]
             [datalevin.core :as d]
+            [datalevin.analyzer :as da]
+            [datalevin.search-utils :as dsu]
             [clojure.java.io :as io]
             [dk.cst.xml-hiccup :as xh]
+            [dk.cst.prayer.search :as search]
             [dk.cst.prayer.static :as static]
-            [dk.cst.prayer.tei :as tei]
-            [hickory.zip :as hzip])
+            [dk.cst.prayer.tei :as tei])
   (:import [java.io File]))
 
 (def db-path
@@ -53,22 +54,123 @@
        (map (fn [id]
               (d/touch (d/entity db id))))))
 
+;; The phrase search implementation: Datalevin's existing full-text search is
+;; augmented with a fairly loose regex search for the required phrase.
 ;; NOTE: Datalevin returns the UNION of results rather than the INTERSECTION,
 ;;       e.g. the query "this that" is equivalent to "this OR that".
 ;;       It also doesn't support phrase search (only token search is supported),
 ;;       so the phrase "\"this that\"" returns the equivalent of the UNION of
 ;;       results of searching for either "this" or "that".
-(defn find-tokens
-  [db s]
-  (->> s
-       (d/q '[:find ?v ?e ?a
-              :in $ ?q
-              :where [(fulltext $ ?q) [[?e ?a ?v]]]]
-            db)
+(defn contains-phrase
+  "Does the string `s` contain the `phrase` (case-insensitive)."
+  [s phrase]
+  (-> (str "(?i)" phrase)                                   ; case-insensitive
+      (str/replace #"\s+" "\\\\s")                          ; whitespace-insensitive
+      (re-pattern)
+      (re-find s)
+      (boolean)))
+
+(defn operand-type
+  [v]
+  (if (string? v)
+    :text
+    (first v)))
+
+(defn enclose-not
+  [triple]
+  (list 'not triple))
+
+(defn negation->intersection
+  [negation-vec]
+  (assoc negation-vec 0 :INTERSECTION))
+
+(declare intersection->triples)
+
+(defn add-negations
+  "Add `negations` from a search query AST to the coll of datalog `triples`.
+  This is used to build a datalog query."
+  [triples negations]
+  (concat
+    triples
+    (if (= (count negations) 1)
+      (->> (first negations)
+           (negation->intersection)
+           (intersection->triples)
+           (map enclose-not))
+      (for [neg negations]
+        (->> (negation->intersection neg)
+             (intersection->triples)
+             (map enclose-not)
+             (cons 'and))))))
+
+;; TODO: full-text negations
+(defn intersection->triples
+  "Convert an `intersection` element from the search query AST into datalog
+  triples to be used in a datalog query.
+
+  Unions/or-clauses found within the intersection are set aside as metadata."
+  [[_ & vs :as intersection]]
+  (let [{:keys [text FIELD NEGATION UNION]} (group-by operand-type vs)]
+    (cond-> []
+
+      ;; NOTE: there's no explicit handling of INTERSECTION, as it is removed
+      ;; during the assumed simplify call which converts the raw search query
+      ;; parse tree into an AST.
+
+      text (concat
+             (for [s text]
+               [(list 'fulltext '$ s) '[[?e ?a ?text]]])
+
+             ;; Phrase matching is added for every multi-token search string.
+             ;; This will ensure that entire phrases are matched, not just the
+             ;; UNION of tokens in the search string which is what Datalevin
+             ;; defaults to.
+             (for [phrase (filter #(re-find #"\s" %) text)]
+               [(list 'contains-phrase '?text phrase)]))
+
+      ;; Fields are only included when they match a known field type.
+      FIELD (concat (->> (for [[_ k v] FIELD]
+                           (when-let [a (static/field->attribute k)]
+                             ['?e a v]))
+                         (remove nil?)))
+
+      ;; Negations are just triple intersections enclosed with (not ...).
+      NEGATION (add-negations NEGATION)
+
+      ;; Unions/or-clauses are not included in the initial datalog query.
+      ;; Instead, they are set aside for subsequent queries that will run
+      ;; sequentially. The union of every query result set is returned instead.
+      UNION (with-meta {:UNION UNION}))))
+
+(defn build-query
+  "Build a datalog query from a coll of `triples`."
+  [triples]
+  (into '[:find ?text ?e
+          :in $
+          :where
+          [?e :bedebok/text ?text]]
+        triples))
+
+(defn search-intersection
+  "Query the `db` for the `intersection-ast`."
+  [db intersection-ast]
+  (-> (intersection->triples intersection-ast)
+      (build-query)
+      (d/q db)))
+
+(defn search-union
+  "Query the `db` sequentially for each part of the `union-ast`, given a
+  `preliminary-result` set of triples, e.g. from the existing search."
+  [db preliminary-result [_ & vs :as union-ast]]
+  (->> (for [v vs]
+         [:INTERSECTION v])
+       (map (partial search-intersection db))
+       (apply set/union preliminary-result)
        (not-empty)))
 
 ;; Used to combine search results into their intersection (e.g. this AND that).
-(defn- result-intersection
+(defn result-intersection
+  "Helper fn to combine search `results` and `more-results` in an intersection."
   [results more-results]
   (or (not-empty (if results
                    (set/intersection results more-results)
@@ -76,121 +178,75 @@
       ;; Abort when the intersection is empty.
       (reduced nil)))
 
-;; The phrase search implementation: Datalevin's existing full-text search is
-;; augmented with a fairly loose regex search for the required phrase.
-(defn has-phrase
-  "Does the string `s` contain the `phrase` (case-insensitive)."
-  [phrase s]
-  (-> (str "(?i)" phrase)                                   ; case-insensitive
-      (str/replace #"\s+" "\\\\s")                          ; whitespace-insensitive
-      (re-pattern)
-      (re-find s)))
+(defn execute-search-ast
+  "Execute a search query `ast` in `db`."
+  [db ast]
+  (let [triples (intersection->triples ast)
+        run     (fn [triples] (-> triples
+                                  (build-query)
+                                  (d/q db)))]
+    (if-let [or-clauses (:UNION (meta triples))]
+      (->> (map (partial search-union db (run triples)) or-clauses)
+           (reduce result-intersection))
+      (run triples))))
 
-(defn text-search
-  "Do a case-insensitive full-text search in `db` for the token/phrase `s`."
-  [db s]
-  (when-let [results (find-tokens db s)]                    ; find tokens
-    (if (re-find #"\s" s)                                   ; check if phrase
-      (set (filter #(has-phrase s (first %)) results))      ; filter phrases
-      results)))                                            ; else token result
-
-;; We need to build this extra bit of machinery to do full-text searches as
-;;   1) Datalevin currently doesn't support searching for phrases and
-;;   2) defaults to the UNION of results, not the INTERSECTION.
-(defn search-intersection
-  "Find the matching entities intersection in `db` for search query values `vs`,
-  i.e. `vs` are the values in a query such as 'v1 AND v2 AND v3'."
-  [db vs]
-  (reduce (fn [acc s]
-            (or (some->> (text-search db s)
-                         (result-intersection acc))
-                ;; Abort when the intersection is empty.
-                (reduced nil)))
-          nil
-          vs))
-
-(defn search-union
-  [db vs]
-  (apply set/union (map #(search-intersection db %) vs)))
-
-;; TODO: implement common parsable search query params
 (defn search
+  "Parse and execute a search `query` in `db`."
   [db query]
-  (some-> (search-intersection db [query])
-          (->> (map (fn [[?e _ ?text]]
-                      ;; produce a seq of [?id ?type ?text] vectors
-                      (conj (d/q '[:find [?id ?type]
-                                   :in $ ?e
-                                   :where
-                                   [?e :bedebok/type ?type]
-                                   [?e :bedebok/id ?id]]
-                                 db
-                                 ?e)
-                            ?text)))
-               (group-by second))
-          (update-vals (fn [kvs]
-                         (sort (map first kvs))))))
-
-(defn tag
-  [kset]
-  (fn [x]
-    (when (vector? x)
-      (get kset (first x)))))
-
-;; https://stackoverflow.com/questions/16805630/and-or-order-of-operations
-(defn expression-union
-  "Reduce the `vs` of an expression to groups of values separated by OR."
-  [vs]
-  (->> (partition-by (comp boolean #{[:OR]}) vs)
-       (take-nth 2)
-       (map #(remove #{[:AND]} %))))
-
-(defn simplify
-  ([x]
-   (cond
-     (vector? x)
-     (let [[k & vs] x]
-       (case k
-         :QUIRK (->> (remove (tag #{:IGNORED}) vs)
-                     (map simplify))
-         :FIELD {(first vs) (second vs)}
-         :NEGATION (into #{} (map simplify vs))
-         :EXPRESSION (map simplify (expression-union vs))
-         :VALUES (map simplify vs)
-         ;; else
-         (simplify vs)))
-
-     (string? x)
-     x
-
-     :else
-     (map simplify x))))
-
-(defn isearch
-  [hiccup]
-  (let [result (atom [])]
-    (loop [loc (hzip/hiccup-zip hiccup)]
-      (if (zip/end? loc)
-        (not-empty @result)
-        (recur (zip/next (do (let [node (zip/node loc)]
-                               (when (vector? node)
-                                 (let [[k & vs] node]
-                                   (case k
-                                     :QUIRK (->> (remove (tag #{:IGNORED}) vs)
-                                                 (map simplify))
-                                     :FIELD {(first vs) (second vs)}
-                                     :NEGATION (into #{} (map simplify vs))
-                                     :EXPRESSION (map simplify (expression-union vs))
-                                     :VALUES (map simplify vs)
-                                     ;; else
-                                     (simplify vs)))
-                                 (swap! result conj (zip/node loc))))
-                             loc)))))))
+  (execute-search-ast db (search/query->ast query)))
 
 (comment
-  (isearch (dk.cst.prayer.search/parse "this OR that"))
+  (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
+  (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
+  (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")
+  (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" corresp:AM08-0073")
+  (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" | glen")
 
-  (search (d/db (d/get-conn db-path static/schema)) "geist")
+  (defn glen [x] "glen")
+
+
+  (d/q '[:find ?text ?e
+         :in $
+         :where
+         [?e :bedebok/text ?text]
+         (or-join [?e ?text]
+                  (and [(fulltext $ "deme stasaole") [[?e ?a ?text]]]
+                       [(integer? ?text)])
+                  (not [?e :tei/corresp "AM08-0073"]))]
+       (d/db (d/get-conn db-path static/schema)))
+
+  (d/q '[:find ?text ?e
+         :in $
+         :where
+         [?e :bedebok/text ?text]
+         (or-join [?e ?text]
+                  (and [(fulltext $ "deme stasaole") [[?e _ ?text]]]
+                       [(string? ?text)])
+                  (not [?e :tei/corresp "AM08-0073"]))]
+       (d/db (d/get-conn db-path static/schema)))
+
+  (d/q '[:find ?text ?type ?e
+         :in $
+         :where
+         [?e :bedebok/text ?text]
+         [?e :bedebok/type ?type]
+         [(string? ?text)]
+         (not [?e :bedebok/type "text"])
+         (or-join [?e]
+                  [(fulltext $ "gasaslen") [[?e ?a ?text]]
+                   (and [?e :tei/corresp "AM08-0073"]
+                        [?e :tei/title "Magnificat"])])]
+       (d/db (d/get-conn db-path static/schema)))
+
+
+
+
+
+  (search/simplify (search/parse "geist "))
+  (search/simplify (search/parse "AND geist | den"))
+  (search/simplify (search/parse "geist & (field:value | NOT den)"))
+  (search (d/db (d/get-conn db-path static/schema)) "AND geist fiel:glen")
+  (search (d/db (d/get-conn db-path static/schema)) "AND geist & (den | den)")
   (xml-files files-path)
   (build-db! files-path db-path)
 
@@ -274,34 +330,66 @@
                   {:db/id 3,
                    :other 789
                    :text  "Moby Dick is a story of a whale and a man obsessed."}]))]
-    (search-intersection db ["Mary" "little lamb" "red as fire"]))
+    (search-intersection db ["Mary" "little lamb"]))
 
-  (let [db (-> (d/empty-db "/tmp/mydb"
+
+
+
+
+
+
+  ;; TODO: why isn't redef working?? I need to ignore English stop words
+  ;; Combining full-text search with triple patterns
+  (with-redefs [datalevin.analyzer/en-stop-words? (constantly false)]
+    (let [db (-> (d/empty-db "/tmp/mydb"
+                             {:bedebok/text {:db/valueType :db.type/string
+                                             :db/fulltext  true}}
+                             {:search-engine {:analyzer (dsu/create-analyzer {:tokenizer da/en-analyzer})}})
+                 (d/db-with
+                   [{:db/id        1,
+                     :other        123
+                     :bedebok/text "The quick red fox jumped over the lazy red dogs."}
+                    {:db/id        2,
+                     :other        456
+                     :bedebok/text "Mary had a little lamb whose fleece was red as fire."}
+                    {:db/id        3,
+                     :other        789
+                     :bedebok/text "Moby Dick is a story of a whale and a man obsessed."}]))]
+      (d/q '[:find ?text ?e :in $ :where
+             [?e :bedebok/text ?text]
+             [(fulltext $ "red") [[?e ?a ?text]]]
+             #_[(fulltext $ "as") [[?e ?a ?text]]]]
+           db)
+      #_(search db "was red")))
+
+  (let [db (-> (d/empty-db "/tmp/glen"
                            {:text {:db/valueType :db.type/string
-                                   :db/fulltext  true}})
+                                   :db/fulltext  true}}
+                           #_{:search-engine {:analyzer (datalevin.search-utils/create-analyzer {:tokenizer datalevin.analyzer/en-analyzer})}})
                (d/db-with
-                 [{:db/id 1,
-                   :other 123
-                   :text  "The quick red fox jumped over the lazy red dogs."}
-                  {:db/id 2,
-                   :other 456
-                   :text  "Mary had a little lamb whose fleece was red as fire."}
-                  {:db/id 3,
-                   :other 789
-                   :text  "Moby Dick is a story of a whale and a man obsessed."}]))]
-    (d/q '[:find ?e ?other ?text
-           :in $ ?q
+                 [{:db/id 1
+                   :text  "The quick red fox jumped over the lazy red dogs."}]))]
+    (d/q '[:find ?text ?e
+           :in $
            :where
-           [?e :other ?other]
            [?e :text ?text]
-           [(fulltext $ ?q) [[?e ?a ?v]]]]
-         db
-         "asdasdasd red"))
+           [(fulltext $ "red") [[?e ?a ?text]]]]
+         db))
 
-  (d/q '[:find ?e ?type
-         :where
-         [?e :db/doc ?type]]
-       (d/db (d/get-conn db-path static/schema)))
+
+
+
+
+
+
+
+
+
+
+
+
+  (d/q [:find ?text ?e :in $ :where [?e :bedebok/text ?text] [(fulltext $ "red") [[?e ?a ?text]]] [(fulltext $ "as") [[?e ?a ?text]]]]
+       db)
 
   (do
     (d/close (d/get-conn db-path static/schema))

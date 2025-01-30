@@ -15,6 +15,9 @@
    :tei/corresp       {:db/valueType :db.type/string
                        :db/unique    :db.unique/identity
                        :db/doc       (str "Used to reference a text or manuscript within a manuscript or text.")}
+   :tei/idno          {:db/valueType :db.type/string
+                       :db/unique    :db.unique/identity
+                       :db/doc       "<idno> (identifier) supplies any form of identifier used to identify some object, such as a bibliographic item, a person, a title, an organization, etc. in a standardized way. [14.3.1 Basic Principles2.2.4 Publication, Distribution, Licensing, etc.2.2.5 The Series Statement3.12.2.4 Imprint, Size of a Document, and Reprint Information]"}
    :tei/key           {:db/valueType :db.type/string
                        :db/doc       (str "Used to reference canonical works.")}
 
@@ -43,6 +46,12 @@
    :tei/repository    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<repository> (repository) contains the name of a repository within which manuscripts or other objects are stored, possibly forming part of an institution. [11.4 The Manuscript Identifier]"}
+   :tei/support       {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/doc         "<support> (support) contains a description of the materials etc. which make up the physical support for the written part of a manuscript or other object. [11.7.1 Object Description]"}
+   :tei/material      {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/doc         "<material> (material) contains a word or phrase describing the material of which the object being described is composed. [11.3.2 Material and Object Type]"}
 
    :tei/origDate      {:db/cardinality :db.cardinality/one
                        :db/doc         "<origDate> (origin date) contains any form of date, used to identify the date of origin for a manuscript, manuscript part, or other object. [11.3.1 Origination]"}
@@ -108,6 +117,25 @@
                        :db/isComponent true
                        :db/doc         "<ref> (reference) defines a reference to another location, possibly modified by additional text or comment. [3.7 Simple Links and Cross-References17.1 Links]"
                        #_(str "A literary reference.")}})
+
+;; Sorting the results of (zipmap (map name (keys schema)) (keys schema))
+(def field->attribute
+  {"settlement" :tei/settlement
+   #_#_"origDate" :tei/origDate                             ; TODO: subfield
+   "class"      :tei/class
+   "key"        :tei/key
+   "repository" :tei/repository
+   "support"    :tei/support
+   "material"   :tei/material
+   #_#_"locus" :tei/locus                                   ; TODO: subfield
+   #_#_"origPlace" :tei/origPlace                           ; TODO: subfield
+   "name"       :file/name
+   #_#_"dimensions" :tei/dimensions                         ; TODO: subfield
+   "corresp"    :tei/corresp
+   "title"      :tei/title
+   "type"       :bedebok/type
+   #_#_"from" :tei/from                                     ;TODO: locus
+   #_#_"to" :tei/to})                                       ;TODO: locus
 
 (def attr-doc
   (reduce-kv (fn [m k v] (if-let [doc (:db/doc v)]

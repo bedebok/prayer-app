@@ -40,9 +40,22 @@
 (defn simplify
   "Simplify a Hiccup `parse-tree`."
   [parse-tree]
-  (hiccup/reshape parse-tree parse-tree-simplification))
+  (let [inner (second (hiccup/reshape parse-tree parse-tree-simplification))]
+    (if (not= :INTERSECTION (first inner))
+      [:INTERSECTION inner]
+      inner)))
+
+;; TODO: log the error? Or return some kind of debugging output?
+(defn query->ast
+  [query]
+  (try
+    (simplify (parse query))
+    (catch #?(:clj Exception :cljs js/Error) _ nil)))
 
 (comment
+  (query->ast "NOT corresp:AM08-0073")
+  (simplify (parse "NOT corresp:AM08-0073"))
+  (simplify (parse "NOT corresp:AM08-0073 glen"))
 
   (parse "!(this that)")
   (parse "1 2 OR (3 AND 4)")

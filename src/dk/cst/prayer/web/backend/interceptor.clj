@@ -2,6 +2,7 @@
   "Pedestal interceptors for the backend web service."
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
+            [reitit.impl :refer [form-decode]]
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.backend.html :as html]
@@ -113,7 +114,7 @@
   (interceptor
     {:name  ::search
      :enter (fn [{:keys [db request] :as ctx}]
-              (let [query (get-in request [:params :query])
+              (let [query (form-decode (get-in request [:params :query]))
                     res   (db/search db query)]
                 (update
                   ctx :response merge

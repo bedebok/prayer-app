@@ -193,7 +193,11 @@
 (defn search
   "Parse and execute a search `query` in `db`."
   [db query]
-  (execute-search-ast db (search/query->ast query)))
+  (->> (search/query->ast query)
+       (execute-search-ast db)
+       (map (fn [[?text ?e]]
+              (d/pull db [:bedebok/type :bedebok/id] ?e)))
+       (not-empty)))
 
 (comment
   (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
@@ -365,7 +369,7 @@
   (let [db (-> (d/empty-db "/tmp/glen"
                            {:text {:db/valueType :db.type/string
                                    :db/fulltext  true}}
-                           #_{:search-engine {:analyzer (datalevin.search-utils/create-analyzer {:tokenizer datalevin.analyzer/en-analyzer})}})
+                           {:search-engine {:analyzer (datalevin.search-utils/create-analyzer {:tokenizer (datalevin.interpret/inter-fn [x] (datalevin.analyzer/en-analyzer x))})}})
                (d/db-with
                  [{:db/id 1
                    :text  "The quick red fox jumped over the lazy red dogs."}]))]

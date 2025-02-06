@@ -210,6 +210,14 @@
      (for [id ids]
        [:dd [:a {:href (str "/" type "s/" id)} id]])]))
 
+(defn search-view
+  [search-result]
+  (for [[type hits] (group-by :bedebok/type search-result)]
+    [:dl
+     type
+     (for [{:keys [bedebok/id]} hits]
+       [:dd [:a {:href (str "/" type "s/" id)} id]])]))
+
 (defn index-view
   [type index]
   [:ul
@@ -222,7 +230,7 @@
     (condp = name
       ::page/main [:p "main page"]
       ;; TODO: make a proper search view
-      ::page/search (work-view (get-in state [:search (:query params)]))
+      ::page/search (search-view (get-in state [:search (:query params)]))
       ::page/work (work-view (get-in state [:works (:id params)]))
       ::page/text (entity-view (get-in state [:entities (:id params)]))
       ::page/manuscript (entity-view (get-in state [:entities (:id params)]))

@@ -37,6 +37,10 @@
    :tei/title         {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<title> (title) contains a title for any kind of work. [3.12.2.2 Titles, Authors, and Editors2.2.1 The Title Statement2.2.5 The Series Statement]"}
+   :tei/head          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/fulltext    true
+                       :db/doc         "<head> (heading) contains any type of heading, for example the title of a section, or the heading of a list, glossary, manuscript description, etc. [4.2.1 Headings and Trailers]"}
    :tei/settlement    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<settlement> (settlement) contains the name of a settlement such as a city, town, or village identified as a single geo-political or administrative unit. [14.2.3 Place Names]"}
@@ -127,6 +131,7 @@
    "repository" :tei/repository
    "support"    :tei/support
    "material"   :tei/material
+   #_#_"mainLang" :tei/mainLang                             ; TODO: subfield
    #_#_"locus" :tei/locus                                   ; TODO: subfield
    #_#_"origPlace" :tei/origPlace                           ; TODO: subfield
    "name"       :file/name

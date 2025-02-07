@@ -148,7 +148,11 @@
   (into '[:find ?text ?e
           :in $
           :where
-          [?e :bedebok/text ?text]]
+          ;; Note that these required triples essentially limit the results
+          ;; to certain results, e.g if we wanted manuscript items to be
+          ;; directly searchable too we would need to modify this query.
+          (or [?e :bedebok/text ?text]                      ; for texts
+              [?e :tei/head ?text])]                        ; for manuscripts
         triples))
 
 (defn search-intersection
@@ -200,6 +204,7 @@
        (not-empty)))
 
 (comment
+  (search (d/db (d/get-conn db-path static/schema)) "material:parch")
   (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")

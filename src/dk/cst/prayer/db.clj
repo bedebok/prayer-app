@@ -103,6 +103,23 @@
              (map enclose-not)
              (cons 'and))))))
 
+(def field-by-label
+  (update-vals static/labels #(update-keys (set/map-invert %) str/lower-case)))
+
+;; TODO: accept Danish labels too?
+(defn fuzzy-value
+  "Attempt to match a fuzzy input value `v` of the attribute `a` to an already
+  known value of that attribute."
+  [a v]
+  (let [v' (str/upper-case v)]
+    (or
+      (and (get-in static/labels [a v']) v')                ; short-form
+      (get-in field-by-label [a (str/lower-case v)])        ; long-form (label)
+      v)))                                                  ; raw value
+
+(def field->attribute
+  (comp static/field->attribute str/lower-case))
+
 ;; TODO: full-text negations
 (defn intersection->triples
   "Convert an `intersection` element from the search query AST into datalog
@@ -130,8 +147,8 @@
 
       ;; Fields are only included when they match a known field type.
       FIELD (concat (->> (for [[_ k v] FIELD]
-                           (when-let [a (static/field->attribute k)]
-                             ['?e a v]))
+                           (when-let [a (field->attribute k)]
+                             ['?e a (fuzzy-value a v)]))
                          (remove nil?)))
 
       ;; Negations are just triple intersections enclosed with (not ...).

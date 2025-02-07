@@ -10,6 +10,16 @@
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe :refer [href]]))
 
+;; https://stackoverflow.com/questions/5004978/check-if-page-gets-reloaded-or-refreshed-in-javascript#53307588
+(def hard-refresh?
+  (delay
+    (and (exists? js/window.performance.navigation)
+         (= js/window.performance.navigation.type 1)
+         (->> (.getEntriesByType js/window.performance "navigation")
+              (map #(.-type %))
+              (filter #{"reload"})
+              (not-empty)))))
+
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
 (defn on-navigate
@@ -48,14 +58,26 @@
   (render @state)
   (add-watch state ::render (fn [_ _ _ state] (render state)))
 
-  ;; Load old session state ONLY IF we're running the same version of the app.
-  (when-let [hash (.getItem (.-localStorage js/window) "initHash")]
-    (when (not= hash (when (exists? js/initHash) js/initHash))
-      (some-> (.-localStorage js/window)
-              (.getItem "state")
-              (edn/read-string)
-              (assoc :location (:location @state))
-              (->> (reset! state)))))
+  ;; A user-initiated page reload is used as an indicator that any preserved
+  ;; state should be removed from localStorage.
+  (when-let [ls (and (exists? (.-localStorage js/window))
+                     (.-localStorage js/window))]
+    (if hard-refresh?
+      (when-let [chars (some-> ls (.getItem "state") (count))]
+        (println "hard refresh detected -- remove old state:" chars "chars")
+        (doto (.-localStorage js/window)
+          (.removeItem "hash")
+          (.removeItem "state")))
+
+      ;; Otherwise, we attempt to read in any existing state from localStorage.
+      ;; We load this state ONLY WHEN running the exact same version of the app!
+      (when-let [hash (.getItem ls "initHash")]
+        (when (not= hash (when (exists? js/initHash) js/initHash))
+          (some-> ls
+                  (.getItem "state")
+                  (edn/read-string)
+                  (assoc :location (:location @state))
+                  (->> (reset! state)))))))
 
   ;; Store state for next session.
   (js/window.addEventListener

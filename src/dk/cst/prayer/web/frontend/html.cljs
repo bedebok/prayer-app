@@ -14,8 +14,8 @@
 (defn nav
   [state]
   [:nav
-   [:button {:on {:click [::event/reset-state]}}
-    "reset"]
+   #_[:button {:on {:click [::event/reset-state]}}
+      "reset"]
    [:form {:on {:submit [::event/search]}}
     [:input {:type "search"
              :name "query"}]]

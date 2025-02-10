@@ -205,10 +205,13 @@
   (let [triples (intersection->triples ast)
         run     (fn [triples] (-> triples
                                   (build-query)
+                                  (doto prn)
                                   (d/q db)))]
     (if-let [or-clauses (:UNION (meta triples))]
-      (->> (map (partial search-union db (run triples)) or-clauses)
-           (reduce result-intersection))
+      ;; TODO: not applying correctly to or-clauses
+      (do (prn 'or-clauses or-clauses)
+        (->> (map (comp (partial search-union db (run triples))) or-clauses)
+             (reduce result-intersection)))
       (run triples))))
 
 (defn search

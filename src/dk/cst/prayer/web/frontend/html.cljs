@@ -11,20 +11,24 @@
   [x]
   (with-out-str (pprint x)))
 
-(defn nav
-  [state]
-  [:nav
-   #_[:button {:on {:click [::event/reset-state]}}
-      "reset"]
-   [:form {:on {:submit [::event/search]}}
-    [:input {:type "search"
-             :name "query"}]]
-   [:ul
-    [:li [:a {:href "/"} "Main"]]
-    [:li [:a {:href "/texts"} "Texts"]]
-    [:li [:a {:href "/manuscripts"} "Manuscripts"]]]
-   #_[:details [:summary "state"]
-      [:pre (pp state)]]])
+(defn header-view
+  [{:keys [location] :as state}]
+  (let [{:keys [name]} location]
+    [:header.top
+     [:nav
+      [:ul
+       [:li [:a (when-not (= name ::page/main) {:href "/"}) "Main"]]
+       [:li [:a (when-not (= name ::page/text-index) {:href "/texts"}) "Texts"]]
+       [:li [:a (when-not (= name ::page/manuscript-index) {:href "/manuscripts"}) "Manuscripts"]]]
+      [:form {:on {:submit [::event/search]}}
+       [:input {:on          {:focus [::event/select]}
+                :placeholder "search"
+                :type        "search"
+                :name        "query"}]]
+      #_[:button {:on {:click [::event/reset-state]}}
+         "reset"]
+      #_[:details [:summary "state"]
+         [:pre (pp state)]]]]))
 
 (defn node->pages
   [node]
@@ -152,7 +156,7 @@
     (let [data-n (-> pb first second :data-n)]
       (into [:article.page [:header data-n] content]))))
 
-(defn header-view
+(defn page-header-view
   [{:keys [tei/title tei/head] :as entity}]
   [:header
    [:h1 title]
@@ -184,19 +188,19 @@
                             (not-empty)
                             (table-views))]
     (list
-      (header-view entity)
+      (page-header-view entity)
 
       ;; When viewing a text, the pages are centred; when viewing a manuscript,
       ;; the manuscript items are centred.
       (if (= type "text")
-        [:main.text
+        [:article.content.text
          (section "Pages" (pages-view node))
          [:aside.metadata
           (section "General" general)
           (section "Manuscript" manuscript)
           (section "Collation" collation)]]
 
-        [:main.manuscript
+        [:article.content.manuscript
          (section "Manuscript" manuscript)
          [:aside.metadata
           (section "General" general)
@@ -224,23 +228,42 @@
    (for [[e id] index]
      [:li [:a {:href (str "/" type "s/" id)} id]])])
 
+(defn frontpage-view
+  []
+  (list
+    [:h1.brutalist "When " [:br] [:span.big.red "Danes"] [:br] " Prayed in " [:br] [:span.big.yellow "German"]]
+    [:p "This project examines the role of Low German in the transition from Latin to Danish as the primary language of religious devotion."]
+    [:p "A common misconception holds that religious devotion was practiced solely through the medium of Latin until the Reformation. However, devotional books already began to appear in the vernacular in Denmark during the Middle Ages; not only in Danish, but also in another vernacular, Low German."]))
+
 (defn content-view
   [{:keys [location] :as state}]
   (let [{:keys [name params]} location]
-    (condp = name
-      ::page/main [:p "main page"]
-      ;; TODO: make a proper search view
-      ::page/search (search-view (get-in state [:search (:query params)]))
-      ::page/work (work-view (get-in state [:works (:id params)]))
-      ::page/text (entity-view (get-in state [:entities (:id params)]))
-      ::page/manuscript (entity-view (get-in state [:entities (:id params)]))
-      ::page/text-index (index-view "text" (get-in state [:index "text"]))
-      ::page/manuscript-index (index-view "manuscript" (get-in state [:index "manuscript"])))))
+    [:main {:id js/window.location.pathname}
+     (condp = name
+       ::page/main (frontpage-view)
+       ::page/search (search-view (get-in state [:search (:query params)]))
+       ::page/work (work-view (get-in state [:works (:id params)]))
+       ::page/text (entity-view (get-in state [:entities (:id params)]))
+       ::page/manuscript (entity-view (get-in state [:entities (:id params)]))
+       ::page/text-index (index-view "text" (get-in state [:index "text"]))
+       ::page/manuscript-index (index-view "manuscript" (get-in state [:index "manuscript"])))]))
 
 (defn page
   [{:keys [location] :as state}]
   ;; Some kind of ID is needed for replicant to properly re-render
   ;; TODO: is there a better ID?
-  [:div {:id js/window.location.pathname}
-   (nav state)
-   (content-view state)])
+  [:div.container
+   (header-view state)
+   (content-view state)
+   [:footer
+    [:ul.links
+     [:li
+      [:a {:href "https://nors.ku.dk/english/research/projects/when-danes-prayed-in-german/"}
+       "Project page"]]
+     [:li
+      [:a {:href "https://github.com/bedebok/prayer-app"}
+       "Github"]]]
+    [:address
+     "Department of Nordic Studies and Linguistics" [:br]
+     "University of Copenhagen" [:br]
+     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]]])

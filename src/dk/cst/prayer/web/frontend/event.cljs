@@ -8,6 +8,9 @@
   [{:keys [replicant/dom-event replicant/node] :as replicant-data} handler-data]
   (condp = handler-data
     [::reset-state] (swap! state select-keys [:location])
+    [::select] (do
+                 (.preventDefault dom-event)
+                 (.select node))
     [::search] (do
                  (.preventDefault dom-event)
                  (let [{:strs [query]} (->> (new js/FormData node)

@@ -41,12 +41,9 @@
   []
   (rfe/start! router on-navigate {:use-fragment false}))
 
-(def el
-  (js/document.getElementById "app"))
-
 (defn render
   [state]
-  (d/render el (html/page state)))
+  (d/render js/document.body (html/page state)))
 
 (defn ^:dev/after-load init!
   []

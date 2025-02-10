@@ -1,7 +1,69 @@
 :root {
-    /* https://github.com/system-fonts/modern-font-stacks#classical-humanist */
-    font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
+    /* https://github.com/system-fonts/modern-font-stacks#old-style */
+    --font-family: SortsMillGoudy, 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+
+    font-family: var(--font-family);
     font-weight: normal;
+}
+
+@font-face {
+    font-family: SortsMillGoudy;
+    src: url(/fonts/SortsMillGoudy-Regular.ttf);
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+html {
+    min-height: 100vh;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100vw;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    align-self: center;
+    width: 800px;
+    padding: 64px 32px 32px 32px;
+    border-left: 2px solid black;
+    flex-grow: 1;
+}
+
+footer {
+    display: flex;
+    align-items: flex-begin;
+    justify-content: space-between;
+    border-top: 2px solid black;
+    border-right: 6px solid black;
+    align-self: center;
+    width: 796px;
+    padding: 32px;
+}
+
+address {
+    text-align: right;
+    padding-left: 16px;
+    font-size: 14px;
+    font-style: normal;
+    letter-spacing: 0.5px;
+    word-spacing: 2px;
+    color: black;
+    line-height: 1.8;
 }
 
 section.pages {
@@ -12,9 +74,11 @@ section.pages {
 }
 
 article.page {
-    border: 1px solid black;
+    border: 2px solid black;
+    border-right-width: 6px;
     min-width: fit-content;
     padding: 2ch;
+    font-size: 18px;
 }
 
 article.page + article.page {
@@ -35,12 +99,17 @@ table {
 }
 
 tr:not(:last-child) {
-  border-bottom: 1px solid rgba(0,0,0,0.33);
+  border-bottom: 0.5px solid black;
+}
+
+table {
+    border-left: none;
+    border: 2px solid black;
+    border-right-width: 6px;
+    font-size: 18px;
 }
 
 table table {
-    border-top: none;
-    border-bottom: none;
     margin-top: 24px;
     margin-bottom: 32px;
 }
@@ -70,10 +139,11 @@ tbody.collationItem {
 }
 
 /* TODO: read up on CSS grid... or use flexbox instead? */
-main {
+article.content {
     display: grid;
     column-gap: 24px;
     grid-template-columns: auto minmax(auto, 1fr);
+    max-width: 1000px;
 }
 
 pre {
@@ -85,4 +155,157 @@ pre {
 h1, h2, h3, h4, h5, h6 {
     font-variant: small-caps;
     text-align: center;
+}
+
+/* TODO: experimental, figure out best method for achieving this across display sizes */
+h1.brutalist {
+    font-size: 80px;
+    letter-spacing: 8px;
+    line-height: 1.2;
+    text-align: center;
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.big {
+    font-size: 150%;
+}
+
+.red {
+    color: #DD2211;
+}
+
+.yellow {
+    color: #FF9922;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.8;
+    letter-spacing: 1px;
+    text-align: justify;
+    text-justify: inter-word;
+    margin: 0;
+}
+
+* + p {
+    margin-top: 24px;
+}
+
+header.top {
+    border-bottom: 6px solid black;
+}
+
+nav {
+    display: flex;
+    align-items: stretch;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+nav a {
+    color: black;
+    text-decoration: none;
+    font-variant: small-caps;
+}
+
+nav a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+nav ul {
+    display: flex;
+    border-right: 2px solid black;
+    margin: 0 auto 0 0;
+    padding: 32px 8px 8px 16px;
+}
+
+nav ul li {
+    display: inline-block;
+    margin-right: 16px;
+    font-size: 24px;
+}
+
+nav form {
+    flex-grow: 1;
+    display: flex;
+}
+
+nav input[type=search] {
+   flex-grow: 1;
+   width: 0;
+   font-size: 24px;
+   padding: 32px 8px 8px 16px;
+   border: none;
+   align-self: stretch;
+   font-family: var(--font-family);
+   line-height: 1;
+}
+
+nav input[type=search]:not(:focus),
+nav input[type=search]::placeholder
+{
+    color: #00000033;
+}
+
+ul.links {
+    list-style-type: none;
+    font-size: 24px;
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+}
+
+ul.links li {
+    padding-left: 4px;
+}
+
+ul.links a {
+    color: black;
+    text-decoration: none;
+    font-variant: small-caps;
+}
+
+ul.links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+@media (width <= 900px) {
+    main {
+        width: auto;
+        align-self: stretch;
+        border-left: none;}
+    footer {
+        border-right: none;
+        width: auto;
+        align-self: stretch;
+    }
+}
+
+/* TODO: realign grid too*/
+@media (width <= 600px) {
+    nav ul li {
+        display: inline-block;
+        margin-right: 12px;
+        font-size: 18px;
+    }
+    nav input[type=search] {
+       flex-grow: 1;
+       font-size: 18px;
+       padding: 32px 8px 8px 12px;
+    }
+    h1.brutalist {
+        font-size: 52px;
+    }
+    ul.links {
+        font-size: 18px;
+    }
+    address {
+        font-size: 10px;
+    }
+    p, article.page, table {
+        font-size: 16px;
+    }
 }

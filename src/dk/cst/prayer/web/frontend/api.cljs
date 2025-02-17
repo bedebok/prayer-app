@@ -1,13 +1,29 @@
 (ns dk.cst.prayer.web.frontend.api
   "Handlers for Reitit frontend routing matches."
-  (:require [dk.cst.prayer.web :as web]
+  (:require [dk.cst.hiccup-tools.elem :as e]
+            [dk.cst.hiccup-tools.hiccup :as h]
+            [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.frontend.state :refer [state]]
             [lambdaisland.fetch :as fetch]))
 
+(defn node->pages
+  "Paginate a TEI Hiccup node."
+  [node]
+  (as-> (h/get node :tei-body) $
+        (h/split :tei-pb $ :retain :between)
+        (e/children $)
+        (partition-by #(= :tei-pb (first %)) $)
+        (partition 2 $)))
+
 (defn add-entity
-  [id e]
-  (when-not (empty? e)
-    (swap! state assoc-in [:entities id] e)))
+  [id entity]
+  (when-not (empty? entity)
+    (swap! state assoc-in [:entities id] entity)
+
+    ;; Generate paginated content and cache it for subsequent views.
+    (when (= "text" (:bedebok/type entity))
+      (swap! state assoc-in [:cached id :pages]
+             (node->pages (:file/node entity))))))
 
 (defn add-work
   [id work]

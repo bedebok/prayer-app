@@ -42,8 +42,8 @@
   (rfe/start! router on-navigate {:use-fragment false}))
 
 (defn render
-  [state]
-  (d/render js/document.body (html/page state)))
+  []
+  (d/render js/document.body (html/page)))
 
 (defn ^:dev/after-load init!
   []
@@ -52,8 +52,8 @@
 
   ;; Replicant (rendering and events).
   (d/set-dispatch! event/handle)
-  (render @state)
-  (add-watch state ::render (fn [_ _ _ state] (render state)))
+  (render)
+  (add-watch state ::render (fn [_ _ _ _new-state] (render)))
 
   ;; A user-initiated page reload is used as an indicator that any preserved
   ;; state should be removed from localStorage.

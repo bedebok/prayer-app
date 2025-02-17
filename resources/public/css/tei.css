@@ -4,21 +4,25 @@ tei-div {
 
 tei-p, tei-rubric, tei-incipit, tei-explicit {
     display: block;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 12px 0;
+    word-spacing: 4px;
 }
 
 /* Headings */
 [data-type=rubric] {
     display: block;
-    font-size: 1.5em;
-    margin-top: 0.83em;
-    margin-bottom: 0.83em;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
     font-weight: bold;
+    font-variant: small-caps;
+}
+
+[data-type=rubric] * {
+    font-size: 32px;
+}
+
+/* Remove this pagination artifact. */
+tei-p > br:first-child {
+    display: none;
 }
 
 [data-rend~=blue] { color: blue; }

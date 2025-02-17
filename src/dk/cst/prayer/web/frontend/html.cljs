@@ -1,9 +1,11 @@
 (ns dk.cst.prayer.web.frontend.html
   "Frontend HTML-generation, returning Replicant-style Hiccup."
   (:require [cljs.pprint :refer [pprint]]
+            [clojure.string :as str]
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as page]
             [dk.cst.prayer.web.frontend.event :as event]
+            [dk.cst.prayer.web.frontend.state :refer [state]]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.elem :as e]))
 
@@ -11,32 +13,27 @@
   [x]
   (with-out-str (pprint x)))
 
-(defn header-view
-  [{:keys [location] :as state}]
-  (let [{:keys [name]} location]
+(defn dev-view []
+  [:div
+   [:button {:on {:click [::event/reset-state]}}
+    "reset"]
+   [:details [:summary "state"]
+    [:pre (pp (dissoc @state :entities :cached))]]])
+
+(defn header-view []
+  (let [{:keys [location]} @state
+        {:keys [name]} location]
     [:header.top
      [:nav
       [:ul
-       [:li [:a (when-not (= name ::page/main) {:href "/"}) "Main"]]
+       [:li [:a (when-not (= name ::page/main) {:href "/"}) "Home"]]
        [:li [:a (when-not (= name ::page/text-index) {:href "/texts"}) "Texts"]]
        [:li [:a (when-not (= name ::page/manuscript-index) {:href "/manuscripts"}) "Manuscripts"]]]
       [:form {:on {:submit [::event/search]}}
        [:input {:on          {:focus [::event/select]}
                 :placeholder "search"
                 :type        "search"
-                :name        "query"}]]
-      #_[:button {:on {:click [::event/reset-state]}}
-         "reset"]
-      #_[:details [:summary "state"]
-         [:pre (pp state)]]]]))
-
-(defn node->pages
-  [node]
-  (as-> (h/get node :tei-body) $
-        (h/split :tei-pb $ :retain :between)
-        (e/children $)
-        (partition-by #(= :tei-pb (first %)) $)
-        (partition 2 $)))
+                :name        "query"}]]]]))
 
 (defn locus-view
   [[from to]]
@@ -132,15 +129,23 @@
     true (dissoc :db/id :file/node :tei/from :tei/to)
     (or from to) (assoc :tei/locus [from to])))
 
+(declare table-views)
+
 (defn table-view
-  [{:keys [bedebok/type db/id] :as m}]
+  [{:keys [bedebok/type db/id tei/locus] :as m}]
   (let [metadata-tr-view' (partial table-tr-view type)
         entity'           (prepare-for-table m)
         table-data        (some-> entity'
-                                  (dissoc :file/node)
+                                  (dissoc :file/node :tei/msItem)
                                   (not-empty))]
-    [:table {:id (str "db-" id)}
-     (map metadata-tr-view' (sort-by first table-data))]))
+    [:table {:id (str "db-" (or id locus))}
+     (map metadata-tr-view' (sort-by first table-data))
+     (when-let [manuscripts (:tei/msItem entity')]
+       [:tr.msitem-row
+        [:td {:colspan 2}
+         [:details
+          [:summary "Parts"]
+          (table-views (map #(assoc % :bedebok/type :tei/msItem) manuscripts))]]])]))
 
 ;; For displaying msItems and collation.
 (defn table-views
@@ -150,11 +155,41 @@
        (sort-by locus-order)
        (map table-view)))
 
+(defn controls-view []
+  (let [{:keys [location] :as state'} @state
+        id         (get-in location [:params :id])
+        pages      (get-in state' [:cached id :pages])
+        page-count (count pages)
+        n          (get-in state' [:user :entities id :n] 0)]
+    [:section.page-controls
+     [:button {:on       {:click [::event/page :backward]}
+               :disabled (= n 0)}
+      "←"]
+     [:select {:default-value n
+               :on            {:change [::event/page]}}
+      (for [i (range page-count)]
+        [:option {:value    i
+                  :selected (= n i)}
+         (inc i) " / " page-count])]
+     [:button {:on       {:click [::event/page :forward]}
+               :disabled (= (inc n) page-count)}
+      "→"]]))
+
+(defn page-view
+  [[pb content]]
+  (let [data-n (-> pb first second :data-n)]
+    (into [:article.page [:header.page-header data-n]
+           [:section.page-content content]])))
+
 (defn pages-view
-  [node]
-  (for [[pb content] (node->pages node)]
-    (let [data-n (-> pb first second :data-n)]
-      (into [:article.page [:header data-n] content]))))
+  [id]
+  (let [{:keys [n]} (get-in @state [:user :entities id])
+        pages (get-in @state [:cached id :pages])]
+    [:section.pages
+     (controls-view)
+     ;; TODO: make the two views toggleable
+     (page-view (nth pages (or n 0)))
+     (map page-view pages)]))
 
 (defn page-header-view
   [{:keys [tei/title tei/head] :as entity}]
@@ -170,7 +205,7 @@
      view]))
 
 (defn entity-view
-  [{:keys [bedebok/type file/node tei/msItem tei/collationItem]
+  [{:keys [bedebok/type tei/msItem tei/collationItem bedebok/id]
     :as   entity}]
   (let [general    (some-> entity
                            (dissoc :tei/title
@@ -194,7 +229,7 @@
       ;; the manuscript items are centred.
       (if (= type "text")
         [:article.content.text
-         (section "Pages" (pages-view node))
+         (section "Pages" (pages-view id))
          [:aside.metadata
           (section "General" general)
           (section "Manuscript" manuscript)
@@ -235,35 +270,37 @@
     [:p "This project examines the role of Low German in the transition from Latin to Danish as the primary language of religious devotion."]
     [:p "A common misconception holds that religious devotion was practiced solely through the medium of Latin until the Reformation. However, devotional books already began to appear in the vernacular in Denmark during the Middle Ages; not only in Danish, but also in another vernacular, Low German."]))
 
-(defn content-view
-  [{:keys [location] :as state}]
-  (let [{:keys [name params]} location]
+(defn content-view []
+  (let [{:keys [location] :as state'} @state
+        {:keys [name params]} location]
     [:main {:id js/window.location.pathname}
      (condp = name
        ::page/main (frontpage-view)
-       ::page/search (search-view (get-in state [:search (:query params)]))
-       ::page/work (work-view (get-in state [:works (:id params)]))
-       ::page/text (entity-view (get-in state [:entities (:id params)]))
-       ::page/manuscript (entity-view (get-in state [:entities (:id params)]))
-       ::page/text-index (index-view "text" (get-in state [:index "text"]))
-       ::page/manuscript-index (index-view "manuscript" (get-in state [:index "manuscript"])))]))
+       ::page/search (search-view (get-in state' [:search (:query params)]))
+       ::page/work (work-view (get-in state' [:works (:id params)]))
+       ::page/text (entity-view (get-in state' [:entities (:id params)]))
+       ::page/manuscript (entity-view (get-in state' [:entities (:id params)]))
+       ::page/text-index (index-view "text" (get-in state' [:index "text"]))
+       ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"])))]))
 
 (defn page
-  [{:keys [location] :as state}]
+  []
   ;; Some kind of ID is needed for replicant to properly re-render
   ;; TODO: is there a better ID?
   [:div.container
-   (header-view state)
-   (content-view state)
+   (header-view)
+   #_(dev-view)
+   (content-view)
    [:footer
+    [:address.grey
+     [:div.big.black "© 2025"]
+     "Department of Nordic Studies and Linguistics" [:br]
+     "University of Copenhagen" [:br]
+     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]
     [:ul.links
      [:li
       [:a {:href "https://nors.ku.dk/english/research/projects/when-danes-prayed-in-german/"}
        "Project page"]]
      [:li
       [:a {:href "https://github.com/bedebok/prayer-app"}
-       "Github"]]]
-    [:address
-     "Department of Nordic Studies and Linguistics" [:br]
-     "University of Copenhagen" [:br]
-     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]]])
+       "Github"]]]]])

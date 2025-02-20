@@ -5,9 +5,7 @@
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as page]
             [dk.cst.prayer.web.frontend.event :as event]
-            [dk.cst.prayer.web.frontend.state :refer [state]]
-            [dk.cst.hiccup-tools.hiccup :as h]
-            [dk.cst.hiccup-tools.elem :as e]))
+            [dk.cst.prayer.web.frontend.state :refer [state]]))
 
 (defn pp
   [x]
@@ -37,7 +35,7 @@
 
 (defn locus-view
   [[from to]]
-  (str from " ⋯ " to))
+  (str from " — " to))
 
 (defn list-view
   [coll]
@@ -90,8 +88,35 @@
             :tei/locus
             (locus-view v)
 
+            :tei/dimensions
+            (let [{:keys [tei/height tei/width]} v
+                  ratio (if (and height width)
+                          (/ height width)
+                          1)]
+              [:table.dimensions
+               [:tr
+                [:td]
+                [:td.dimensions-width width]]
+               [:tr
+                [:td.dimensions-height height]
+                [:div.dimensions-model {:style {:height (* ratio 100)
+                                                :width  100}}]]])
+
+            :tei/origDate
+            (let [{:keys [tei/notAfter tei/notBefore tei/title]} v]
+              (if title
+                (list title [:br] " (c. " notBefore "–" notAfter ")")
+                (str "c. " notBefore "–" notAfter)))
+
+            :tei/origPlace
+            (let [{:keys [tei/key tei/title]} v]
+              ;; TODO: actual search not working correctly
+              ;; TODO: should replace contents of search input too
+              [:a {:href (str "/search/" (str "origPlace%3" key))}
+               title])
+
             ;; Put simple inline tables here.
-            #{:tei/dimensions :tei/origDate :tei/origPlace}
+            #_#_:tei/origPlace
             [:table
              (map (partial table-tr-view k) v)]
 
@@ -126,7 +151,7 @@
   [{:keys [tei/from tei/to]
     :as   m}]
   (cond-> m
-    true (dissoc :db/id :file/node :tei/from :tei/to)
+    true (dissoc :db/id :file/node :tei/from :tei/to :bedebok/id)
     (or from to) (assoc :tei/locus [from to])))
 
 (declare table-views)
@@ -136,16 +161,38 @@
   (let [metadata-tr-view' (partial table-tr-view type)
         entity'           (prepare-for-table m)
         table-data        (some-> entity'
-                                  (dissoc :file/node :tei/msItem)
+                                  (dissoc :file/node
+                                          :tei/msItem
+                                          :tei/collationItem
+                                          :file/name
+                                          :tei/locus)
                                   (not-empty))]
     [:table {:id (str "db-" (or id locus))}
+     (if-let [locus (:tei/locus entity')]
+       [:tr.header-row
+        [:th {:colspan 2
+              :title   (static/attr-doc :tei/locus)}
+         (locus-view locus)]]
+       (if-let [filename (:file/name entity')]
+         [:tr.header-row
+          [:th {:colspan 2
+                :title   (static/attr-doc :file/name)}
+           filename]]
+         [:tr.header-row
+          [:th {:colspan 2}]]))
      (map metadata-tr-view' (sort-by first table-data))
      (when-let [manuscripts (:tei/msItem entity')]
        [:tr.msitem-row
         [:td {:colspan 2}
          [:details
           [:summary "Parts"]
-          (table-views (map #(assoc % :bedebok/type :tei/msItem) manuscripts))]]])]))
+          (table-views (map #(assoc % :bedebok/type :tei/msItem) manuscripts))]]])
+     (when-let [collation (:tei/collationItem entity')]
+       [:tr.collation-row
+        [:td {:colspan 2}
+         [:details
+          [:summary "Parts"]
+          (table-views (map #(assoc % :bedebok/type :tei/collationItem) collation))]]])]))
 
 ;; For displaying msItems and collation.
 (defn table-views
@@ -153,7 +200,8 @@
   (->> ms
        (map prepare-for-table)
        (sort-by locus-order)
-       (map table-view)))
+       (map table-view)
+       (interpose [:div.continuation "︙"])))
 
 (defn controls-view []
   (let [{:keys [location] :as state'} @state
@@ -183,19 +231,38 @@
 
 (defn pages-view
   [id]
-  (let [{:keys [n]} (get-in @state [:user :entities id])
-        pages (get-in @state [:cached id :pages])]
-    [:section.pages
-     (controls-view)
-     ;; TODO: make the two views toggleable
-     (page-view (nth pages (or n 0)))
-     (map page-view pages)]))
+  (let [state'        @state
+        {:keys [n]} (get-in state' [:user :entities id])
+        pages         (get-in state' [:cached id :pages])
+        pages-display (boolean (get-in state' [:user :prefs :pages-display]))]
+    (if pages-display
+      [:section.pages (map page-view pages)]
+      [:section.pages (controls-view) (page-view (nth pages (or n 0)))])))
+
+(defn uncapitalize
+  [s]
+  (str (str/lower-case (subs s 0 1))
+       (subs s 1)))
 
 (defn page-header-view
-  [{:keys [tei/title tei/head] :as entity}]
+  [{:keys [tei/title tei/summary tei/head tei/origin bedebok/type] :as entity}]
   [:header
-   [:h1 title]
-   (when head [:p head])])
+   [:hgroup
+    [:h1 title]
+    (when summary
+      [:p summary])]
+   (when head
+     [:p head])
+   (when origin
+     [:p.origin [:strong "ORIGIN: "] (uncapitalize origin)])
+   (when (= type "text")
+     (let [pages-display (boolean (get-in @state [:user :prefs :pages-display]))]
+       [:aside.preferences
+        [:label [:input {:type    "checkbox"
+                         :title   "Toggle single/multi page view"
+                         :checked pages-display
+                         :on      {:change [::event/pages-display]}}]
+         " show all pages"]]))])
 
 (defn- section
   [title view & [attr]]
@@ -208,8 +275,11 @@
   [{:keys [bedebok/type tei/msItem tei/collationItem bedebok/id]
     :as   entity}]
   (let [general    (some-> entity
+                           ;; TODO: why remove stuff both here and in prepare-for-table?
                            (dissoc :tei/title
                                    :tei/head
+                                   :tei/summary
+                                   :tei/origin
                                    :tei/msItem
                                    :tei/collationItem)
                            (not-empty)
@@ -231,15 +301,15 @@
         [:article.content.text
          (section "Pages" (pages-view id))
          [:aside.metadata
-          (section "General" general)
-          (section "Manuscript" manuscript)
-          (section "Collation" collation)]]
+          (section "Miscellaneous" general)
+          (section "Manuscript Item" manuscript)
+          (section "Collation Data" collation)]]
 
         [:article.content.manuscript
-         (section "Manuscript" manuscript)
+         (section "Manuscript Items" manuscript)
          [:aside.metadata
-          (section "General" general)
-          (section "Collation" collation)]]))))
+          (section "Miscellaneous" general)
+          (section "Collation Data" collation)]]))))
 
 (defn work-view
   [work]

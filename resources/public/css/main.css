@@ -11,6 +11,10 @@
     src: url(/fonts/SortsMillGoudy-Regular.ttf);
 }
 
+table [title]:not(a) {
+    cursor: help;
+}
+
 button, select {
     cursor: pointer;
 }
@@ -69,7 +73,6 @@ footer {
 
 address {
     text-align: left;
-    padding: 16px;
     font-size: 12px;
     font-style: normal;
     letter-spacing: 0.5px;
@@ -81,11 +84,52 @@ address {
     margin-right: 24px;
 }
 
+fieldset {
+    border: 2px solid black;
+    border-right-width: 6px;
+    padding: 12px;
+
+}
+
+fieldset legend {
+    padding: 0 6px;
+    font-variant: small-caps;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    border: 2px solid black;
+    width: 20px;
+    height: 20px;
+    background: white;
+    margin-right: 8px;
+    content: "d";
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked::after {
+    content: "✓";
+    font-size: 14px;
+    margin-left: 2px;
+}
+
+aside.preferences {
+    display: flex;
+    justify-content: center;
+}
+
 section.pages {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
-    width: 100%;
     margin: 0 auto;
 }
 
@@ -125,6 +169,7 @@ section.page-controls > *:first-child {
 section.page-controls > select {
     flex-grow: 1;
     text-align: center;
+    border-radius: 0;
 }
 
 section.page-controls > *:last-child {
@@ -179,9 +224,17 @@ table {
     font-size: 18px;
 }
 
+
 table table {
-    margin-top: 24px;
-    margin-bottom: 32px;
+    margin: 12px 0;
+}
+
+.continuation {
+    margin: 24px 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 1;
 }
 
 /* useful for debugging */
@@ -193,6 +246,8 @@ tr > td:first-child {
     text-align: right;
     font-weight: bold;
     font-variant: small-caps;
+    border-right: 0.5px solid black;
+    width: 80px;
 }
 
 tr td:last-child {
@@ -203,6 +258,16 @@ tr td:last-child {
 
 td, th {
     padding: 8px 12px;
+}
+
+th {
+    background: black;
+    color: white;
+    word-spacing: 6px;
+    letter-spacing: 1px;
+    text-align: center;
+    font-weight: normal;
+    height: 26.5px; /* for empty headers */
 }
 
 details > table {
@@ -218,8 +283,8 @@ details > summary {
 /* TODO: read up on CSS grid... or use flexbox instead? */
 article.content {
     display: grid;
-    column-gap: 24px;
-    grid-template-columns: minmax(220px, auto) minmax(180px, auto);
+    column-gap: 32px;
+    grid-template-columns: minmax(220px, auto) minmax(180px, 40%);
     width: 100%;
 }
 
@@ -236,7 +301,7 @@ h1, h2, h3, h4, h5, h6 {
 
 main header h1 {
     margin: 0;
-    font-size:48px;
+    font-size: 48px;
 }
 
 main h2 {
@@ -248,7 +313,15 @@ main section + section {
     margin-top: 48px;
 }
 
+hgroup {
+    margin: 0 auto;
+}
 
+hgroup p {
+    margin-top: 0;
+    text-align: center;
+    font-variant: small-caps;
+}
 
 /* TODO: experimental, figure out best method for achieving this across display sizes */
 h1.brutalist {
@@ -279,6 +352,30 @@ h1.brutalist {
 .black {
      color: black;
  }
+
+table.dimensions, table.dimensions tr,  table.dimensions td {
+    border: none;
+    width: fit-content;
+    text-align: center;
+    padding: 0;
+    margin: 0 0 12px 0;
+    line-height: 1;
+    font-weight: normal;
+}
+
+table.dimensions td.dimensions-height {
+    padding-right: 8px;
+}
+
+table.dimensions td.dimensions-width {
+    padding-bottom: 8px;
+}
+
+.dimensions-model {
+    border: 2px solid black;
+    background: black;
+    background-image: url(/images/stripes.svg);
+}
 
 p {
     font-size: 18px;
@@ -425,8 +522,13 @@ ul.links a:hover {
     }
 }
 
-/* TODO: realign grid too*/
 @media (width <= 600px) {
+    main, footer {
+        padding: 24px;
+    }
+    nav ul {
+        padding: 16px 8px 8px 8px;
+    }
     nav ul li {
         display: inline-block;
         margin-right: 12px;
@@ -435,20 +537,39 @@ ul.links a:hover {
     nav input[type=search] {
        flex-grow: 1;
        font-size: 18px;
-       padding: 32px 8px 8px 12px;
+       padding: 16px 8px 8px 8px;
     }
     h1.brutalist {
         font-size: 52px;
+        margin-top: 24px;
     }
     footer {
         flex-direction: column-reverse;
         align-items: stretch;
     }
-    ul.links {
+    ul.links, address {
         text-align: center;
     }
     address {
-        font-size: 10px;
-        margin: 0;
+        margin-top: 12px;
+    }
+}
+
+@media (width <= 480px) {
+    main, footer {
+        padding: 12px;
+    }
+    nav ul {
+        padding: 12px 6px 6px 6px
+    }
+    nav ul li {
+        font-size: 16px;
+    }
+    nav ul li {
+        margin-right: 8px;
+    }
+    nav input[type=search] {
+       font-size: 16px;
+       padding: 12px 6px 6px 6px
     }
 }

@@ -12,6 +12,7 @@
   [{:keys [replicant/dom-event replicant/node] :as replicant-data} handler-data]
   (condp = (first handler-data)
     ::reset-state (swap! state select-keys [:location])
+    ::pages-display (swap! state update-in [:user :prefs :pages-display] not)
     ::page (let [arg (second handler-data)
                  id  (get-in @state [:location :params :id])]
              (.preventDefault dom-event)

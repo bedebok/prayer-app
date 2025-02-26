@@ -18,11 +18,15 @@
    :tei/idno          {:db/valueType :db.type/string
                        :db/unique    :db.unique/identity
                        :db/doc       "<idno> (identifier) supplies any form of identifier used to identify some object, such as a bibliographic item, a person, a title, an organization, etc. in a standardized way. [14.3.1 Basic Principles2.2.4 Publication, Distribution, Licensing, etc.2.2.5 The Series Statement3.12.2.4 Imprint, Size of a Document, and Reprint Information]"}
-   :tei/key           {:db/valueType :db.type/string
-                       :db/doc       (str "Used to reference canonical works.")}
+   ;;TODO: keep using this?
+   :tei/key           {:db/valueType :db.type/string}
 
    ;; NOTE: keeping doc type separate from :tei/type as that expects a composite tuple.
    :bedebok/type      {:db/valueType :db.type/string}
+   :bedebok/work      {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         (str "Used to reference canonical works appearing across multiple texts.")}
 
    ;; Plain text stored for search.
    :bedebok/text      {:db/valueType   :db.type/string
@@ -41,15 +45,30 @@
                        :db/cardinality :db.cardinality/one
                        :db/fulltext    true
                        :db/doc         "<head> (heading) contains any type of heading, for example the title of a section, or the heading of a list, glossary, manuscript description, etc. [4.2.1 Headings and Trailers]"}
+   :tei/origin        {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/fulltext    true
+                       :db/doc         "<origin> (origin) contains any descriptive or other information concerning the origin of a manuscript, manuscript part, or other object. [11.8 History]"}
+   :tei/provenance    {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/fulltext    true
+                       :db/doc         "<provenance> (provenance) contains any descriptive or other information concerning a single identifiable episode during the history of a manuscript, manuscript part, or other object after its creation but before its acquisition. [11.8 History]"}
    :tei/settlement    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<settlement> (settlement) contains the name of a settlement such as a city, town, or village identified as a single geo-political or administrative unit. [14.2.3 Place Names]"}
    :tei/mainLang      {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
-                       :db/doc         "<textLang> (text language) describes the languages and writing systems identified within the bibliographic work being described, rather than its description. [3.12.2.4 Imprint, Size of a Document, and Reprint Information11.6.6 Languages and Writing Systems]"}
+                       :db/doc         "@mainLang (main language) supplies a code which identifies the chief language used in the bibliographic work."}
+   :tei/otherLangs    {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many
+                       :db/doc         "@otherLangs (other languages) one or more codes identifying any other languages used in the bibliographic work."}
    :tei/repository    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<repository> (repository) contains the name of a repository within which manuscripts or other objects are stored, possibly forming part of an institution. [11.4 The Manuscript Identifier]"}
+   :tei/supportDesc   {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         "<supportDesc> (support description) groups elements describing the physical support for the written part of a manuscript or other object. [11.7.1 Object Description]"}
    :tei/support       {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<support> (support) contains a description of the materials etc. which make up the physical support for the written part of a manuscript or other object. [11.7.1 Object Description]"}
@@ -58,6 +77,8 @@
                        :db/doc         "<material> (material) contains a word or phrase describing the material of which the object being described is composed. [11.3.2 Material and Object Type]"}
 
    :tei/origDate      {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
                        :db/doc         "<origDate> (origin date) contains any form of date, used to identify the date of origin for a manuscript, manuscript part, or other object. [11.3.1 Origination]"}
    :tei/origPlace     {:db/cardinality :db.cardinality/one
                        :db/valueType   :db.type/ref
@@ -75,7 +96,9 @@
    :tei/class         {:db/cardinality :db.cardinality/many
                        :db/valueType   :db.type/string
                        :db/doc         "@class identifies the text types or classifications applicable to this item by pointing to other elements or resources defining the classification concerned."}
+   ;; TODO: make a component?
    :tei/dimensions    {:db/doc "<dimensions> (dimensions) contains a dimensional specification. [11.3.4 Dimensions]"}
+   ;; TODO: make a component?
    :tei/locus         {:db/doc "<locus> (locus) defines a location within a manuscript, manuscript part, or other object typically as a (possibly discontinuous) sequence of folio references. [11.3.5 References to Locations within a Manuscript]"}
    :tei/from          {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one}
@@ -122,23 +145,27 @@
                        :db/doc         "<ref> (reference) defines a reference to another location, possibly modified by additional text or comment. [3.7 Simple Links and Cross-References17.1 Links]"
                        #_(str "A literary reference.")}})
 
-;; Sorting the results of (zipmap (map name (keys schema)) (keys schema))
+
+;; NOTE: the KEYS should ALL be LOWERCASE!!!
+;; (zipmap (map name (keys schema)) (keys schema))
 (def field->attribute
-  {"settlement" :tei/settlement
+  {"settlement"  :tei/settlement
    #_#_"origDate" :tei/origDate                             ; TODO: subfield
-   "class"      :tei/class
-   "key"        :tei/key
-   "repository" :tei/repository
-   "support"    :tei/support
-   "material"   :tei/material
-   #_#_"mainLang" :tei/mainLang                             ; TODO: subfield
+   "class"       :tei/class
+   "key"         :tei/key
+   "repository"  :tei/repository
+   "supportDesc" '[?e :tei/supportDesc ?supportDesc :tei/material]
+   "support"     '[?e :tei/supportDesc ?supportDesc :tei/material]
+   "material"    '[?e :tei/supportDesc ?supportDesc :tei/material]
+   "mainlang"    '[?e :tei/msItem ?msItem :tei/mainLang]
+   "otherlangs"  '[?e :tei/msItem ?msItem :tei/otherLangs]
    #_#_"locus" :tei/locus                                   ; TODO: subfield
-   #_#_"origPlace" :tei/origPlace                           ; TODO: subfield
-   "name"       :file/name
+   "origplace"   '[?e :tei/origPlace ?origPlace :tei/key]
+   "name"        :file/name
    #_#_"dimensions" :tei/dimensions                         ; TODO: subfield
-   "corresp"    :tei/corresp
-   "title"      :tei/title
-   "type"       :bedebok/type
+   "corresp"     :tei/corresp
+   "title"       :tei/title
+   "type"        :bedebok/type
    #_#_"from" :tei/from                                     ;TODO: locus
    #_#_"to" :tei/to})                                       ;TODO: locus
 

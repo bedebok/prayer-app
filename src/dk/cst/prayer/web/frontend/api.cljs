@@ -81,11 +81,7 @@
   (when-not (get-in @state [:index "work"])
     (-> (fetch/get (web/api-path "/api/works"))
         ;; TODO: handle 404 explicitly
-        (.then (fn [resp]
-                 ;; TODO: return kvs from AP
-                 ;;       (currently only keys are returned, not titles)
-                 (let [kvs (zipmap (:body resp) (:body resp))]
-                   (add-index "work" kvs)))))))
+        (.then #(add-index "work" (:body %))))))
 
 (defn handle
   [req handler-data]

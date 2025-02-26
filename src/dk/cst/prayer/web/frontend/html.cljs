@@ -29,10 +29,12 @@
        [:li [:a (when-not (= name ::page/manuscript-index) {:href "/manuscripts"}) "Manuscripts"]]
        [:li [:a (when-not (= name ::page/work-index) {:href "/works"}) "Works"]]]
       [:form {:on {:submit [::event/search]}}
-       [:input {:on          {:focus [::event/select]}
-                :placeholder "search"
-                :type        "search"
-                :name        "query"}]]]]))
+       [:input#searchbar {:on          {:focus [::event/select]}
+                          :value       (when (= name ::page/search)
+                                         (get-in location [:params :query]))
+                          :placeholder "search"
+                          :type        "search"
+                          :name        "query"}]]]]))
 
 (defn locus-view
   [[from to]]
@@ -66,11 +68,21 @@
     (get x y)
     (= x y)))
 
-;; TODO: link up with searches, e.g. :tei/settlement "KBH"?
 (defn label-view
   [k v]
   (let [label (get-in static/labels [k v] (str v))]
     label))
+
+(defn basic-field-search
+  [k v]
+  (if (set? v)
+    (interpose ", " (map (partial basic-field-search k) (sort v)))
+    (let [v' (if (re-find #"\s" v)
+               (str "\"" v "\"")
+               v)]
+      [:a {:title (str "Find more with this field value")
+           :href  (str "/search/" (str (name k) "=" v'))}
+       (label-view k v)])))
 
 (defn table-tr-view
   [bedebok-type [k v]]
@@ -111,23 +123,19 @@
 
             :tei/origPlace
             (let [{:keys [tei/key tei/title]} v]
-              ;; TODO: actual search not working correctly
-              ;; TODO: should replace contents of search input too
-              [:a {:href (str "/search/" (str "origPlace%3" key))}
+              [:a {:href (str "/search/" (str "origPlace=" key))}
                title])
 
-            ;; Put simple inline tables here.
-            #_#_:tei/origPlace
-            [:table
-             (map (partial table-tr-view k) v)]
+            :tei/supportDesc
+            (let [{:keys [tei/support tei/material]} v]
+              [:a {:href (str "/search/" (str "material=" material))}
+               support])
 
-            ;; TODO: support other key types through overloaded :bedebok/type
-            :tei/key
-            (if (= bedebok-type :tei/msItem)
-              [:a {:href  (str "/works/" v)
-                   :title "View documents containing key"}
-               v]
-              v)
+            :bedebok/work
+            (let [{:keys [tei/key tei/title]} v]
+              [:a {:href  (str "/works/" key)
+                   :title "View documents referencing this work"}
+               title])
 
             :tei/corresp
             [:a (if (= bedebok-type "text")
@@ -141,6 +149,14 @@
             [:a {:href  (str "/" bedebok-type "s")
                  :title "View more of this type"}
              v]
+
+            #{:tei/settlement :tei/repository :tei/mainLang :tei/otherLangs}
+            (basic-field-search k v)
+
+            ;; Put simple inline tables here.
+            #_:tei/origPlace
+            #_[:table
+               (map (partial table-tr-view k) v)]
 
             ;; else
             (if (set? v)
@@ -245,8 +261,25 @@
   (str (str/lower-case (subs s 0 1))
        (subs s 1)))
 
+(defn descriptive-view
+  [{:keys [tei/origin tei/provenance] :as entity}]
+  (cond
+    (or origin provenance)
+    [:ul.descriptive
+     (when origin
+       [:li#origin
+        [:strong {:title (static/attr-doc :tei/origin)}
+         "ORIGIN"] ": "
+        (uncapitalize origin)])
+     (when provenance
+       [:li#provenance
+        [:strong {:title (static/attr-doc :tei/provenance)}
+         "PROVENANCE"] ": "
+        (uncapitalize provenance)])]))
+
 (defn page-header-view
-  [{:keys [tei/title tei/summary tei/head tei/origin bedebok/type] :as entity}]
+  [{:keys [tei/title tei/summary tei/head bedebok/type]
+    :as   entity}]
   [:header
    [:hgroup
     [:h1 title]
@@ -254,8 +287,7 @@
       [:p summary])]
    (when head
      [:p head])
-   (when origin
-     [:p.origin [:strong "ORIGIN: "] (uncapitalize origin)])
+   (descriptive-view entity)
    (when (= type "text")
      (let [pages-display (boolean (get-in @state [:user :prefs :pages-display]))]
        [:aside.preferences
@@ -281,6 +313,7 @@
                                    :tei/head
                                    :tei/summary
                                    :tei/origin
+                                   :tei/provenance
                                    :tei/msItem
                                    :tei/collationItem)
                            (not-empty)
@@ -331,8 +364,8 @@
 (defn index-view
   [type index]
   [:ul
-   (for [[e id] (sort-by second index)]
-     [:li [:a {:href (str "/" type "s/" id)} id]])])
+   (for [[k v] (sort-by second index)]
+     [:li [:a {:href (str "/" type "s/" k)} v]])])
 
 (defn frontpage-view
   []

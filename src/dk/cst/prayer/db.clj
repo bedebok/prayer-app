@@ -78,7 +78,11 @@
 
 (defn enclose-not
   [triple]
-  (list 'not triple))
+  (let [{:keys [path-triple?]} (meta triple)]
+    ;; Path triples shouldn't be negated, only the final value triple should!
+    (if path-triple?
+      triple
+      (list 'not triple))))
 
 (defn negation->intersection
   [negation-vec]
@@ -120,6 +124,19 @@
 (def field->attribute
   (comp static/field->attribute str/lower-case))
 
+(defn path->triples
+  "Convert a property `path` into triples."
+  [path]
+  (loop [rem-path path
+         triples  []]
+    (if (> (count rem-path) 3)
+      ;; The triples that form a path leading to the final triple containing the
+      ;; value are marked such that negations will work properly, i.e. only the
+      ;; final triple should ever be negated (see: enclose-not).
+      (let [path-triple (with-meta (subvec rem-path 0 3) {:path-triple? true})]
+        (recur (subvec rem-path 2) (conj triples path-triple)))
+      (conj triples rem-path))))
+
 ;; TODO: full-text negations
 (defn intersection->triples
   "Convert an `intersection` element from the search query AST into datalog
@@ -148,8 +165,11 @@
       ;; Fields are only included when they match a known field type.
       FIELD (concat (->> (for [[_ k v] FIELD]
                            (when-let [a (field->attribute k)]
-                             ['?e a (fuzzy-value a v)]))
-                         (remove nil?)))
+                             (if (vector? a)
+                               (path->triples (conj a (fuzzy-value a v)))
+                               [['?e a (fuzzy-value a v)]])))
+                         (remove nil?)
+                         (apply concat)))
 
       ;; Negations are just triple intersections enclosed with (not ...).
       NEGATION (add-negations NEGATION)
@@ -163,7 +183,7 @@
   "Build a datalog query from a coll of `triples`."
   [triples]
   (into '[:find ?text ?e
-          :in $
+          :in $ %
           :where
           ;; Note that these required triples essentially limit the results
           ;; to certain results, e.g if we wanted manuscript items to be
@@ -172,12 +192,23 @@
               [?e :tei/head ?text])]                        ; for manuscripts
         triples))
 
+(def manuscript-ancestor-rule
+  '[[(ancestor ?msItem ?ancestor)
+     [?ancestor :tei/msItem ?msItem]]
+    [(ancestor ?msItem ?ancestor)
+     [?parent :tei/msItem ?msItem]
+     (ancestor ?parent ?ancestor)]])
+
+(defn run
+  [db triples]
+  (if (not-empty triples)
+    (d/q (build-query triples) db manuscript-ancestor-rule)
+    #{}))
+
 (defn search-intersection
   "Query the `db` for the `intersection-ast`."
   [db intersection-ast]
-  (-> (intersection->triples intersection-ast)
-      (build-query)
-      (d/q db)))
+  (run db (intersection->triples intersection-ast)))
 
 (defn search-union
   "Query the `db` sequentially for each part of the `union-ast`, given a
@@ -202,17 +233,12 @@
 (defn execute-search-ast
   "Execute a search query `ast` in `db`."
   [db ast]
-  (let [triples (intersection->triples ast)
-        run     (fn [triples] (-> triples
-                                  (build-query)
-                                  (doto prn)
-                                  (d/q db)))]
+  (let [triples        (intersection->triples ast)
+        initial-result (run db triples)]
     (if-let [or-clauses (:UNION (meta triples))]
-      ;; TODO: not applying correctly to or-clauses
-      (do (prn 'or-clauses or-clauses)
-        (->> (map (comp (partial search-union db (run triples))) or-clauses)
-             (reduce result-intersection)))
-      (run triples))))
+      (->> (map (comp (partial search-union db initial-result)) or-clauses)
+           (reduce result-intersection))
+      initial-result)))
 
 (defn search
   "Parse and execute a search `query` in `db`."
@@ -224,14 +250,12 @@
        (not-empty)))
 
 (comment
-  (search (d/db (d/get-conn db-path static/schema)) "material:parch")
+  (search (d/db (d/get-conn db-path static/schema)) "otherLangs=lat")
   (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" | glen")
-
-  (defn glen [x] "glen")
 
 
   (d/q '[:find ?text ?e

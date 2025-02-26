@@ -81,44 +81,38 @@
                                   (transito/write-str))}
                     {:status 404}))))}))
 
-(def manuscript-ancestor-rule
-  '[[(ancestor ?msItem ?ancestor)
-     [?ancestor :tei/msItem ?msItem]]
-    [(ancestor ?msItem ?ancestor)
-     [?parent :tei/msItem ?msItem]
-     (ancestor ?parent ?ancestor)]])
-
 (def by-work
   (interceptor
     {:name  ::by-work
      :enter (fn [{:keys [db request] :as ctx}]
-              (let [work (get-in request [:params :work])
-                    res  (-> (d/q '[:find ?id ?type
-                                    :in $ % ?work
-                                    :where
-                                    ;; Fetching relevant entities by searching
-                                    ;; the tree of manuscript items recursively.
-                                    (ancestor ?msItem ?e)
-                                    [?e :bedebok/type ?type]
-                                    (or [?e :bedebok/type "text"]
-                                        [?e :bedebok/type "manuscript"])
-                                    [?msItem :tei/key ?work]
-                                    [?e :bedebok/id ?id]]
-                                  db
-                                  ;; The % added to the :in clause above
-                                  ;; references the rule set provided below.
-                                  manuscript-ancestor-rule
-                                  work)
-                             (->> (group-by second))
-                             (update-vals (fn [kvs]
-                                            (sort (map first kvs)))))]
+              (let [key (get-in request [:params :work])
+                    res (-> (d/q '[:find ?id ?type
+                                   :in $ % ?key
+                                   :where
+                                   ;; Fetching relevant entities by searching
+                                   ;; the tree of manuscript items recursively.
+                                   (ancestor ?msItem ?e)
+                                   [?e :bedebok/type ?type]
+                                   (or [?e :bedebok/type "text"]
+                                       [?e :bedebok/type "manuscript"])
+                                   [?msItem :bedebok/work ?work]
+                                   [?work :tei/key ?key]
+                                   [?e :bedebok/id ?id]]
+                                 db
+                                 ;; The % added to the :in clause above
+                                 ;; references the rule set provided below.
+                                 db/manuscript-ancestor-rule
+                                 key)
+                            (->> (group-by second))
+                            (update-vals (fn [kvs]
+                                           (sort (map first kvs)))))]
                 (basic-response ctx res)))}))
 
 (def works
   (interceptor
     {:name  ::works
      :enter (fn [{:keys [db] :as ctx}]
-              (let [res (d/q '[:find [?work ...]
+              (let [res (d/q '[:find ?key ?title
                                :in $ %
                                :where
                                ;; Fetching relevant entities by searching
@@ -126,11 +120,13 @@
                                (ancestor ?msItem ?e)
                                (or [?e :bedebok/type "text"]
                                    [?e :bedebok/type "manuscript"])
-                               [?msItem :tei/key ?work]]
+                               [?msItem :bedebok/work ?work]
+                               [?work :tei/key ?key]
+                               [?work :tei/title ?title]]
                              db
                              ;; The % added to the :in clause above
                              ;; references the rule set provided below.
-                             manuscript-ancestor-rule)]
+                             db/manuscript-ancestor-rule)]
                 (basic-response ctx res)))}))
 
 (def search
@@ -146,11 +142,12 @@
     {:name  ::by-type
      :enter (fn [{:keys [db request] :as ctx}]
               (let [type (get-in request [:params :type])
-                    res  (d/q '[:find ?e ?id
+                    res  (d/q '[:find ?id ?title
                                 :in $ ?type
                                 :where
                                 [?e :bedebok/type ?type]
-                                [?e :bedebok/id ?id]]
+                                [?e :bedebok/id ?id]
+                                [?e :tei/title ?title]]
                               db
                               type)]
                 (basic-response ctx res)))}))

@@ -79,16 +79,20 @@
 
    [[:textLang {:mainLang true}]
     (fn [node]
-      (let [{:keys [mainLang]} (elem/attr node)]
-        {:tei/mainLang mainLang}))]
+      (let [{:keys [mainLang otherLangs]} (elem/attr node)]
+        (if otherLangs
+          {:tei/mainLang   mainLang
+           :tei/otherLangs (set (str/split (str/trim otherLangs) #"\s"))}
+          {:tei/mainLang mainLang})))]
 
    ;; Capture references to canonical works.
    [:title
     (fn [node]
-      (let [{:keys [key]} (elem/attr node)]
-        ;; TODO: what about the title label?
+      (let [{:keys [key]} (elem/attr node)
+            title (first (elem/children node))]
         (when key
-          {:tei/key key})))]
+          {:bedebok/work {:tei/key   key
+                          :tei/title (or title key)}})))]
 
    [:rubric
     (fn [node]
@@ -152,6 +156,9 @@
    [:head
     (inner-text :tei/head)]
 
+   [:provenance
+    (inner-text :tei/provenance)]
+
    [:summary
     (inner-text :tei/summary)]
 
@@ -177,11 +184,16 @@
 
    [(with-meta (match [:supportDesc {:material true}]) {:on-match :continue})
     (fn [node]
-      (let [{:keys [material]} (elem/attr node)]
-        {:tei/material material}))]
+      (let [{:keys [material]} (elem/attr node)
+            support (->> (elem/children node)
+                         (filter #(and (vector? %)
+                                       (= :support (first %))))
+                         (first))]
+        {:tei/supportDesc {:tei/support  (h/hiccup->text support tei-conversion)
+                           :tei/material material}}))]
 
-   [:support
-    (inner-text :tei/support)]
+   #_[:support
+      (inner-text :tei/support)]
 
    ;; TODO: what is this value? what should be done about it?
    #_[:extent
@@ -335,8 +347,8 @@
     m))
 
 (comment
-  (tei-description (tei-ref :idno))
-  (tei-description (tei-ref :rubric))
+  (tei-description (tei-ref :origin))
+  (tei-description (tei-ref :supportDesc))
 
   ;; test text conversion on a full HTML document
   (-> (tei-ref :sourceDesc)

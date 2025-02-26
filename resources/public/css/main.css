@@ -11,7 +11,7 @@
     src: url(/fonts/SortsMillGoudy-Regular.ttf);
 }
 
-table [title]:not(a) {
+table [title]:not(a), ul.descriptive strong {
     cursor: help;
 }
 
@@ -224,7 +224,6 @@ table {
     font-size: 18px;
 }
 
-
 table table {
     margin: 12px 0;
 }
@@ -377,7 +376,21 @@ table.dimensions td.dimensions-width {
     background-image: url(/images/stripes.svg);
 }
 
-p {
+ul.descriptive {
+    list-style-type: none;
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+ul.descriptive li {
+    padding-left: 4px;
+}
+
+ul.descriptive li + li {
+    margin-top: 4px;
+}
+
+p, ul.descriptive li {
     font-size: 18px;
     line-height: 1.8;
     letter-spacing: 1px;
@@ -387,7 +400,7 @@ p {
 }
 
 * + p {
-    margin-top: 24px;
+    margin-top: 16px;
 }
 
 header.top {
@@ -552,6 +565,9 @@ ul.links a:hover {
     }
     address {
         margin-top: 12px;
+    }
+    ul.descriptive {
+        padding-left: 12px;
     }
 }
 

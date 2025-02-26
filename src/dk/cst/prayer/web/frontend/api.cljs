@@ -75,11 +75,24 @@
         ;; TODO: handle 404 explicitly
         (.then #(add-index type (:body %))))))
 
+(defn fetch-works
+  []
+  ;; TODO: swap built-in fetch transit parsing for transito?
+  (when-not (get-in @state [:index "work"])
+    (-> (fetch/get (web/api-path "/api/works"))
+        ;; TODO: handle 404 explicitly
+        (.then (fn [resp]
+                 ;; TODO: return kvs from AP
+                 ;;       (currently only keys are returned, not titles)
+                 (let [kvs (zipmap (:body resp) (:body resp))]
+                   (add-index "work" kvs)))))))
+
 (defn handle
   [req handler-data]
   (condp = handler-data
     [::fetch-entity] (fetch-entity req)
     [::fetch-work] (fetch-work req)
     [::search] (search req)
+    [::fetch-index "work"] (fetch-works)
     [::fetch-index "text"] (fetch-index "text")
     [::fetch-index "manuscript"] (fetch-index "manuscript")))

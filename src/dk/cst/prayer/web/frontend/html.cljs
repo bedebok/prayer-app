@@ -26,7 +26,8 @@
       [:ul
        [:li [:a (when-not (= name ::page/main) {:href "/"}) "Home"]]
        [:li [:a (when-not (= name ::page/text-index) {:href "/texts"}) "Texts"]]
-       [:li [:a (when-not (= name ::page/manuscript-index) {:href "/manuscripts"}) "Manuscripts"]]]
+       [:li [:a (when-not (= name ::page/manuscript-index) {:href "/manuscripts"}) "Manuscripts"]]
+       [:li [:a (when-not (= name ::page/work-index) {:href "/works"}) "Works"]]]
       [:form {:on {:submit [::event/search]}}
        [:input {:on          {:focus [::event/select]}
                 :placeholder "search"
@@ -330,7 +331,7 @@
 (defn index-view
   [type index]
   [:ul
-   (for [[e id] index]
+   (for [[e id] (sort-by second index)]
      [:li [:a {:href (str "/" type "s/" id)} id]])])
 
 (defn frontpage-view
@@ -351,7 +352,8 @@
        ::page/text (entity-view (get-in state' [:entities (:id params)]))
        ::page/manuscript (entity-view (get-in state' [:entities (:id params)]))
        ::page/text-index (index-view "text" (get-in state' [:index "text"]))
-       ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"])))]))
+       ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
+       ::page/work-index (index-view "work" (get-in state' [:index "work"])))]))
 
 (defn page
   []

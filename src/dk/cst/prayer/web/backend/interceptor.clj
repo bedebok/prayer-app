@@ -11,6 +11,16 @@
             [datalevin.core :as d]
             [dk.cst.prayer.db :as db]))
 
+(defn basic-response
+  [ctx res]
+  (update
+    ctx :response merge
+    (if (not (empty? res))
+      {:status  200
+       :headers {"Content-Type" "application/transit+json"}
+       :body    (transito/write-str res)}
+      {:status 404})))
+
 (def trailing-slash
   (letfn [(remove-trailing-slash
             [s]
@@ -102,13 +112,26 @@
                              (->> (group-by second))
                              (update-vals (fn [kvs]
                                             (sort (map first kvs)))))]
-                (update
-                  ctx :response merge
-                  (if (not (empty? res))
-                    {:status  200
-                     :headers {"Content-Type" "application/transit+json"}
-                     :body    (transito/write-str res)}
-                    {:status 404}))))}))
+                (basic-response ctx res)))}))
+
+(def works
+  (interceptor
+    {:name  ::works
+     :enter (fn [{:keys [db] :as ctx}]
+              (let [res (d/q '[:find [?work ...]
+                               :in $ %
+                               :where
+                               ;; Fetching relevant entities by searching
+                               ;; the tree of manuscript items recursively.
+                               (ancestor ?msItem ?e)
+                               (or [?e :bedebok/type "text"]
+                                   [?e :bedebok/type "manuscript"])
+                               [?msItem :tei/key ?work]]
+                             db
+                             ;; The % added to the :in clause above
+                             ;; references the rule set provided below.
+                             manuscript-ancestor-rule)]
+                (basic-response ctx res)))}))
 
 (def search
   (interceptor
@@ -116,13 +139,7 @@
      :enter (fn [{:keys [db request] :as ctx}]
               (let [query (form-decode (get-in request [:params :query]))
                     res   (db/search db query)]
-                (update
-                  ctx :response merge
-                  (if (not (empty? res))
-                    {:status  200
-                     :headers {"Content-Type" "application/transit+json"}
-                     :body    (transito/write-str res)}
-                    {:status 404}))))}))
+                (basic-response ctx res)))}))
 
 (def by-type
   (interceptor
@@ -136,13 +153,7 @@
                                 [?e :bedebok/id ?id]]
                               db
                               type)]
-                (update
-                  ctx :response merge
-                  (if (not (empty? res))
-                    {:status  200
-                     :headers {"Content-Type" "application/transit+json"}
-                     :body    (transito/write-str (sort-by second res))}
-                    {:status 404}))))}))
+                (basic-response ctx res)))}))
 
 (def app
   (interceptor

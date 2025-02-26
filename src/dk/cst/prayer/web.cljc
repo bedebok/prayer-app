@@ -72,6 +72,8 @@
               :handle [::api/fetch-index "text"]}]
    ["/manuscripts" {:name   ::manuscript-index
                     :handle [::api/fetch-index "manuscript"]}]
+   ["/works" {:name   ::work-index
+              :handle [::api/fetch-index "work"]}]
    ["/search/:query" {:name   ::search
                       :handle [::api/search]}]
    ["/works/:id" {:name   ::work

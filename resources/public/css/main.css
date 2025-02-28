@@ -277,9 +277,9 @@ details > summary {
     text-align: center;
     font-weight: bold;
     font-size: 20px;
+    cursor: pointer;
 }
 
-/* TODO: read up on CSS grid... or use flexbox instead? */
 article.content {
     display: grid;
     column-gap: 32px;

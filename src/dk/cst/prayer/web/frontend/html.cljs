@@ -145,12 +145,17 @@
                    :title "View text"})
              v]
 
-            :bedebok/type
+            #_#_:bedebok/type
             [:a {:href  (str "/" bedebok-type "s")
                  :title "View more of this type"}
              v]
 
-            #{:tei/settlement :tei/repository :tei/mainLang :tei/otherLangs}
+            #{:bedebok/type
+              :tei/class
+              :tei/settlement
+              :tei/repository
+              :tei/mainLang
+              :tei/otherLangs}
             (basic-field-search k v)
 
             ;; Put simple inline tables here.

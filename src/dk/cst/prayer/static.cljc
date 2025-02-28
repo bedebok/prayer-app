@@ -151,7 +151,8 @@
 (def field->attribute
   {"settlement"  :tei/settlement
    #_#_"origDate" :tei/origDate                             ; TODO: subfield
-   "class"       :tei/class
+   "class"       '[?e :tei/msItem ?msItem :tei/class]
+   "work"        '[?e :tei/msItem ?msItem :bedebok/work]
    "key"         :tei/key
    "repository"  :tei/repository
    "supportDesc" '[?e :tei/supportDesc ?supportDesc :tei/material]

@@ -49,10 +49,17 @@
                        :db/cardinality :db.cardinality/one
                        :db/fulltext    true
                        :db/doc         "<origin> (origin) contains any descriptive or other information concerning the origin of a manuscript, manuscript part, or other object. [11.8 History]"}
+   :tei/acquisition   {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/fulltext    true
+                       :db/doc         "<acquisition> (acquisition) contains any descriptive or other information concerning the process by which a manuscript or manuscript part or other object entered the holding institution. [11.8 History]"}
    :tei/provenance    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/fulltext    true
                        :db/doc         "<provenance> (provenance) contains any descriptive or other information concerning a single identifiable episode during the history of a manuscript, manuscript part, or other object after its creation but before its acquisition. [11.8 History]"}
+   :tei/note          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/doc         "<note> (note) contains a note or annotation. [3.9.1 Notes and Simple Annotation2.2.6 The Notes Statement3.12.2.8 Notes and Statement of Language10.3.5.4 Notes within Entries]"}
    :tei/settlement    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<settlement> (settlement) contains the name of a settlement such as a city, town, or village identified as a single geo-political or administrative unit. [14.2.3 Place Names]"}
@@ -93,6 +100,14 @@
                        :db/valueType   :db.type/ref
                        :db/isComponent true
                        :db/doc         "<msItem> (manuscript item) describes an individual work or item within the intellectual content of a manuscript, manuscript part, or other object. [11.6.1 The msItem and msItemStruct Elements]"}
+   :tei/author        {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         "<author> (author) in a bibliographic reference, contains the name(s) of an author, personal or corporate, of a work; for example in the same form as that provided by a recognized bibliographic name authority. [3.12.2.2 Titles, Authors, and Editors2.2.1 The Title Statement]"}
+   :tei/respStmt      {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         "<respStmt> (statement of responsibility) supplies a statement of responsibility for the intellectual content of a text, edition, recording, or series, where the specialized elements for authors, editors, etc. do not suffice or do not apply. May also be used to encode information about individuals or organizations which have played a role in the production or distribution of a bibliographic work. [3.12.2.2 Titles, Authors, and Editors2.2.1 The Title Statement2.2.2 The Edition Statement2.2.5 The Series Statement]"}
    :tei/class         {:db/cardinality :db.cardinality/many
                        :db/valueType   :db.type/string
                        :db/doc         "@class identifies the text types or classifications applicable to this item by pointing to other elements or resources defining the classification concerned."}
@@ -151,15 +166,18 @@
 (def field->attribute
   {"settlement"  :tei/settlement
    #_#_"origDate" :tei/origDate                             ; TODO: subfield
-   "class"       '[?e :tei/msItem ?msItem :tei/class]
-   "work"        '[?e :tei/msItem ?msItem :bedebok/work]
+   "class"       '[?msItem :tei/class]
+   "work"        '[?msItem :bedebok/work]
    "key"         :tei/key
    "repository"  :tei/repository
+   "author"      '[?msItem :tei/author ?author :tei/key]
+   "respStmt"    '[?e :tei/respStmt ?respStmt :tei/key]
+   "resp"        '[?e :tei/respStmt ?respStmt :tei/key]
    "supportDesc" '[?e :tei/supportDesc ?supportDesc :tei/material]
    "support"     '[?e :tei/supportDesc ?supportDesc :tei/material]
    "material"    '[?e :tei/supportDesc ?supportDesc :tei/material]
-   "mainlang"    '[?e :tei/msItem ?msItem :tei/mainLang]
-   "otherlangs"  '[?e :tei/msItem ?msItem :tei/otherLangs]
+   "mainlang"    '[?msItem :tei/mainLang]
+   "otherlangs"  '[?msItem :tei/otherLangs]
    #_#_"locus" :tei/locus                                   ; TODO: subfield
    "origplace"   '[?e :tei/origPlace ?origPlace :tei/key]
    "name"        :file/name

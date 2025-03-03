@@ -9,7 +9,7 @@
 
 (insta/defparser parse*
   #?(:clj  (slurp "resources/search.ebnf")
-     :cljs (resource/inline "lucene.ebnf")))
+     :cljs (resource/inline "search.ebnf")))
 
 (defn parse
   "Parse a search `query` to get a Hiccup parse tree."

@@ -185,6 +185,7 @@
   (into '[:find ?text ?e
           :in $ %
           :where
+          (ancestor ?msItem ?e)
           ;; Note that these required triples essentially limit the results
           ;; to certain results, e.g if we wanted manuscript items to be
           ;; directly searchable too we would need to modify this query.
@@ -250,7 +251,7 @@
        (not-empty)))
 
 (comment
-  (search (d/db (d/get-conn db-path static/schema)) "otherLangs=lat")
+  (search (d/db (d/get-conn db-path static/schema)) "class=antiphone")
   (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")

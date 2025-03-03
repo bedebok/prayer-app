@@ -8,6 +8,19 @@ tei-p, tei-rubric, tei-incipit, tei-explicit {
     word-spacing: 4px;
 }
 
+/* Content added by editor is marked with [...]. */
+tei-ex::before {
+    content: "[";
+    opacity: 0.5;
+    font-weight: 100;
+}
+
+tei-ex::after {
+    content: "]";
+    opacity: 0.5;
+    font-weight: 100;
+}
+
 /* Headings */
 [data-type=rubric] {
     display: block;

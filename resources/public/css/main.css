@@ -287,6 +287,10 @@ article.content {
     width: 100%;
 }
 
+article.list {
+    margin-top: 24px;
+}
+
 pre {
     min-width: 50vw;
     max-width: 67vw;

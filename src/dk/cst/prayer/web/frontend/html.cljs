@@ -2,6 +2,8 @@
   "Frontend HTML-generation, returning Replicant-style Hiccup."
   (:require [cljs.pprint :refer [pprint]]
             [clojure.string :as str]
+            [reitit.impl :refer [form-decode]]
+            [dk.cst.prayer.search :as search]
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as page]
             [dk.cst.prayer.web.frontend.event :as event]
@@ -31,7 +33,20 @@
       [:form {:on {:submit [::event/search]}}
        [:input#searchbar {:on          {:focus [::event/select]}
                           :value       (when (= name ::page/search)
-                                         (get-in location [:params :query]))
+                                         (-> (get-in location [:params :query])
+
+
+
+
+
+                                             ;; TODO: the decoding should occur elsewhere, not here
+
+
+
+
+
+
+                                             (form-decode)))
                           :placeholder "search"
                           :type        "search"
                           :name        "query"}]]]]))
@@ -145,10 +160,10 @@
                    :title "View text"})
              v]
 
-            #_#_:bedebok/type
-            [:a {:href  (str "/" bedebok-type "s")
-                 :title "View more of this type"}
-             v]
+            #_:bedebok/type
+            #_[:a {:href  (str "/" bedebok-type "s")
+                   :title "View more of this type"}
+               v]
 
             #{:bedebok/type
               :tei/class
@@ -351,20 +366,44 @@
           (section "Collation Data" collation)]]))))
 
 (defn work-view
-  [work]
-  (for [[type ids] (sort-by first work)]
-    [:dl
-     type
-     (for [id ids]
-       [:dd [:a {:href (str "/" type "s/" id)} id]])]))
+  [id work]
+  (let [n (count work)]
+    (list
+      ;; TODO: needs a proper label
+      [:header [:h1 id]
+       (case n
+         0 [:p "No documents reference this work."]
+         1 [:p "The following document references this work:"]
+         [:p "The following " n " documents reference this work:"])]
+      [:article.result
+       [:dl.index
+        (for [[type ids] (sort-by first work)]
+          (list
+            [:dt (str/capitalize type)]
+            [:dd
+             [:ul
+              (for [id (sort ids)]
+                [:li [:a {:href (str "/" type "s/" id)} id]])]]))]])))
 
 (defn search-view
-  [search-result]
-  (for [[type hits] (group-by :bedebok/type search-result)]
-    [:dl
-     type
-     (for [{:keys [bedebok/id]} hits]
-       [:dd [:a {:href (str "/" type "s/" id)} id]])]))
+  [query search-result]
+  (let [n (count search-result)]
+    (list
+      [:header [:h1 "Search result"]
+       [:p (str (search/simplify (search/parse query)))]
+       (case n
+         0 [:p "No documents reference this work."]
+         1 [:p "The following document references this work:"]
+         [:p "The following " n " documents reference this work:"])]
+      [:article.result
+       [:dl.index
+        (for [[type hits] (group-by :bedebok/type search-result)]
+          (list
+            [:dt (str/capitalize type)]
+            [:dd
+             [:ul
+              (for [{:keys [bedebok/id]} (sort-by :bedebok/id hits)]
+                [:li [:a {:href (str "/" type "s/" id)} id]])]]))]])))
 
 (defn index-view
   [type index]
@@ -388,14 +427,15 @@
 
 (defn content-view []
   (let [{:keys [location] :as state'} @state
-        {:keys [name params]} location]
+        {:keys [name params]} location
+        {:keys [query id]} params]
     [:main {:id js/window.location.pathname}
      (condp = name
        ::page/main (frontpage-view)
-       ::page/search (search-view (get-in state' [:search (:query params)]))
-       ::page/work (work-view (get-in state' [:works (:id params)]))
-       ::page/text (entity-view (get-in state' [:entities (:id params)]))
-       ::page/manuscript (entity-view (get-in state' [:entities (:id params)]))
+       ::page/search (search-view query (get-in state' [:search query]))
+       ::page/work (work-view id (get-in state' [:works id]))
+       ::page/text (entity-view (get-in state' [:entities id]))
+       ::page/manuscript (entity-view (get-in state' [:entities id]))
        ::page/text-index (index-view "text" (get-in state' [:index "text"]))
        ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
        ::page/work-index (index-view "work" (get-in state' [:index "work"])))]))

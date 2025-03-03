@@ -368,9 +368,16 @@
 
 (defn index-view
   [type index]
-  [:ul
-   (for [[k v] (sort-by second index)]
-     [:li [:a {:href (str "/" type "s/" k)} v]])])
+  (let [letter->kvs (->> (group-by (comp first second) index)
+                         (sort-by first))]
+    [:dl.index
+     (for [[letter kvs] letter->kvs]
+       (list
+         [:dt letter]
+         [:dd
+          [:ul
+           (for [[k v] (sort-by second kvs)]
+             [:li [:a {:href (str "/" type "s/" k)} v]])]]))]))
 
 (defn frontpage-view
   []

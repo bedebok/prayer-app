@@ -49,6 +49,10 @@
                        :db/cardinality :db.cardinality/one
                        :db/fulltext    true
                        :db/doc         "<origin> (origin) contains any descriptive or other information concerning the origin of a manuscript, manuscript part, or other object. [11.8 History]"}
+   :tei/acquisition   {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/fulltext    true
+                       :db/doc         "<acquisition> (acquisition) contains any descriptive or other information concerning the process by which a manuscript or manuscript part or other object entered the holding institution. [11.8 History]"}
    :tei/provenance    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/fulltext    true
@@ -93,6 +97,10 @@
                        :db/valueType   :db.type/ref
                        :db/isComponent true
                        :db/doc         "<msItem> (manuscript item) describes an individual work or item within the intellectual content of a manuscript, manuscript part, or other object. [11.6.1 The msItem and msItemStruct Elements]"}
+   :tei/author        {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         "<author> (author) in a bibliographic reference, contains the name(s) of an author, personal or corporate, of a work; for example in the same form as that provided by a recognized bibliographic name authority. [3.12.2.2 Titles, Authors, and Editors2.2.1 The Title Statement]"}
    :tei/class         {:db/cardinality :db.cardinality/many
                        :db/valueType   :db.type/string
                        :db/doc         "@class identifies the text types or classifications applicable to this item by pointing to other elements or resources defining the classification concerned."}
@@ -155,6 +163,7 @@
    "work"        '[?e :tei/msItem ?msItem :bedebok/work]
    "key"         :tei/key
    "repository"  :tei/repository
+   "author"      '[?e :tei/msItem ?msItem :tei/author ?author :tei/key]
    "supportDesc" '[?e :tei/supportDesc ?supportDesc :tei/material]
    "support"     '[?e :tei/supportDesc ?supportDesc :tei/material]
    "material"    '[?e :tei/supportDesc ?supportDesc :tei/material]

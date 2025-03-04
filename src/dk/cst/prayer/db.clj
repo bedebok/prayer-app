@@ -250,7 +250,7 @@
        (not-empty)))
 
 (comment
-  (search (d/db (d/get-conn db-path static/schema)) "otherLangs=lat")
+  (search (d/db (d/get-conn db-path static/schema)) "author=Birgitta")
   (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")

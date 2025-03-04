@@ -94,6 +94,15 @@
           {:bedebok/work {:tei/key   key
                           :tei/title (or title key)}})))]
 
+   ;; TODO: should also extract the <persName> inside the text
+   [:author
+    (fn [node]
+      (let [{:keys [key]} (elem/attr node)
+            title (first (elem/children node))]
+        (when key
+          {:tei/author {:tei/key   key
+                        :tei/title (or title key)}})))]
+
    [:rubric
     (fn [node]
       {:tei/rubric [(h/hiccup->text node tei-conversion)]})]
@@ -191,6 +200,9 @@
                          (first))]
         {:tei/supportDesc {:tei/support  (h/hiccup->text support tei-conversion)
                            :tei/material material}}))]
+
+   [:acquisition
+    (inner-text :tei/acquisition)]
 
    #_[:support
       (inner-text :tei/support)]
@@ -347,7 +359,7 @@
     m))
 
 (comment
-  (tei-description (tei-ref :origin))
+  (tei-description (tei-ref :acquisition))
   (tei-description (tei-ref :supportDesc))
 
   ;; test text conversion on a full HTML document

@@ -130,6 +130,11 @@
                 [:div.dimensions-model {:style {:height (* ratio 100)
                                                 :width  100}}]]])
 
+            :tei/author
+            (let [{:keys [tei/key tei/title]} v]
+              [:a {:href (str "/search/" (str "author=" key))}
+               title])
+
             :tei/origDate
             (let [{:keys [tei/notAfter tei/notBefore tei/title]} v]
               (if title
@@ -187,8 +192,8 @@
   "Modifies the data of `m` for table display."
   [{:keys [tei/from tei/to]
     :as   m}]
-  (cond-> m
-    true (dissoc :db/id :file/node :tei/from :tei/to :bedebok/id)
+  ;; Some attributes are implementation details to be removed at every level.
+  (cond-> (dissoc m :db/id :file/node :tei/from :tei/to :bedebok/id)
     (or from to) (assoc :tei/locus [from to])))
 
 (declare table-views)
@@ -282,7 +287,7 @@
        (subs s 1)))
 
 (defn descriptive-view
-  [{:keys [tei/origin tei/provenance] :as entity}]
+  [{:keys [tei/origin tei/provenance tei/acquisition] :as entity}]
   (cond
     (or origin provenance)
     [:ul.descriptive
@@ -295,7 +300,12 @@
        [:li#provenance
         [:strong {:title (static/attr-doc :tei/provenance)}
          "PROVENANCE"] ": "
-        (uncapitalize provenance)])]))
+        (uncapitalize provenance)])
+     (when acquisition
+       [:li#acquisition
+        [:strong {:title (static/attr-doc :tei/acquisition)}
+         "ACQUISITION"] ": "
+        (uncapitalize acquisition)])]))
 
 (defn page-header-view
   [{:keys [tei/title tei/summary tei/head bedebok/type]
@@ -328,12 +338,14 @@
   [{:keys [bedebok/type tei/msItem tei/collationItem bedebok/id]
     :as   entity}]
   (let [general    (some-> entity
-                           ;; TODO: why remove stuff both here and in prepare-for-table?
+                           ;; Removed ONLY at the top-level, since they are
+                           ;; explicitly displayed in separate sections.
                            (dissoc :tei/title
                                    :tei/head
                                    :tei/summary
                                    :tei/origin
                                    :tei/provenance
+                                   :tei/acquisition
                                    :tei/msItem
                                    :tei/collationItem)
                            (not-empty)

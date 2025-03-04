@@ -57,6 +57,9 @@
                        :db/cardinality :db.cardinality/one
                        :db/fulltext    true
                        :db/doc         "<provenance> (provenance) contains any descriptive or other information concerning a single identifiable episode during the history of a manuscript, manuscript part, or other object after its creation but before its acquisition. [11.8 History]"}
+   :tei/note          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/one
+                       :db/doc         "<note> (note) contains a note or annotation. [3.9.1 Notes and Simple Annotation2.2.6 The Notes Statement3.12.2.8 Notes and Statement of Language10.3.5.4 Notes within Entries]"}
    :tei/settlement    {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<settlement> (settlement) contains the name of a settlement such as a city, town, or village identified as a single geo-political or administrative unit. [14.2.3 Place Names]"}

@@ -69,6 +69,9 @@
    [(match :msItem (match/has-parent :msItem))
     [:tei/msItem 'recursive]]
 
+   [:note
+    (inner-text :tei/note)]
+
    [[:locus {:from true
              :to   true}]
     (fn [node]
@@ -107,6 +110,7 @@
     (fn [node]
       {:tei/rubric [(h/hiccup->text node tei-conversion)]})]
 
+   ;; TODO: also register xml:lang and type, see: AM08-0073.xml
    [:incipit
     (fn [node]
       {:tei/incipit [(h/hiccup->text node tei-conversion)]})]
@@ -359,7 +363,7 @@
     m))
 
 (comment
-  (tei-description (tei-ref :acquisition))
+  (tei-description (tei-ref :note))
   (tei-description (tei-ref :supportDesc))
 
   ;; test text conversion on a full HTML document

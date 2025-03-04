@@ -387,7 +387,7 @@
          0 [:p "No documents reference this work."]
          1 [:p "The following document references this work:"]
          [:p "The following " n " documents reference this work:"])]
-      [:article.result
+      [:article.list
        [:dl.index
         (for [[type ids] (sort-by first work)]
           (list
@@ -401,13 +401,14 @@
   [query search-result]
   (let [n (count search-result)]
     (list
-      [:header [:h1 "Search result"]
+      [:header
+       [:h1 "Search result"]
        [:p (str (search/simplify (search/parse query)))]
        (case n
          0 [:p "No documents reference this work."]
          1 [:p "The following document references this work:"]
          [:p "The following " n " documents reference this work:"])]
-      [:article.result
+      [:article.list
        [:dl.index
         (for [[type hits] (group-by :bedebok/type search-result)]
           (list
@@ -420,15 +421,20 @@
 (defn index-view
   [type index]
   (let [letter->kvs (->> (group-by (comp first second) index)
-                         (sort-by first))]
-    [:dl.index
-     (for [[letter kvs] letter->kvs]
-       (list
-         [:dt letter]
-         [:dd
-          [:ul
-           (for [[k v] (sort-by second kvs)]
-             [:li [:a {:href (str "/" type "s/" k)} v]])]]))]))
+                         (sort-by first))
+        type-plural (str type "s")]
+    (list
+      [:header
+       [:h1 (str/capitalize type-plural)]]
+      [:article.list
+       [:dl.index
+        (for [[letter kvs] letter->kvs]
+          (list
+            [:dt letter]
+            [:dd
+             [:ul
+              (for [[k v] (sort-by second kvs)]
+                [:li [:a {:href (str "/" type-plural "/" k)} v]])]]))]])))
 
 (defn frontpage-view
   []

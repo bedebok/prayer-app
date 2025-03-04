@@ -104,6 +104,10 @@
                        :db/valueType   :db.type/ref
                        :db/isComponent true
                        :db/doc         "<author> (author) in a bibliographic reference, contains the name(s) of an author, personal or corporate, of a work; for example in the same form as that provided by a recognized bibliographic name authority. [3.12.2.2 Titles, Authors, and Editors2.2.1 The Title Statement]"}
+   :tei/respStmt      {:db/cardinality :db.cardinality/one
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
+                       :db/doc         "<respStmt> (statement of responsibility) supplies a statement of responsibility for the intellectual content of a text, edition, recording, or series, where the specialized elements for authors, editors, etc. do not suffice or do not apply. May also be used to encode information about individuals or organizations which have played a role in the production or distribution of a bibliographic work. [3.12.2.2 Titles, Authors, and Editors2.2.1 The Title Statement2.2.2 The Edition Statement2.2.5 The Series Statement]"}
    :tei/class         {:db/cardinality :db.cardinality/many
                        :db/valueType   :db.type/string
                        :db/doc         "@class identifies the text types or classifications applicable to this item by pointing to other elements or resources defining the classification concerned."}

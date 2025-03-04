@@ -151,6 +151,21 @@
               [:a {:href (str "/search/" (str "material=" material))}
                support])
 
+            :tei/respStmt
+            (let [{:keys [tei/key tei/resp tei/persName]} v
+                  year (:tei/when v)]
+              ""
+              #_(list
+                  resp
+                  " ("
+                  (when year
+                    (str year " "))
+                  (if key
+                    [:a {:href (str "/search/" (str "resp=" key))}
+                     persName]
+                    resp)
+                  ")"))
+
             :bedebok/work
             (let [{:keys [tei/key tei/title]} v]
               [:a {:href  (str "/works/" key)

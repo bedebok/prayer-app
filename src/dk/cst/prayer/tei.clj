@@ -146,6 +146,18 @@
     (fn [node]
       {:tei/desc (h/hiccup->text node tei-conversion)})]])
 
+(def respStmt-search-kvs
+  [[:resp
+    (fn [node]
+      (let [{:keys [when]} (elem/attr node)]
+        (cond-> {:tei/resp (h/hiccup->text node tei-conversion)}
+          when (assoc :tei/when when))))]
+   [:persName {:key true}
+    (fn [node]
+      (let [{:keys [key]} (elem/attr node)]
+        {:tei/persName (h/hiccup->text node tei-conversion)
+         :tei/key      key}))]])
+
 (def tei-search-kvs
   "The core [matcher process] kvs for initiating a TEI data search."
   [[(with-meta (match :TEI) {:on-match :continue})
@@ -264,9 +276,6 @@
       (when-let [text (not-empty (h/hiccup->text node tei-conversion))]
         {:bedebok/text text}))]
 
-   [(match :item (match/has-parent (match :list (match/has-parent :collation))))
-    [:tei/collationItem collationItem-search-kvs]]
-
    ;; Capture the attributes from <msItem>.
    ;; As this relies on special behaviour, it should take place before the
    ;; sub-search defined below as that removes the tree from the current search.
@@ -277,9 +286,15 @@
         (when class'
           {:tei/class class'})))]
 
-   ;; Marks the sub-search of a variable depth tree of <msItem> elements.
-   [(match :msItem (match/has-parent :msContents))
-    [:tei/msItem msItem-search-kvs]]])
+   ;; BELOW: sub-searches of a variable depth tree of various elements.
+   [(match :msItem (match/has-parent :msContents))          ; recursive
+    [:tei/msItem msItem-search-kvs]]
+
+   [(match :item (match/has-parent (match :list (match/has-parent :collation)))) ; recursive
+    [:tei/collationItem collationItem-search-kvs]]
+
+   [:respStmt
+    [:tei/respStmt respStmt-search-kvs]]])
 
 (def tei-html
   ;; Structural changes that emit valid HTML go here.
@@ -363,7 +378,7 @@
     m))
 
 (comment
-  (tei-description (tei-ref :note))
+  (tei-description (tei-ref :respStmt))
   (tei-description (tei-ref :supportDesc))
 
   ;; test text conversion on a full HTML document

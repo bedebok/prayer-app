@@ -184,6 +184,14 @@
                    :title "View more of this type"}
                v]
 
+            ;; TODO: need the inline language info here too
+            #{:tei/rubric :tei/incipit :tei/explicit}
+            (if (= (count v) 1)
+              (first v)
+              [:ul
+               (for [s (sort v)]
+                 [:li s])])
+
             #{:bedebok/type
               :tei/class
               :tei/settlement
@@ -213,15 +221,20 @@
 (declare table-views)
 
 (defn table-view
-  [{:keys [bedebok/type db/id tei/locus] :as m}]
+  [{:keys [bedebok/type db/id tei/locus tei/rubric tei/incipit tei/explicit]
+    :as   m}]
   (let [metadata-tr-view' (partial table-tr-view type)
         entity'           (prepare-for-table m)
         table-data        (some-> entity'
                                   (dissoc :file/node
+                                          :tei/text
                                           :tei/msItem
                                           :tei/collationItem
                                           :file/name
-                                          :tei/locus)
+                                          :tei/locus
+                                          :tei/rubric
+                                          :tei/incipit
+                                          :tei/explicit)
                                   (not-empty))]
     [:table {:id (str "db-" (or id locus))}
      (if-let [locus (:tei/locus entity')]
@@ -236,7 +249,18 @@
            filename]]
          [:tr.header-row
           [:th {:colspan 2}]]))
+
+     ;; General metadata comes immediately after the header.
      (map metadata-tr-view' (sort-by first table-data))
+
+     ;; Text summaries are put in the expected order as the final 2-column rows.
+     (->> [[:tei/rubric rubric]
+           [:tei/incipit incipit]
+           [:tei/explicit explicit]]
+          (remove (comp nil? second))
+          (map metadata-tr-view'))
+
+     ;; Embedded items come last.
      (when-let [manuscripts (:tei/msItem entity')]
        [:tr.msitem-row
         [:td {:colspan 2}

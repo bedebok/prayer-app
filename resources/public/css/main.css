@@ -202,32 +202,43 @@ article.page section.page-content {
 }
 
 /* Allows for styling tr. */
-table {
+table.common {
     border-collapse: collapse;
     width: 100%;
-    background: white;
-    color: black;
 
+    border-left: none;
+    border: 2px solid black;
+    border: 2px solid black;
+    border-right-width: 6px;
+
+    font-size: 18px;
     font-weight: normal;
     font-variant: normal;
+    background: white;
+    color: black;
 }
 
 tr:not(:last-child) {
   border-bottom: 0.5px solid black;
 }
 
-table {
-    border-left: none;
-    border: 2px solid black;
-    border: 2px solid black;
-    border-right-width: 6px;
-    font-size: 18px;
-}
-
-table table {
+table.common table.common {
     margin: 12px 0;
 }
+/* useful for debugging */
+table.common + table.common {
+    margin-top: 32px;
+}
 
+table.common > tr > td:first-child {
+    text-align: right;
+    font-weight: bold;
+    font-variant: small-caps;
+    border-right: 0.5px solid black;
+    width: 80px;
+}
+
+/* Decorative element for linking tables. */
 .continuation {
     margin: 24px 0;
     text-align: center;
@@ -236,30 +247,17 @@ table table {
     line-height: 1;
 }
 
-/* useful for debugging */
-table + table {
-    margin-top: 32px;
-}
-
-tr > td:first-child {
-    text-align: right;
-    font-weight: bold;
-    font-variant: small-caps;
-    border-right: 0.5px solid black;
-    width: 80px;
-}
-
-tr td:last-child {
+table.common > tr > td:last-child {
     text-align: left;
     font-weight: normal;
     font-variant: normal;
 }
 
-td, th {
+table.common td, th {
     padding: 8px 12px;
 }
 
-th {
+table.common th {
     background: black;
     color: white;
     word-spacing: 6px;
@@ -269,7 +267,7 @@ th {
     height: 26.5px; /* for empty headers */
 }
 
-details > table {
+details > table.common {
     margin: 12px 0 0 0;
 }
 
@@ -280,7 +278,7 @@ details > summary {
     cursor: pointer;
 }
 
-article.content {
+article.content, article.list {
     display: grid;
     column-gap: 32px;
     grid-template-columns: minmax(220px, auto) minmax(180px, 40%);
@@ -289,6 +287,17 @@ article.content {
 
 article.list {
     margin-top: 24px;
+}
+
+article.list.single {
+    display: flex;
+    justify-content: center;
+    margin-top: 48px;
+}
+
+article.list.single > * {
+    width: 100%;
+    max-width: 450px;
 }
 
 pre {
@@ -372,6 +381,29 @@ table.dimensions td.dimensions-height {
 
 table.dimensions td.dimensions-width {
     padding-bottom: 8px;
+}
+
+table.skiplinks {
+    background: black;
+    background-image: url(/images/stripes.svg);
+}
+
+table.skiplinks td {
+    border: 0.5px solid black;
+    text-align: center;
+    font-weight: bold;
+    background: white;
+}
+
+table.skiplinks td.empty {
+    border: none;
+    background: none;
+}
+
+/* Undo table.common styles. '*/
+table.skiplinks > tr > td:first-child,
+table.skiplinks > tr > td:last-child {
+    text-align: center;
 }
 
 .dimensions-model {
@@ -517,13 +549,17 @@ ul.links a:hover {
 
 dl.index {
      margin: 0;
-     line-height: 1;
 }
 dl.index dt {
     background: black;
     color: white;
-    padding: 12px;
+    padding: 8px 12px;
     font-size: 18px;
+
+    /* Match table.common border styles. */
+    border: 2px solid black;
+    border-right-width: 6px;
+    border-bottom-width: 0.5px;
 }
 dl.index dd {
     margin: 0;
@@ -539,7 +575,7 @@ dl.index dd + dt {
     margin-top: 24px;
 }
 dl.index li {
-    padding: 12px;
+    padding: 8px 12px;
     font-size: 18px;
 }
 dl.index li + li {
@@ -564,6 +600,10 @@ dl.index li + li {
     article.content {
         display: flex;
         flex-direction: column;
+    }
+    article.list {
+        display: flex;
+        flex-direction: column-reverse;
     }
     section.pages {
         max-width: 450px;

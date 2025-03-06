@@ -202,7 +202,7 @@
 
             ;; Put simple inline tables here.
             #_:tei/origPlace
-            #_[:table
+            #_[:table.common
                (map (partial table-tr-view k) v)]
 
             ;; else
@@ -236,7 +236,7 @@
                                           :tei/incipit
                                           :tei/explicit)
                                   (not-empty))]
-    [:table {:id (str "db-" (or id locus))}
+    [:table.common {:id (str "db-" (or id locus))}
      (if-let [locus (:tei/locus entity')]
        [:tr.header-row
         [:th {:colspan 2
@@ -420,20 +420,23 @@
   (let [n (count work)]
     (list
       ;; TODO: needs a proper label
-      [:header [:h1 id]
-       (case n
-         0 [:p "No documents reference this work."]
-         1 [:p "The following document references this work:"]
-         [:p "The following " n " documents reference this work:"])]
-      [:article.list
+      [:header
+       [:hgroup [:h1 id]
+        (case n
+          0 [:p "No documents include this work"]
+          1 [:p "One document"]
+          [:p  n " documents"])]]
+      [:article.list.single
        [:dl.index
-        (for [[type ids] (sort-by first work)]
+        (for [[doc-type ks] (sort-by first work)]
           (list
-            [:dt (str/capitalize type)]
+            [:dt {:id char} (str/capitalize doc-type)]
             [:dd
              [:ul
-              (for [id (sort ids)]
-                [:li [:a {:href (str "/" type "s/" id)} id]])]]))]])))
+              (for [k (sort ks)]
+                [:li
+                 [:a {:href (str "/" doc-type "s/" k)}
+                  k]])]]))]])))
 
 (defn search-view
   [query search-result]
@@ -459,23 +462,61 @@
               (for [{:keys [bedebok/id]} (sort-by :bedebok/id hits)]
                 [:li [:a {:href (str "/" type "s/" id)} id]])]]))]])))
 
+(defn alphabetical
+  [s]
+  (and (re-matches #"[\w]" s)
+       (re-matches #"[^\d]" s)))
+
+(defn skiplinks-table-view
+  [header ks]
+  [:table.common.skiplinks
+   [:tr
+    [:th {:colspan 4}
+     header]]
+   (for [ks' (partition 4 4 [nil nil nil] ks)]
+     [:tr
+      (for [k ks']
+        (if (nil? k)
+          [:td.empty]
+          [:td [:a {:href (str "#" k)} k]]))])])
+
+(defn index-section
+  [heading type-plural char->kvs]
+  (section heading
+           [:dl.index
+            (for [[char kvs] char->kvs]
+              (list
+                [:dt {:id char} char]
+                [:dd
+                 [:ul
+                  (for [[k v] (sort-by second kvs)]
+                    [:li [:a {:href (str "/" type-plural "/" k)} v]])]]))]))
+
 (defn index-view
   [type index]
-  (let [letter->kvs (->> (group-by (comp first second) index)
+  (let [char->kvs   (->> (group-by (comp first second) index)
                          (sort-by first))
+        other-char  (complement alphabetical)
+        letter->kvs (not-empty (filter (comp alphabetical first) char->kvs))
+        other->kvs  (not-empty (filter (comp other-char first) char->kvs))
         type-plural (str type "s")]
     (list
       [:header
        [:h1 (str/capitalize type-plural)]]
       [:article.list
-       [:dl.index
-        (for [[letter kvs] letter->kvs]
+       [:section.listings
+        (when letter->kvs
+          (index-section "Alphabetical" type-plural letter->kvs))
+        (when other->kvs
+          (index-section "Other" type-plural other->kvs))]
+       [:aside.skiplinks
+        (section
+          "Index"
           (list
-            [:dt letter]
-            [:dd
-             [:ul
-              (for [[k v] (sort-by second kvs)]
-                [:li [:a {:href (str "/" type-plural "/" k)} v]])]]))]])))
+            (when letter->kvs
+              (skiplinks-table-view "Alphabetical" (map first letter->kvs)))
+            (when other->kvs
+              (skiplinks-table-view "Other" (map first other->kvs)))))]])))
 
 (defn frontpage-view
   []

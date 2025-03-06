@@ -23,11 +23,15 @@
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
 (defn on-navigate
-  [{:keys [data] :as req}]
+  [{:keys [data fragment] :as req}]
   ;; Replace Reitit coercion with our own that we can also use in the backend.
   (let [coerced-req (web/coerce-request req)]               ; TODO: log errors?
-    (swap! state assoc :location {:name   (:name data)
-                                  :params (:params coerced-req)})
+    (swap! state assoc
+           :location {:name   (:name data)
+                      :params (:params coerced-req)}
+
+           ;; NOTE: fragment not considered part of the location.
+           :fragment fragment)
     (when-let [handler (:handle data)]
       (api/handle coerced-req handler))))
 
@@ -45,6 +49,12 @@
   []
   (d/render js/document.body (html/page)))
 
+(defn scroll-to
+  [id]
+  (some-> id
+          (js/document.getElementById)
+          (.scrollIntoView)))
+
 (defn ^:dev/after-load init!
   []
   ;; Reitit (frontend routing).
@@ -53,7 +63,9 @@
   ;; Replicant (rendering and events).
   (d/set-dispatch! event/handle)
   (render)
-  (add-watch state ::render (fn [_ _ _ _new-state] (render)))
+  (add-watch state ::render (fn [_ _ _ _new-state]
+                              (render)
+                              (scroll-to (:fragment @state))))
 
   ;; A user-initiated page reload is used as an indicator that any preserved
   ;; state should be removed from localStorage.

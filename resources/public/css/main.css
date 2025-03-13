@@ -139,6 +139,9 @@ section.page-controls {
     margin: 0;
     line-height: 1;
     align-self: stretch;
+    border: 2px solid black;
+    border-right-width: 6px;
+    border-bottom: none;
 }
 
 section.page-controls > * {
@@ -404,6 +407,7 @@ table.skiplinks td.empty {
 table.skiplinks > tr > td:first-child,
 table.skiplinks > tr > td:last-child {
     text-align: center;
+    width: auto;
 }
 
 .dimensions-model {

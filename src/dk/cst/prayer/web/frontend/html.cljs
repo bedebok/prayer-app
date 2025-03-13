@@ -421,22 +421,24 @@
     (list
       ;; TODO: needs a proper label
       [:header
-       [:hgroup [:h1 id]
-        (case n
-          0 [:p "No documents include this work"]
-          1 [:p "One document"]
-          [:p  n " documents"])]]
+       [:hgroup
+        [:h1 id]
+        [:p "References to this work"]]]
       [:article.list.single
-       [:dl.index
-        (for [[doc-type ks] (sort-by first work)]
-          (list
-            [:dt {:id char} (str/capitalize doc-type)]
-            [:dd
-             [:ul
-              (for [k (sort ks)]
-                [:li
-                 [:a {:href (str "/" doc-type "s/" k)}
-                  k]])]]))]])))
+       (section (case n
+                  0 "No results"
+                  1 "One result"
+                  (str n " results"))
+                [:dl.index
+                 (for [[doc-type ks] (sort-by first work)]
+                   (list
+                     [:dt {:id char} (str/capitalize doc-type)]
+                     [:dd
+                      [:ul
+                       (for [k (sort ks)]
+                         [:li
+                          [:a {:href (str "/" doc-type "s/" k)}
+                           k]])]]))])])))
 
 (defn search-view
   [query search-result]
@@ -540,6 +542,28 @@
        ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
        ::page/work-index (index-view "work" (get-in state' [:index "work"])))]))
 
+(defn footer-view
+  []
+  [:footer
+   [:address.grey
+    [:div.big.black "© 2025"]
+    "Department of Nordic Studies and Linguistics" [:br]
+    "University of Copenhagen" [:br]
+    "Emil Holms Kanal 2, DK-2300 Copenhagen S"]
+   [:ul.links
+    [:li
+     [:a {:href ""}
+      "Accessibility"]]
+    [:li
+     [:a {:href ""}
+      "Privacy"]]
+    [:li
+     [:a {:href "https://nors.ku.dk/english/research/projects/when-danes-prayed-in-german/"}
+      "Project page"]]
+    [:li
+     [:a {:href "https://github.com/bedebok/prayer-app"}
+      "Github"]]]])
+
 (defn page
   []
   ;; Some kind of ID is needed for replicant to properly re-render
@@ -547,17 +571,11 @@
   [:div.container
    (header-view)
    #_(dev-view)
-   (content-view)
-   [:footer
-    [:address.grey
-     [:div.big.black "© 2025"]
-     "Department of Nordic Studies and Linguistics" [:br]
-     "University of Copenhagen" [:br]
-     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]
-    [:ul.links
-     [:li
-      [:a {:href "https://nors.ku.dk/english/research/projects/when-danes-prayed-in-german/"}
-       "Project page"]]
-     [:li
-      [:a {:href "https://github.com/bedebok/prayer-app"}
-       "Github"]]]]])
+   [:div.page-body-wrapper
+    [:div.spacer]
+    [:aside.spine {:aria-hidden "true"}
+     "When " [:span.red "Danes"] " Prayed in " [:span.yellow "German"]]
+    [:section.page-body
+     (content-view)
+     (footer-view)]
+    [:div.spacer]]])

@@ -53,11 +53,47 @@ body {
     min-height: 100vh;
 }
 
-main {
+.page-body-wrapper {
     align-self: center;
-    width: 800px;
+    display: flex;
+    width: 100vw;
+    flex-grow: 1;
+}
+
+.page-body-wrapper .spacer {
+    flex-grow: 1;
+}
+
+.page-body-wrapper .spacer:first-child {
+    background-size: 48px;
+    background-position: top right;
+    background-image: url(/images/spirals.svg);
+}
+
+section.page-body {
+    display: flex;
+    flex-direction: column;
+}
+
+aside.spine {
+    user-select: none;
+
+    writing-mode: vertical-lr;
+    padding: 24px;
+    letter-spacing: 2px;
+    word-spacing: 4px;
+    font-size: 18px;
+    font-variant: small-caps;
+    line-height: 1;
+
+    background-color: black;
+    color: white;
+}
+
+
+main {
+    max-width: 800px;
     padding: 64px 32px 32px 32px;
-    border-left: 2px solid black;
     flex-grow: 1;
 }
 
@@ -65,7 +101,6 @@ footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-left: 2px solid black;
     align-self: center;
     width: 800px;
     padding: 32px;
@@ -80,6 +115,12 @@ address {
     color: black;
     line-height: 2;
     flex-grow: 2;
+
+    background-image: url(/images/ku-logo.svg);
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: 88px 88px;
+    padding-left: 100px;
 
     margin-right: 24px;
 }
@@ -270,6 +311,12 @@ table.common th {
     height: 26.5px; /* for empty headers */
 }
 
+table.common ul {
+    margin: 0;
+    padding-left: 24px;
+    list-style-type: square;
+}
+
 details > table.common {
     margin: 12px 0 0 0;
 }
@@ -452,7 +499,7 @@ header.top {
 nav {
     display: flex;
     align-items: stretch;
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
     background: white;
 }
@@ -515,15 +562,15 @@ nav input[type=search]::placeholder
 }
 
 ul.links {
-    display: flex;
-    flex-direction: column;
+    columns: 2;
+    column-gap: 0;
 
     flex-grow: 1;
     justify-content: center;
 
     text-align: right;
     list-style-type: none;
-    font-size: 24px;
+    font-size: 18px;
     margin: 0;
     padding: 0;
     line-height: 1.4;
@@ -532,12 +579,17 @@ ul.links {
 }
 
 ul.links li {
-    padding-left: 4px;
-    padding: 8px 16px 8px 32px;
+    padding: 8px;
+    margin: 0;
+    text-align: center;
 }
 
-ul.links li + li {
-    border-top: 0.5px solid black;
+ul.links li:nth-child(1), ul.links li:nth-child(2) {
+    border-right: 0.5px solid black;
+}
+
+ul.links li:nth-child(1), ul.links li:nth-child(3) {
+    border-bottom: 0.5px solid black;
 }
 
 ul.links a {
@@ -571,6 +623,7 @@ dl.index dd {
 dl.index ul {
     list-style-type: none;
     padding: 0;
+    margin: 0; /* Chrome needs this. */
     border: 2px solid black;
     border-top: none;
     border-right-width: 6px;
@@ -586,21 +639,37 @@ dl.index li + li {
     border-top: 0.5px solid black;
 }
 
-@media (width <= 900px) {
+@media (width <= 932px) {
+    .page-body-wrapper {
+        flex-direction: column;
+    }
+    aside.spine {
+        writing-mode: horizontal-tb;
+        padding: 16px 8px;
+        text-align: center;
+    }
+    .spacer {
+        display: none;
+    }
+    .page-body {
+        flex-grow: 1;
+    }
+    .page-body-wrapper {
+        justify-content: center;
+    }
+    aside.spine {
+    }
     main {
         width: auto;
-        align-self: stretch;
-        border-left: none;
+        flex-grow: 1;
     }
     footer {
-        border-left: none;
         width: auto;
         align-self: stretch;
     }
 }
 
-
-@media (width <= 852px) {
+@media (width <= 824px) {
     article.content {
         display: flex;
         flex-direction: column;
@@ -611,6 +680,13 @@ dl.index li + li {
     }
     section.pages {
         max-width: 450px;
+    }
+    footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+    address {
+        margin-top: 24px;
     }
 }
 
@@ -624,7 +700,6 @@ dl.index li + li {
     nav ul li {
         display: inline-block;
         margin-right: 12px;
-        font-size: 18px;
     }
     nav input[type=search] {
        flex-grow: 1;
@@ -635,24 +710,17 @@ dl.index li + li {
         font-size: 52px;
         margin-top: 24px;
     }
-    footer {
-        flex-direction: column-reverse;
-        align-items: stretch;
-    }
-    ul.links, address {
-        text-align: center;
-    }
-    address {
-        margin-top: 12px;
-    }
     ul.descriptive {
         padding-left: 12px;
     }
 }
 
 @media (width <= 480px) {
-    main, footer {
+    main {
         padding: 12px;
+    }
+    footer {
+        padding: 24px 12px;
     }
     nav ul {
         padding: 12px 6px 6px 6px
@@ -666,5 +734,9 @@ dl.index li + li {
     nav input[type=search] {
        font-size: 16px;
        padding: 12px 6px 6px 6px
+    }
+    aside.spine {
+        font-size: 16px;
+        padding: 12px 6px;
     }
 }

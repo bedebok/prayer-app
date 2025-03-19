@@ -283,31 +283,31 @@
        (map table-view)
        (interpose [:div.continuation "︙"])))
 
-(defn controls-view []
+(defn controls-view
+  [id]
   (let [{:keys [location] :as state'} @state
-        id         (get-in location [:params :id])
         pages      (get-in state' [:cached id :pages])
         page-count (count pages)
         n          (get-in state' [:user :entities id :n] 0)]
-    [:section.page-controls
-     [:button {:on       {:click [::event/page :backward]}
+    [:section.tei-page-controls
+     [:button {:on       {:click [::event/page id :backward]}
                :disabled (= n 0)}
       "←"]
      [:select {:default-value n
-               :on            {:change [::event/page]}}
+               :on            {:change [::event/page id]}}
       (for [i (range page-count)]
         [:option {:value    i
                   :selected (= n i)}
          (inc i) " / " page-count])]
-     [:button {:on       {:click [::event/page :forward]}
+     [:button {:on       {:click [::event/page id :forward]}
                :disabled (= (inc n) page-count)}
       "→"]]))
 
 (defn page-view
   [[pb content]]
   (let [data-n (-> pb first second :data-n)]
-    (into [:article.page [:header.page-header data-n]
-           [:section.page-content content]])))
+    (into [:article.tei-page [:header.tei-page-header data-n]
+           [:section.tei-page-content content]])))
 
 (defn pages-view
   [id]
@@ -316,8 +316,8 @@
         pages         (get-in state' [:cached id :pages])
         pages-display (boolean (get-in state' [:user :prefs :pages-display]))]
     (if pages-display
-      [:section.pages (map page-view pages)]
-      [:section.pages (controls-view) (page-view (nth pages (or n 0)))])))
+      [:section.tei-pages (map page-view pages)]
+      [:section.tei-pages (controls-view id) (page-view (nth pages (or n 0)))])))
 
 (defn uncapitalize
   [s]
@@ -372,9 +372,20 @@
      [:h2 title]
      view]))
 
+(defn pin-button
+  [id]
+  [:button.add-pin {:title "Pin content"
+                    :on    {:click [::event/pin id]}}])
+
+(defn unpin-button
+  [id]
+  [:button.remove-pin {:title "Unpin content"
+                       :on    {:click [::event/pin id]}}])
+
 (defn entity-view
   [{:keys [bedebok/type tei/msItem tei/collationItem bedebok/id]
-    :as   entity}]
+    :as   entity}
+   pin-status]
   (let [general    (some-> entity
                            ;; Removed ONLY at the top-level, since they are
                            ;; explicitly displayed in separate sections.
@@ -396,73 +407,77 @@
                             (map #(assoc % :bedebok/type :tei/collationItem))
                             (not-empty)
                             (table-views))]
-    (list
-      (page-header-view entity)
+    [:article
+     (case pin-status
+       :unpinned (pin-button id)
+       :pinned (unpin-button id)
+       nil)
+     (page-header-view entity)
 
-      ;; When viewing a text, the pages are centred; when viewing a manuscript,
-      ;; the manuscript items are centred.
-      (if (= type "text")
-        [:article.content.text
-         (section "Pages" (pages-view id))
-         [:aside.metadata
-          (section "Miscellaneous" general)
-          (section "Manuscript Item" manuscript)
-          (section "Collation Data" collation)]]
+     ;; When viewing a text, the pages are centred; when viewing a manuscript,
+     ;; the manuscript items are centred.
+     (if (= type "text")
+       [:section.content.text
+        (section "Pages" (pages-view id))
+        [:aside.metadata
+         (section "Miscellaneous" general)
+         (section "Manuscript Item" manuscript)
+         (section "Collation Data" collation)]]
 
-        [:article.content.manuscript
-         (section "Manuscript Items" manuscript)
-         [:aside.metadata
-          (section "Miscellaneous" general)
-          (section "Collation Data" collation)]]))))
+       [:section.content.manuscript
+        (section "Manuscript Items" manuscript)
+        [:aside.metadata
+         (section "Miscellaneous" general)
+         (section "Collation Data" collation)]])]))
 
 (defn work-view
   [id work]
   (let [n (count work)]
-    (list
-      ;; TODO: needs a proper label
-      [:header
-       [:hgroup
-        [:h1 id]
-        [:p "References to this work"]]]
-      [:article.list.single
-       (section (case n
-                  0 "No results"
-                  1 "One result"
-                  (str n " results"))
-                [:dl.index
-                 (for [[doc-type ks] (sort-by first work)]
-                   (list
-                     [:dt {:id char} (str/capitalize doc-type)]
-                     [:dd
-                      [:ul
-                       (for [k (sort ks)]
-                         [:li
-                          [:a {:href (str "/" doc-type "s/" k)}
-                           k]])]]))])])))
+    [:article
+     ;; TODO: needs a proper label
+     [:header
+      [:hgroup
+       [:h1 id]
+       [:p "References to this work"]]]
+     [:section.list.single
+      (section (case n
+                 0 "No results"
+                 1 "One result"
+                 (str n " results"))
+               [:dl.index
+                (for [[doc-type ks] (sort-by first work)]
+                  (list
+                    [:dt {:id char} (str/capitalize doc-type)]
+                    [:dd
+                     [:ul
+                      (for [k (sort ks)]
+                        [:li
+                         [:a {:href (str "/" doc-type "s/" k)}
+                          k]])]]))])]]))
 
 (defn search-view
   [query search-result]
   (let [n (count search-result)]
-    (list
-      [:header
-       [:hgroup
-        [:h1 "Search result"]
-        [:p query
-         ;; TODO: visualise search query?
-         #_(str (search/simplify (search/parse query)))]]
-       (case n
-         0 [:p "No documents match this query."]
-         1 [:p "The following document matches this query:"]
-         [:p "The following " n " documents match this query:"])]
-      [:article.list
-       [:dl.index
-        (for [[type hits] (group-by :bedebok/type search-result)]
-          (list
-            [:dt (str/capitalize type)]
-            [:dd
-             [:ul
-              (for [{:keys [bedebok/id]} (sort-by :bedebok/id hits)]
-                [:li [:a {:href (str "/" type "s/" id)} id]])]]))]])))
+    [:article
+     [:header
+      [:hgroup
+       [:h1 "Search result"]
+       [:p query
+        ;; TODO: visualise search query?
+        #_(str (search/simplify (search/parse query)))]]
+      (case n
+        0 [:p "No documents match this query."]
+        1 [:p "The following document matches this query:"]
+        [:p "The following " n " documents match this query:"])]
+     [:section.list
+      [:dl.index
+       (for [[type hits] (group-by :bedebok/type search-result)]
+         (list
+           [:dt (str/capitalize type)]
+           [:dd
+            [:ul
+             (for [{:keys [bedebok/id]} (sort-by :bedebok/id hits)]
+               [:li [:a {:href (str "/" type "s/" id)} id]])]]))]]]))
 
 (defn alphabetical
   [s]
@@ -502,45 +517,51 @@
         letter->kvs (not-empty (filter (comp alphabetical first) char->kvs))
         other->kvs  (not-empty (filter (comp other-char first) char->kvs))
         type-plural (str type "s")]
-    (list
-      [:header
-       [:h1 (str/capitalize type-plural)]]
-      [:article.list
-       [:section.listings
-        (when letter->kvs
-          (index-section "Alphabetical" type-plural letter->kvs))
-        (when other->kvs
-          (index-section "Other" type-plural other->kvs))]
-       [:aside.skiplinks
-        (section
-          "Index"
-          (list
-            (when letter->kvs
-              (skiplinks-table-view "Alphabetical" (map first letter->kvs)))
-            (when other->kvs
-              (skiplinks-table-view "Other" (map first other->kvs)))))]])))
+    [:article
+     [:header
+      [:h1 (str/capitalize type-plural)]]
+     [:section.list
+      [:section.listings
+       (when letter->kvs
+         (index-section "Alphabetical" type-plural letter->kvs))
+       (when other->kvs
+         (index-section "Other" type-plural other->kvs))]
+      [:aside.skiplinks
+       (section
+         "Index"
+         (list
+           (when letter->kvs
+             (skiplinks-table-view "Alphabetical" (map first letter->kvs)))
+           (when other->kvs
+             (skiplinks-table-view "Other" (map first other->kvs)))))]]]))
 
 (defn frontpage-view
   []
-  (list
-    [:h1.brutalist "When " [:br] [:span.big.red "Danes"] [:br] " Prayed in " [:br] [:span.big.yellow "German"]]
-    [:p "This project examines the role of Low German in the transition from Latin to Danish as the primary language of religious devotion."]
-    [:p "A common misconception holds that religious devotion was practiced solely through the medium of Latin until the Reformation. However, devotional books already began to appear in the vernacular in Denmark during the Middle Ages; not only in Danish, but also in another vernacular, Low German."]))
+  [:article
+   [:header
+    [:h1.brutalist "When " [:br] [:span.big.red "Danes"] [:br] " Prayed in " [:br] [:span.big.yellow "German"]]]
+   [:p "This project examines the role of Low German in the transition from Latin to Danish as the primary language of religious devotion."]
+   [:p "A common misconception holds that religious devotion was practiced solely through the medium of Latin until the Reformation. However, devotional books already began to appear in the vernacular in Denmark during the Middle Ages; not only in Danish, but also in another vernacular, Low German."]])
 
-(defn content-view []
-  (let [{:keys [location] :as state'} @state
+(defn content-view
+  []
+  (let [{:keys [location user] :as state'} @state
+        {:keys [pins]} user
         {:keys [name params]} location
-        {:keys [query id]} params]
-    [:main {:id js/window.location.pathname}
-     (condp = name
-       ::page/main (frontpage-view)
-       ::page/search (search-view query (get-in state' [:search query]))
-       ::page/work (work-view id (get-in state' [:works id]))
-       ::page/text (entity-view (get-in state' [:entities id]))
-       ::page/manuscript (entity-view (get-in state' [:entities id]))
-       ::page/text-index (index-view "text" (get-in state' [:index "text"]))
-       ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
-       ::page/work-index (index-view "work" (get-in state' [:index "work"])))]))
+        {:keys [query id]} params
+        ;; The only other pin-status is :pinned for the pinned/copied content
+        ;; and this is set manually for the pinned content.
+        pin-status (when (empty? (filter #{id} pins))
+                     :unpinned)]
+    (condp = name
+      ::page/main (frontpage-view)
+      ::page/search (search-view query (get-in state' [:search query]))
+      ::page/work (work-view id (get-in state' [:works id]))
+      ::page/text (entity-view (get-in state' [:entities id]) pin-status)
+      ::page/manuscript (entity-view (get-in state' [:entities id]) pin-status)
+      ::page/text-index (index-view "text" (get-in state' [:index "text"]))
+      ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
+      ::page/work-index (index-view "work" (get-in state' [:index "work"])))))
 
 (defn footer-view
   []
@@ -564,18 +585,44 @@
      [:a {:href "https://github.com/bedebok/prayer-app"}
       "Github"]]]])
 
+(defn pinning-view []
+  (let [{:keys [user entities] :as state'} @state
+        pins           (:pins user)]
+    [:section.pinning
+     [:p "Pinned content: "]
+     (for [id pins]
+       (let [{:keys [tei/title bedebok/type]} (get entities id)]
+         [:label {:title (str "Unpin: " id)}
+          [:input {:type    "checkbox"
+                   :on      {:change [::event/pin]}
+                   :checked true}]
+          (or title id)]))]))
+
 (defn page
   []
-  ;; Some kind of ID is needed for replicant to properly re-render
-  ;; TODO: is there a better ID?
-  [:div.container
-   (header-view)
-   #_(dev-view)
-   [:div.page-body-wrapper
-    [:div.spacer]
-    [:aside.spine {:aria-hidden "true"}
-     "When " [:span.red "Danes"] " Prayed in " [:span.yellow "German"]]
-    [:section.page-body
-     (content-view)
-     (footer-view)]
-    [:div.spacer]]])
+  (let [{:keys [user] :as state'} @state
+        {:keys [pins]} user]
+    ;; Some kind of ID is needed for replicant to properly re-render
+    ;; TODO: is there a better ID?
+    [:div.container {:class (if (empty? pins)
+                              "single-document"
+                              "multi-document")}
+     (header-view)
+     #_(dev-view)
+     [:div.page-body-wrapper
+      [:div.spacer]
+      [:aside.spine {:aria-hidden "true"}
+       "When " [:span.red "Danes"] " Prayed in " [:span.yellow "German"]]
+      [:section.page-body
+       (if (empty? pins)
+         [:main {:id js/window.location.pathname}
+          (content-view)]
+         (list
+           (pinning-view)
+           [:main {:id js/window.location.pathname}
+            (content-view)
+            (for [id pins]
+              (entity-view (get-in state' [:entities id])
+                           :pinned))]))
+       (footer-view)]
+      [:div.spacer]]]))

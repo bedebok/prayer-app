@@ -15,7 +15,8 @@ table [title]:not(a), ul.descriptive strong {
     cursor: help;
 }
 
-button, select {
+button,
+select {
     cursor: pointer;
 }
 
@@ -90,11 +91,96 @@ aside.spine {
     color: white;
 }
 
+section.pinning {
+    padding: 12px 32px;
+    border-bottom: 2px solid black;
+}
+
+section.pinning > * {
+    display: inline-block;
+}
+
+section.pinning * + * {
+    margin-left: 24px;
+}
+
+section.pinning label {
+    cursor: pointer;
+}
+
+button.add-pin,
+button.remove-pin {
+  all: unset;
+  float: right;
+  color: transparent;
+  user-select: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+}
+
+button.add-pin {
+  background: url("/images/New Tab.svg") center no-repeat;
+}
+
+button.remove-pin {
+  background: url("/images/Trash.svg") center no-repeat;
+}
+
+button.add-pin:focus,
+button.remove-pin:focus {
+  outline: revert;
+}
 
 main {
-    max-width: 800px;
-    padding: 64px 32px 32px 32px;
     flex-grow: 1;
+}
+
+main > article {
+    padding: 64px 32px 32px 32px;
+    max-width: 800px;
+}
+
+.container.multi-document .page-body-wrapper {
+    flex-direction: column;
+}
+
+.container.multi-document .page-body > footer {
+    border-top: 2px solid black;
+    width: calc(100vw - 64px);
+    padding: 12px 32px;
+}
+
+.container.multi-document main {
+    overflow-x: auto;
+    max-width: 100vw;
+    display: flex;
+
+    /* For the pinned/copied content. */
+    background-color: #EFEFEF;
+    background-size: 12px;
+    background-position: center;
+}
+.container.multi-document main > article:first-child {
+    background: white;
+}
+
+
+.container.multi-document main > article {
+    min-width: 800px;
+}
+
+.container.multi-document main > article + article {
+    border-left: 0.5px solid black;
+    padding-left: 32px;
+}
+
+.container.multi-document .spacer {
+    display: none;
+}
+
+.container.multi-document aside.spine {
+    display: none;
 }
 
 footer {
@@ -167,14 +253,14 @@ aside.preferences {
     justify-content: center;
 }
 
-section.pages {
+section.tei-pages {
     display: flex;
     flex-direction: column;
     justify-content: stretch;
     margin: 0 auto;
 }
 
-section.page-controls {
+section.tei-page-controls {
     display: flex;
     padding: 0;
     margin: 0;
@@ -185,11 +271,11 @@ section.page-controls {
     border-bottom: none;
 }
 
-section.page-controls > * {
+section.tei-page-controls > * {
     appearance: none;
 }
 
-section.page-controls > * {
+section.tei-page-controls > * {
     border: none;
     border-left: 0.5px solid white;
 
@@ -200,27 +286,28 @@ section.page-controls > * {
     font-size: 16px;
     min-width: max(80px, 25%);
 }
-section.page-controls > *:disabled {
+section.tei-page-controls > *:disabled {
     /* https://toolcool.org/svg-stripes-maker-react/ */
     background-image: url(/images/stripes.svg);
 }
 
-section.page-controls > *:first-child {
+section.tei-page-controls > *:first-child {
     padding-left: 24px;
     border-left: none;
 }
 
-section.page-controls > select {
+section.tei-page-controls > select {
     flex-grow: 1;
     text-align: center;
     border-radius: 0;
 }
 
-section.page-controls > *:last-child {
+section.tei-page-controls > *:last-child {
     padding-right: 24px;
 }
 
-article.page {
+/* The pages in a TEI document. */
+article.tei-page {
     display: flex;
     flex-direction: column;
 
@@ -229,19 +316,20 @@ article.page {
     min-width: fit-content;
     padding: 24px;
     font-size: 18px;
+    background: white;
 }
 
-article.page + article.page {
+article.tei-page + article.tei-page {
     margin-top: 24px;
 }
 
-article.page header.page-header {
+article.tei-page header.tei-page-header {
     text-align: right;
     font-size: 18px;
     color: grey;
 }
 
-article.page section.page-content {
+article.tei-page section.tei-page-content {
     align-self: center;
 }
 
@@ -328,24 +416,25 @@ details > summary {
     cursor: pointer;
 }
 
-article.content, article.list {
+section.content,
+section.list {
     display: grid;
     column-gap: 32px;
     grid-template-columns: minmax(220px, auto) minmax(180px, 40%);
     width: 100%;
 }
 
-article.list {
+section.list {
     margin-top: 24px;
 }
 
-article.list.single {
+section.list.single {
     display: flex;
     justify-content: center;
     margin-top: 48px;
 }
 
-article.list.single > * {
+section.list.single > * {
     width: 100%;
     max-width: 450px;
 }
@@ -670,15 +759,19 @@ dl.index li + li {
 }
 
 @media (width <= 824px) {
-    article.content {
+    .container.multi-document main > article {
+        min-width: 420px;
+        width: auto;
+    }
+    section.content {
         display: flex;
         flex-direction: column;
     }
-    article.list {
+    section.list {
         display: flex;
         flex-direction: column-reverse;
     }
-    section.pages {
+    section.tei-pages {
         max-width: 450px;
     }
     footer {
@@ -691,8 +784,14 @@ dl.index li + li {
 }
 
 @media (width <= 600px) {
-    main, footer {
+    main > article, footer {
         padding: 24px;
+    }
+    section.pinning {
+        padding: 12px 24px;
+    }
+    section.pinning * + * {
+         margin-left: 8px;
     }
     nav ul {
         padding: 16px 8px 8px 8px;
@@ -716,8 +815,17 @@ dl.index li + li {
 }
 
 @media (width <= 480px) {
-    main {
+    main > article {
         padding: 12px;
+    }
+    section.pinning {
+        padding: 8px 12px;
+    }
+    section.pinning p {
+        font-size: 16px;
+    }
+    section.pinning * + * {
+         margin-left: 6px;
     }
     footer {
         padding: 24px 12px;

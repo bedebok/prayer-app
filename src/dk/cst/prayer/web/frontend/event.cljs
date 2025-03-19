@@ -8,13 +8,18 @@
   [dom-event]
   (some-> dom-event .-target .-value))
 
+;; Q: why not a custom ordered set data type + regular disj?
+;; A: because we need to cache it as EDN in localStorage.
+(defn vec-disj
+  [coll v]
+  (vec (remove #{v} coll)))
+
 (defn handle
   [{:keys [replicant/dom-event replicant/node] :as replicant-data} handler-data]
   (condp = (first handler-data)
     ::reset-state (swap! state select-keys [:location])
     ::pages-display (swap! state update-in [:user :prefs :pages-display] not)
-    ::page (let [arg (second handler-data)
-                 id  (get-in @state [:location :params :id])]
+    ::page (let [[_ id arg] handler-data]
              (.preventDefault dom-event)
              (cond
                (= arg :forward) (swap! state update-in [:user :entities id :n] inc)
@@ -22,6 +27,11 @@
                :else (let [v* (e->v dom-event)
                            v  (if v* (parse-double v*) 0)]
                        (swap! state assoc-in [:user :entities id :n] v))))
+    ::pin (let [id   (second handler-data)
+                pins (get-in @state [:user :pins])]
+            (if (empty? (filter #{id} pins))
+              (swap! state update-in [:user :pins] conj id)
+              (swap! state update-in [:user :pins] vec-disj id)))
     ::select (do
                (.preventDefault dom-event)
                (.select node))

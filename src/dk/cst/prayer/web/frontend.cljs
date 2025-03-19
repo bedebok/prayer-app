@@ -12,6 +12,7 @@
 
 ;; https://stackoverflow.com/questions/5004978/check-if-page-gets-reloaded-or-refreshed-in-javascript#53307588
 (def hard-refresh?
+  "Says whether the user initiated a page refresh or navigated in/to the app."
   (delay
     (and (exists? js/window.performance.navigation)
          (= js/window.performance.navigation.type 1)
@@ -19,6 +20,11 @@
               (map #(.-type %))
               (filter #{"reload"})
               (not-empty)))))
+
+(def local-storage
+  (delay
+    (and (exists? (.-localStorage js/window))
+         (.-localStorage js/window))))
 
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
@@ -47,7 +53,9 @@
 
 (defn render
   []
-  (d/render js/document.body (html/page)))
+  ;; NOTE: cannot render inside the <body> as this element contains a <script>
+  ;;       element with version-specific values in it, e.g. versionHash!
+  (d/render (js/document.getElementById "app") (html/page)))
 
 (defn scroll-to
   [id]
@@ -55,43 +63,49 @@
           (js/document.getElementById)
           (.scrollIntoView)))
 
+(defn cache-size
+  [ls]
+  (some-> ls (.getItem "state") (count)))
+
 (defn ^:dev/after-load init!
   []
-  ;; Reitit (frontend routing).
+  ;; Reitit (frontend routing)
   (set-up-navigation!)
 
-  ;; Replicant (rendering and events).
+  ;; Replicant (rendering and events)
   (d/set-dispatch! event/handle)
   (render)
   (add-watch state ::render (fn [_ _ _ _new-state]
                               (render)
                               (scroll-to (:fragment @state))))
 
-  ;; A user-initiated page reload is used as an indicator that any preserved
-  ;; state should be removed from localStorage.
-  (when-let [ls (and (exists? (.-localStorage js/window))
-                     (.-localStorage js/window))]
-    (if hard-refresh?
-      (when-let [chars (some-> ls (.getItem "state") (count))]
-        (println "hard refresh detected -- remove old state:" chars "chars")
+  ;; Caching
+  (when-let [ls @local-storage]
+    ;; A user-initiated page reload is used as an indicator that any preserved
+    ;; state should be removed from localStorage.
+    (if @hard-refresh?
+      (do
+        (println "hard refresh -- removing cache:" (cache-size ls))
         (doto (.-localStorage js/window)
           (.removeItem "hash")
           (.removeItem "state")))
 
-      ;; Otherwise, we attempt to read in any existing state from localStorage.
-      ;; We load this state ONLY WHEN running the exact same version of the app!
-      (when-let [hash (.getItem ls "initHash")]
-        (when (not= hash (when (exists? js/initHash) js/initHash))
+      ;; Otherwise, we attempt to read in the cached state from localStorage.
+      ;; We load this state ONLY WHEN running the exact same version of the app,
+      ;; which is determined by comparing the cached hash with the current hash
+      (when-let [cached-hash (.getItem ls "hash")]
+        (when (= cached-hash (when (exists? js/versionHash) js/versionHash))
+          (println "compatible app version -- loading cache:" (cache-size ls))
           (some-> ls
                   (.getItem "state")
                   (edn/read-string)
                   (assoc :location (:location @state))
-                  (->> (reset! state)))))))
+                  (->> (reset! state))))))
 
-  ;; Store state for next session.
-  (js/window.addEventListener
-    "beforeunload"
-    (fn []
-      (doto (.-localStorage js/window)
-        (.setItem "hash" (when (exists? js/initHash) js/initHash))
-        (.setItem "state" (pr-str (dissoc @state :location)))))))
+    ;; Cache the current state for the next session when closing the window/tab.
+    (js/window.addEventListener
+      "beforeunload"
+      (fn []
+        (doto ls
+          (.setItem "hash" (when (exists? js/versionHash) js/versionHash))
+          (.setItem "state" (pr-str (dissoc @state :location))))))))

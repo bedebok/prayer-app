@@ -7,14 +7,17 @@
 (def main-js                                                ; TODO: implement (see Glossematics or clarin-tei)
   "main.js")
 
-(def init-hash
-  (hash (Date.)))
+;; Used not only for cache-busting static assets such as CSS files, but also
+;; for clearing localStorage cache (see: dk.cst.prayer.web.frontend namespace).
+(def version-hash
+  "Unique versioning of the frontend app."
+  (abs (hash (Date.))))
 
 ;; https://javascript.plainenglish.io/what-is-cache-busting-55366b3ac022
 (defn- cb
   "Decorate the supplied `path` with a cache busting string."
   [path]
-  (str path "?v=" (abs init-hash)))
+  (str path "?hash=" version-hash))
 
 (defn index-hiccup
   [negotiated-language]
@@ -34,7 +37,8 @@
     [:script
      ;; Rather than having an extra endpoint that the SPA needs to access, these
      ;; values are passed on to the SPA along with the compiled main.js code.
-     (str "var negotiatedLanguage = '" (pr-str negotiated-language) "';\n")]
+     (str "var negotiatedLanguage = '" (pr-str negotiated-language) "';\n")
+     (str "var versionHash = '" version-hash "';\n")]
     [:script {:src (cb (str "/js/" main-js))}]]])
 
 (def index-html

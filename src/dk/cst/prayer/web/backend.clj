@@ -23,6 +23,7 @@
     (into route [:constraints constraints])
     route))
 
+;; All frontend routes serve the same HTML page + JS blob.
 (defn frontend-route
   "Turn a Reitit frontend route into a Pedestal route.
 

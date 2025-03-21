@@ -587,14 +587,15 @@
 
 (defn pinning-view []
   (let [{:keys [user entities] :as state'} @state
-        pins           (:pins user)]
+        pins (:pins user)]
     [:section.pinning
      [:p "Pinned content: "]
      (for [id pins]
        (let [{:keys [tei/title bedebok/type]} (get entities id)]
-         [:label {:title (str "Unpin: " id)}
+         [:label {:id    id
+                  :title (str "Unpin: " id)}
           [:input {:type    "checkbox"
-                   :on      {:change [::event/pin]}
+                   :on      {:change [::event/pin id]}
                    :checked true}]
           (or title id)]))]))
 

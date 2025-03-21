@@ -112,6 +112,7 @@ button.add-pin,
 button.remove-pin {
   all: unset;
   float: right;
+  margin-left: -32px;
   color: transparent;
   user-select: none;
   cursor: pointer;

@@ -601,7 +601,7 @@
      [:p "Pinned content: "]
      (for [id pins]
        (let [{:keys [tei/title bedebok/type]} (get entities id)]
-         [:label {:id    id
+         [:label {:id    (str id "-checkbox")
                   :title (str "Unpin: " id)}
           [:input {:type    "checkbox"
                    :on      {:change [::event/pin id]}

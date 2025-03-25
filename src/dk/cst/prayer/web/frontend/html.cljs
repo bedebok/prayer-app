@@ -132,7 +132,8 @@
 
             :tei/author
             (let [{:keys [tei/key tei/title]} v]
-              [:a {:href (str "/search/" (str "author=" key))}
+              [:a {:href  (str "/search/" (str "author=" key))
+                   :title "Find more with this author"}
                title])
 
             :tei/origDate
@@ -143,12 +144,15 @@
 
             :tei/origPlace
             (let [{:keys [tei/key tei/title]} v]
-              [:a {:href (str "/search/" (str "origPlace=" key))}
+              [:a {:href  (str "/search/" (str "origPlace=" key))
+                   :title "Find more with this place"}
+
                title])
 
             :tei/supportDesc
             (let [{:keys [tei/support tei/material]} v]
-              [:a {:href (str "/search/" (str "material=" material))}
+              [:a {:href  (str "/search/" (str "material=" material))
+                   :title "Find more with this material"}
                support])
 
             :tei/respStmt
@@ -160,7 +164,8 @@
                 (when year
                   (str year " "))
                 (if key
-                  [:a {:href (str "/search/" (str "resp=" key))}
+                  [:a {:href  (str "/search/" (str "resp=" key))
+                       :title "Find more with this person"}
                    persName]
                   resp)
                 ")"))
@@ -174,9 +179,9 @@
             :tei/corresp
             [:a (if (= bedebok-type "text")
                   {:href  (str "/manuscripts/" v)
-                   :title "View manuscript"}
+                   :title "View corresponding manuscript"}
                   {:href  (str "/texts/" v)
-                   :title "View text"})
+                   :title "View corresponding text"})
              v]
 
             #_:bedebok/type
@@ -573,16 +578,20 @@
     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]
    [:ul.links
     [:li
-     [:a {:href ""}
+     [:a {:href  ""                                         ;TODO
+          :title "Accessibility statement"}
       "Accessibility"]]
     [:li
-     [:a {:href ""}
+     [:a {:href  ""                                         ;TODO
+          :title "Privacy policy"}
       "Privacy"]]
     [:li
-     [:a {:href "https://nors.ku.dk/english/research/projects/when-danes-prayed-in-german/"}
+     [:a {:href  "https://nors.ku.dk/english/research/projects/when-danes-prayed-in-german/"
+          :title "Official project page"}
       "Project page"]]
     [:li
-     [:a {:href "https://github.com/bedebok/prayer-app"}
+     [:a {:href  "https://github.com/bedebok/prayer-app"
+          :title "Source code"}
       "Github"]]]])
 
 (defn pinning-view []

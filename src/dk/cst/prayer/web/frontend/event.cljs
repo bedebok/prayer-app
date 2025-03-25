@@ -32,6 +32,7 @@
             (if (empty? (filter #{id} pins))
               (swap! state update-in [:user :pins] conj id)
               (swap! state update-in [:user :pins] vec-disj id)))
+    ::reset-pins (swap! state update-in [:user :pins] empty)
     ::select (do
                (.preventDefault dom-event)
                (.select node))

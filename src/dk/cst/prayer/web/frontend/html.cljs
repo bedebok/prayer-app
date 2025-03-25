@@ -606,7 +606,10 @@
           [:input {:type    "checkbox"
                    :on      {:change [::event/pin id]}
                    :checked true}]
-          (or title id)]))]))
+          (or title id)]))
+     [:button.remove-pin {:title "Unpin all"
+                          :on    {:click [::event/reset-pins]}}]]))
+
 
 (defn page
   []

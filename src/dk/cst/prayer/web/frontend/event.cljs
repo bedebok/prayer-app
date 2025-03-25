@@ -33,6 +33,8 @@
               (swap! state update-in [:user :pins] conj id)
               (swap! state update-in [:user :pins] vec-disj id)))
     ::reset-pins (swap! state update-in [:user :pins] empty)
+    ::reset-error (let [[_ error-location] handler-data]
+                    (swap! state update :error dissoc error-location))
     ::select (do
                (.preventDefault dom-event)
                (.select node))

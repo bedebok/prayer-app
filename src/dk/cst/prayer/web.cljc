@@ -7,8 +7,9 @@
 (def port
   3456)
 
+;; NOTE: must be 0.0.0.0 when running in a container, cannot be localhost!
 (def host
-  "localhost")
+  "0.0.0.0")
 
 (def protocol
   "http://")
@@ -19,9 +20,6 @@
 (defn api-path
   [& path]
   (apply str api-prefix path))
-
-(def development?
-  true)
 
 (def coercion
   {:type {:constraint #"text|manuscript"}})                 ; TODO: expand

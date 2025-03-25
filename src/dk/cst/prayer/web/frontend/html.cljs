@@ -610,10 +610,22 @@
      [:button.remove-pin {:title "Unpin all"
                           :on    {:click [::event/reset-pins]}}]]))
 
+;; TODO: make more functional, e.g. send/log errors somewhere on request
+;; TODO: handle frontend errors too
+(defn error-message-view
+  [error]
+  (when-let [backend-error (:backend error)]
+    [:dialog.error {:open true}
+     [:h1 "Error"]
+     [:pre (str backend-error)]
+     [:form {:method "dialog"}
+      [:button {:autofocus true
+                :on        {:click [::event/reset-error :backend]}}
+       "OK"]]]))
 
 (defn page
   []
-  (let [{:keys [user] :as state'} @state
+  (let [{:keys [user error] :as state'} @state
         {:keys [pins]} user]
     ;; Some kind of ID is needed for replicant to properly re-render
     ;; TODO: is there a better ID?
@@ -622,6 +634,7 @@
                               "multi-document")}
      (header-view)
      #_(dev-view)
+     (error-message-view error)
      [:div.page-body-wrapper
       [:div.spacer]
       [:aside.spine {:aria-hidden "true"}

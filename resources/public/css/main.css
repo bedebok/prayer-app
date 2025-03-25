@@ -729,6 +729,13 @@ dl.index li + li {
     border-top: 0.5px solid black;
 }
 
+/* TODO: improve styles */
+dialog.error pre {
+    width: 70vw;
+    height: 70vh;
+    overflow: scroll;
+}
+
 @media (width <= 932px) {
     .page-body-wrapper {
         flex-direction: column;

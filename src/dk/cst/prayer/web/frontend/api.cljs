@@ -40,6 +40,18 @@
   (when-not (empty? kvs)
     (swap! state assoc-in [:index type] kvs)))
 
+;; TODO: proof-of-concept, needs to be improved, e.g don't use js/alert
+(defn check-response
+  [fetch-promise]
+  (.then fetch-promise
+         #(if (= (:status %) 500)
+            (swap! state assoc-in [:error :backend] (:body %))
+            %)))
+
+(defn fetch
+  [url & [opts]]
+  (check-response (fetch/get url opts)))
+
 (defn fetch-entity
   [{:keys [params]}]
   (let [{:keys [id]} params]
@@ -63,9 +75,8 @@
   (let [{:keys [query]} params]
     ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:search query])
-      (-> (fetch/get (web/api-path "/api/search/" query))
-          ;; TODO: handle 404 explicitly
-          (.then #(add-search-result query (:body %)))))))
+      (some-> (fetch (web/api-path "/api/search/" query))
+              (.then #(add-search-result query (:body %)))))))
 
 (defn fetch-index
   [type]

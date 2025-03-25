@@ -1,11 +1,21 @@
 (ns dk.cst.prayer.web.backend.html
   "Server-side HTML generation."
-  (:require [huff2.core :as h]
-            [dk.cst.prayer.web :as web])
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [huff2.core :as h])
   (:import [java.util Date]))
 
-(def main-js                                                ; TODO: implement (see Glossematics or clarin-tei)
-  "main.js")
+(def main-js
+  "When making a release, the filename will be appended with a hash;
+  that is not the case when running the regular shadow-cljs watch process.
+
+  It relies on :module-hash-names being set to true in shadow-cljs.edn."
+  (if-let [url (io/resource "public/js/manifest.edn")]
+    (-> url slurp edn/read-string first :output-name)
+    "main.js"))
+
+(def dev?
+  (= main-js "main.js"))
 
 ;; Used not only for cache-busting static assets such as CSS files, but also
 ;; for clearing localStorage cache (see: dk.cst.prayer.web.frontend namespace).
@@ -26,7 +36,7 @@
     [:meta {:charset "utf-8"}]
     [:meta {:name    "viewport"
             :content "width=device-width, initial-scale=1.0"}]
-    [:title (str (when web/development? "(dev) ")
+    [:title (str (when dev? "(dev) ")
                  "When Danes Prayed in German")]
     #_[:link {:rel "icon" :href (cb "/images/favicon.svg")}]
     #_[:link {:rel "mask-icon" :href (cb "/images/favicon.svg") :color "#a02c2c"}]

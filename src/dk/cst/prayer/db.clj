@@ -1,6 +1,7 @@
 (ns dk.cst.prayer.db
   (:require [clojure.set :as set]
             [clojure.string :as str]
+            [clojure.java.io :as io]
             [datalevin.core :as d]
             [datalevin.analyzer :as da]
             [datalevin.search-utils :as dsu]
@@ -11,11 +12,14 @@
             [dk.cst.prayer.tei :as tei])
   (:import [java.io File]))
 
+;; The db-path and files-path values are meant only for the dev environment.
+;; In the production server they are replaced with hardcoded values as part of
+;; executing the -main function.
 (def db-path
-  "test/db")
+  "test/db")                                                ; dev value
 
 (def files-path
-  "test/Data")
+  "test/Data")                                              ; dev value
 
 (defn xml-files
   "Fetch XML File objects recursively from a starting `dir`."
@@ -31,15 +35,18 @@
        (reverse)
        (run! io/delete-file)))
 
+(defn delete-db!
+  "Close any previous db at `db-path` and remove the data."
+  [db-path]
+  (d/close (d/get-conn db-path static/schema))
+  (rmdir db-path))
+
 (defn build-db!
   [files-path db-path]
+  (io/make-parents db-path)
   (let [files    (xml-files files-path)
         entities (map tei/file->entity files)
-        ;; TODO: kills old db first (make this a bit more elegant)
-        conn     (do
-                   (d/close (d/get-conn db-path static/schema))
-                   (rmdir db-path)
-                   (d/get-conn db-path static/schema))]
+        conn     (d/get-conn db-path static/schema)]
     (d/transact! conn entities)))
 
 (defn top-items

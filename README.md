@@ -69,3 +69,9 @@ It is probably a bit more unstable than Asami, e.g. I already discovered two (wh
 
 #### Replicant
 TBD
+
+## Dev and production
+
+```shell
+PRAYER_APP_FILES_DIR=/Users/rqf595/Code/prayer-app/test/Data docker compose up --build
+```

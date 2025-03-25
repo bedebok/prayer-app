@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  prayer-app:
+    build:
+      # need to include files from parent dir (see Dockerfile)
+      context: ../
+      dockerfile: docker/prayer-app/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ${PRAYER_APP_FILES_DIR}:/etc/prayer-app/files
+    ports:
+      - "3456:3456"

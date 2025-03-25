@@ -1,7 +1,13 @@
 (ns dk.cst.prayer.web.backend.interceptor
   "Pedestal interceptors for the backend web service."
-  (:require [clojure.edn :as edn]
+  (:require [clj-commons.format.exceptions :as exceptions]
+            [clojure.edn :as edn]
+            [clojure.pprint :as pprint]
             [clojure.string :as str]
+            [ring.util.response :as ring-response]
+            [taoensso.telemere :as t]
+            [io.pedestal.http :as http]
+            [io.pedestal.http.cors :as cors]
             [reitit.impl :refer [form-decode]]
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as web]
@@ -10,6 +16,48 @@
             [io.pedestal.interceptor :refer [interceptor]]
             [datalevin.core :as d]
             [dk.cst.prayer.db :as db]))
+
+(defn- format-exception
+  [exception]
+  (binding [exceptions/*fonts* nil]
+    (exceptions/format-exception exception)))
+
+(defn error-debug
+  "When an error propagates to this interceptor error fn, trap it,
+  print it to the output stream of the HTTP request, and do not
+  rethrow it."
+  [context exception]
+  #_(t/error! :msg "Dev interceptor caught an exception; Forwarding it as the response."
+               :exception exception)
+  (assoc context
+    :response (-> (ring-response/response
+                    (with-out-str (println "Error processing request!")
+                                  (println "Exception:\n")
+                                  (println (format-exception exception))
+                                  (println "\nContext:\n")
+                                  (pprint/pprint context)))
+                  (ring-response/status 500)
+                  (assoc-in [:headers "Access-Control-Allow-Origin"] "*"))))
+
+(def fixed-exception-debug
+  "An interceptor which catches errors, renders them to readable text
+  and sends them to the user. This interceptor is intended for
+  development time assistance in debugging problems in pedestal
+  services. Including it in interceptor paths on production systems
+  may present a security risk by exposing call stacks of the
+  application when exceptions are encountered."
+  (interceptor
+    {:name  ::fixed-exception-debug
+     :error error-debug}))
+
+;; An alternative to the built-in dev-interceptors which is fundamentally broken
+;; with regard to CORS: errors cannot be displayed in the browser since it
+;; doesn't set the necessary "Access-Control-Allow-Origin: *" header before
+;; returning the error result.
+(defn dev-interceptors
+  [service-map]
+  (update service-map ::http/interceptors
+          #(into [cors/dev-allow-origin fixed-exception-debug] %)))
 
 (defn basic-response
   [ctx res]

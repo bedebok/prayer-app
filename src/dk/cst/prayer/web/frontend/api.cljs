@@ -40,6 +40,7 @@
   (when-not (empty? kvs)
     (swap! state assoc-in [:index type] kvs)))
 
+;; TODO: create a macro for the (some-> ...) code?
 ;; TODO: proof-of-concept, needs to be improved, e.g don't use js/alert
 (defn check-response
   [fetch-promise]
@@ -48,6 +49,8 @@
             (swap! state assoc-in [:error :backend] (:body %))
             %)))
 
+;; TODO: swap built-in fetch transit parsing for transito?
+;; TODO: handle 404?
 (defn fetch
   [url & [opts]]
   (check-response (fetch/get url opts)))
@@ -55,44 +58,35 @@
 (defn fetch-entity
   [{:keys [params]}]
   (let [{:keys [id]} params]
-    ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:entities id])
-      (-> (fetch/get (web/api-path "/api/entity/" id))
-          ;; TODO: handle 404 explicitly
-          (.then #(add-entity id (:body %)))))))
+      (some-> (fetch (web/api-path "/api/entity/" id))
+              (.then #(add-entity id (:body %)))))))
 
 (defn fetch-work
   [{:keys [params]}]
   (let [{:keys [id]} params]
-    ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:works id])
-      (-> (fetch/get (web/api-path "/api/work/" id))
-          ;; TODO: handle 404 explicitly
-          (.then #(add-work id (:body %)))))))
+      (some-> (fetch (web/api-path "/api/work/" id))
+              (.then #(add-work id (:body %)))))))
 
 (defn search
   [{:keys [params]}]
   (let [{:keys [query]} params]
-    ;; TODO: swap built-in fetch transit parsing for transito?
     (when-not (get-in @state [:search query])
       (some-> (fetch (web/api-path "/api/search/" query))
               (.then #(add-search-result query (:body %)))))))
 
 (defn fetch-index
   [type]
-  ;; TODO: swap built-in fetch transit parsing for transito?
   (when-not (get-in @state [:index type])
-    (-> (fetch/get (web/api-path "/api/index/" type))
-        ;; TODO: handle 404 explicitly
-        (.then #(add-index type (:body %))))))
+    (some-> (fetch (web/api-path "/api/index/" type))
+            (.then #(add-index type (:body %))))))
 
 (defn fetch-works
   []
-  ;; TODO: swap built-in fetch transit parsing for transito?
   (when-not (get-in @state [:index "work"])
-    (-> (fetch/get (web/api-path "/api/works"))
-        ;; TODO: handle 404 explicitly
-        (.then #(add-index "work" (:body %))))))
+    (some-> (fetch (web/api-path "/api/works"))
+            (.then #(add-index "work" (:body %))))))
 
 (defn handle
   [req handler-data]

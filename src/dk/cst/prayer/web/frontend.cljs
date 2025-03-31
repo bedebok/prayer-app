@@ -3,7 +3,7 @@
   (:require [clojure.edn :as edn]
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.frontend.event :as event]
-            [dk.cst.prayer.web.frontend.state :refer [state]]
+            [dk.cst.prayer.web.frontend.state :as state :refer [state]]
             [dk.cst.prayer.web.frontend.api :as api]
             [dk.cst.prayer.web.frontend.html :as html]
             [replicant.dom :as d]
@@ -67,8 +67,21 @@
   [ls]
   (some-> ls (.getItem "state") (count)))
 
+;; Only the data map of the ExceptionInfo error is considered
+(defn error-handling
+  [_message _url _line-number _col-number error]
+  (state/register-error! error)
+
+  ;; We do not short-circuit regular error handling (e.g. console output).
+  ;; To do that we would have to return true instead of returning false.
+  false)
+
 (defn ^:dev/after-load init!
   []
+  ;; Refer all uncaught errors to a universal error handler.
+  ;; https://www.staticapps.org/articles/front-end-error-handling/
+  (set! (.-onerror js/window) error-handling)
+
   ;; Reitit (frontend routing)
   (set-up-navigation!)
 

@@ -611,16 +611,20 @@
                           :on    {:click [::event/reset-pins]}}]]))
 
 ;; TODO: make more functional, e.g. send/log errors somewhere on request
-;; TODO: handle frontend errors too
 (defn error-message-view
-  [error]
-  (when-let [backend-error (:backend error)]
+  [{:keys [name message url body] :as error}]
+  (when error
     [:dialog.error {:open true}
-     [:h1 "Error"]
-     [:pre (str backend-error)]
+     [:h1 (or name "Unknown error")]
+     (when message
+       [:p [:strong "Message: "] (str/capitalize message)])
+     (when url
+       [:p [:strong "URL: "] [:a {:href url} url]])
+     (when body
+       [:pre (str body)])
      [:form {:method "dialog"}
       [:button {:autofocus true
-                :on        {:click [::event/reset-error :backend]}}
+                :on        {:click [::event/reset-error]}}
        "OK"]]]))
 
 (defn page
@@ -635,6 +639,9 @@
      (header-view)
      #_(dev-view)
      (error-message-view error)
+     #_[:button {:on {:click [::event/throw {:name    "Artificial error"
+                                             :message "Error induced by user"}]}}
+        "throw error"]
      [:div.page-body-wrapper
       [:div.spacer]
       [:aside.spine {:aria-hidden "true"}

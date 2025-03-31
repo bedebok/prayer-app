@@ -1,6 +1,7 @@
 (ns dk.cst.prayer.web.frontend.event
   "Handlers for Replicant event dispatches."
-  (:require [reitit.impl :refer [form-encode]]
+  (:require [clojure.string :as str]
+            [reitit.impl :refer [form-encode]]
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.frontend.state :refer [state]]))
 
@@ -17,6 +18,9 @@
 (defn handle
   [{:keys [replicant/dom-event replicant/node] :as replicant-data} handler-data]
   (condp = (first handler-data)
+    ::throw (let [[_ {:keys [name message] :as m}] handler-data
+                  ex-message (str/join ": " (remove nil? [name message]))]
+              (throw (ex-info ex-message m)))
     ::reset-state (swap! state select-keys [:location])
     ::pages-display (swap! state update-in [:user :prefs :pages-display] not)
     ::page (let [[_ id arg] handler-data]
@@ -33,8 +37,7 @@
               (swap! state update-in [:user :pins] conj id)
               (swap! state update-in [:user :pins] vec-disj id)))
     ::reset-pins (swap! state update-in [:user :pins] empty)
-    ::reset-error (let [[_ error-location] handler-data]
-                    (swap! state update :error dissoc error-location))
+    ::reset-error (swap! state assoc :error nil)
     ::select (do
                (.preventDefault dom-event)
                (.select node))

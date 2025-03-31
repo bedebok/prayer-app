@@ -3,7 +3,7 @@
   (:require [dk.cst.hiccup-tools.elem :as e]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.prayer.web :as web]
-            [dk.cst.prayer.web.frontend.state :refer [state]]
+            [dk.cst.prayer.web.frontend.state :as state :refer [state]]
             [lambdaisland.fetch :as fetch]))
 
 (defn node->pages
@@ -41,12 +41,18 @@
     (swap! state assoc-in [:index type] kvs)))
 
 ;; TODO: create a macro for the (some-> ...) code?
-;; TODO: proof-of-concept, needs to be improved, e.g don't use js/alert
 (defn check-response
   [fetch-promise]
   (.then fetch-promise
          #(if (= (:status %) 500)
-            (swap! state assoc-in [:error :backend] (:body %))
+            (let [url (some-> % meta ::fetch/request .-url)]
+              ;; NOTE: when throwing an error inside a promise, the error will
+              ;;       not be caught by window.onerror, so we should always
+              ;;       explicitly call `register-error!` in such cases!
+              (state/register-error! {:name    "Server error"
+                                      :message "status 500 received from server"
+                                      :url     url
+                                      :body    (:body %)}))
             %)))
 
 ;; TODO: swap built-in fetch transit parsing for transito?

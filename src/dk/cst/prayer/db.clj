@@ -5,8 +5,9 @@
             [datalevin.core :as d]
             [datalevin.analyzer :as da]
             [datalevin.search-utils :as dsu]
-            [clojure.java.io :as io]
+            [taoensso.telemere :as t]
             [dk.cst.xml-hiccup :as xh]
+            [dk.cst.prayer.tei.schema :as schema]
             [dk.cst.prayer.search :as search]
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.tei :as tei])
@@ -41,12 +42,25 @@
   (d/close (d/get-conn db-path static/schema))
   (rmdir db-path))
 
+(defn validate-files
+  [files]
+  (reduce (fn [acc file]
+            (if-let [error (schema/validate-tei file)]
+              (vary-meta acc update :error assoc (.getName file) error)
+              (conj acc file)))
+          ^{:error {}} []
+          files))
+
 (defn build-db!
   [files-path db-path]
   (io/make-parents db-path)
-  (let [files    (xml-files files-path)
+  (let [files    (validate-files (xml-files files-path))
         entities (map tei/file->entity files)
         conn     (d/get-conn db-path static/schema)]
+    (when-let [error (meta files)]
+      (t/log! {:level :warn
+               :data  error}
+              (str "TEI validation error: " (count error) " file(s) excluded")))
     (d/transact! conn entities)))
 
 (defn top-items

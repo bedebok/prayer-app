@@ -9,7 +9,7 @@
 ;; See: https://github.com/taoensso/telemere/wiki/3-Config#system-streams
 ;; Ensure that the logs are written to output, but only for errors.
 (t/streams->telemere!)
-(t/set-min-level! :error)
+(t/set-min-level! :warn)
 
 ;; Starts a production server available at port 3456.
 ;; NOTE: this is expected to be done by booting system via docker compose!

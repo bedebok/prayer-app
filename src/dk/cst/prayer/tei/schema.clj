@@ -29,7 +29,7 @@
           (.getMessage e))))))
 
 (def validator
-  (delay (->validator "resources/tei_all.xsd")))
+  (delay (->validator "resources/schema/tei_all.xsd")))
 
 (defn validate-tei
   "Return the first found validation error for TEI `xml` (if invalid)."
@@ -42,7 +42,7 @@
   (nil? (validate-tei xml)))
 
 (comment
-  (->validator "resources/tei_all.xsd")
+  (->validator "resources/schema/tei_all.xsd")
 
   (validate-tei "test/Data/Catalogue/xml/AM04-0789.xml")
   (validate-tei "test/Data/Catalogue/xml/AM08-0073.xml")

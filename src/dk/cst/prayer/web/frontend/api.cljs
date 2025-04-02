@@ -42,15 +42,16 @@
 
 ;; TODO: create a macro for the (some-> ...) code?
 (defn check-response
+  "Return nil on server error in `fetch-promise` and write to error log."
   [fetch-promise]
   (.then fetch-promise
-         #(if (= (:status %) 500)
+         #(if (<= 500 (:status %) 511)
             (let [url (some-> % meta ::fetch/request .-url)]
               ;; NOTE: when throwing an error inside a promise, the error will
               ;;       not be caught by window.onerror, so we should always
               ;;       explicitly call `register-error!` in such cases!
               (state/register-error! {:name    "Server error"
-                                      :message "status 500 received from server"
+                                      :message (str "status code " (:status %) " received")
                                       :url     url
                                       :body    (:body %)}))
             %)))

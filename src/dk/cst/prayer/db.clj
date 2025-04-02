@@ -57,10 +57,14 @@
   (let [files    (validate-files (xml-files files-path))
         entities (map tei/file->entity files)
         conn     (d/get-conn db-path static/schema)]
-    (when-let [error (meta files)]
+    (when-let [error (some-> files meta :error not-empty)]
       (t/log! {:level :warn
                :data  error}
               (str "TEI validation error: " (count error) " file(s) excluded")))
+    (t/log! {:level :info
+             :data  (update-vals (group-by :bedebok/type entities)
+                                 (comp sort #(map :file/name %)))}
+            (str "Populating database with " (count entities) " documents."))
     (d/transact! conn entities)))
 
 (defn top-items

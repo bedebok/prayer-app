@@ -41,7 +41,7 @@
     (swap! state assoc-in [:index type] kvs)))
 
 ;; TODO: create a macro for the (some-> ...) code?
-(defn check-response
+(defn cancel-on-error!
   "Return nil on server error in `fetch-promise` and write to error log."
   [fetch-promise]
   (.then fetch-promise
@@ -60,7 +60,10 @@
 ;; TODO: handle 404?
 (defn fetch
   [url & [opts]]
-  (check-response (fetch/get url opts)))
+  (->> (assoc opts
+         :headers {"x-session-id" state/session-id})        ; track in logs
+       (fetch/get url)
+       (cancel-on-error!)))
 
 (defn fetch-entity
   [{:keys [params]}]
@@ -94,6 +97,14 @@
   (when-not (get-in @state [:index "work"])
     (some-> (fetch (web/api-path "/api/works"))
             (.then #(add-index "work" (:body %))))))
+
+(defn backend-log
+  [error]
+  (fetch/post (web/api-path "/api/error/" state/session-id) {:body error})
+
+  ;; ;; https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon
+  ;; This is the ideal alternative, but it is blocked by e.g. UBlock Origin.
+  #_(.sendBeacon js/navigator (web/api-path "/api/error/" state/session-id) error))
 
 (defn handle
   [req handler-data]

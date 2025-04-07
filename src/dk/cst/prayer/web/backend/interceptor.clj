@@ -27,8 +27,6 @@
   print it to the output stream of the HTTP request, and do not
   rethrow it."
   [context exception]
-  #_(t/error! :msg "Dev interceptor caught an exception; Forwarding it as the response."
-               :exception exception)
   (assoc context
     :response (-> (ring-response/response
                     (with-out-str (println "Error processing request!")
@@ -60,14 +58,16 @@
           #(into [cors/dev-allow-origin fixed-exception-debug] %)))
 
 (defn basic-response
-  [ctx res]
-  (update
-    ctx :response merge
-    (if (not (empty? res))
-      {:status  200
-       :headers {"Content-Type" "application/transit+json"}
-       :body    (transito/write-str res)}
-      {:status 404})))
+  ([ctx]
+   (update ctx :response merge {:status 201}))
+  ([ctx res]
+   (update
+     ctx :response merge
+     (if (not (empty? res))
+       {:status  200
+        :headers {"Content-Type" "application/transit+json"}
+        :body    (transito/write-str res)}
+       {:status 404}))))
 
 (def trailing-slash
   (letfn [(remove-trailing-slash
@@ -199,6 +199,20 @@
                               db
                               type)]
                 (basic-response ctx res)))}))
+
+(def frontend-error
+  (interceptor
+    {:name  ::frontend-error
+     :enter (fn [{:keys [request] :as ctx}]
+              (let [session-id (form-decode (get-in request [:params :session-id]))
+                    ;; transit-params are produced by the 'body-params' IC.
+                    {:keys [name message] :as error} (:transit-params request)]
+                (t/log! {:level :error
+                         :data  {:session-id session-id
+                                 :error      error}}
+                        (str "[FRONTEND] " name (when message
+                                                  (str ": " message))))
+                (basic-response ctx request)))}))
 
 (def app
   (interceptor

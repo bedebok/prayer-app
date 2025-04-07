@@ -4,6 +4,7 @@
             [dk.cst.prayer.web.backend.html :as html]
             [dk.cst.prayer.web.backend.interceptor :as ic]
             [io.pedestal.http :as http]
+            [io.pedestal.http.body-params :refer [body-params]]
             [io.pedestal.http.route :as route]))
 
 (defonce server (atom nil))
@@ -13,7 +14,8 @@
     ["/api/index/:type" :get [ic/by-type] :route-name ::index]
     ["/api/works" :get [ic/works] :route-name ::work-index]
     ["/api/work/:work" :get [ic/by-work] :route-name ::work]
-    ["/api/search/:query" :get [ic/search] :route-name ::search]})
+    ["/api/search/:query" :get [ic/search] :route-name ::search]
+    ["/api/error/:session-id" :post [(body-params) ic/frontend-error] :route-name ::frontend-error]})
 
 (defn backend-route
   "Add common parts to a Pedestal API `route`."
@@ -91,3 +93,8 @@
   (when @server
     (stop-dev))
   (start-dev))
+
+(comment
+  (restart)
+  #_.)
+

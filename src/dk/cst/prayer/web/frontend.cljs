@@ -67,9 +67,16 @@
   [ls]
   (some-> ls (.getItem "state") (count)))
 
-;; Only the data map of the ExceptionInfo error is considered
+(defn ex-data+
+  [error]
+  (if (instance? ExceptionInfo error)
+    (ex-data error)
+    {:name    (.-name error)
+     :message (.-message error)}))
+
 (defn error-handling
   [_message _url _line-number _col-number error]
+  (api/backend-log (ex-data+ error))
   (state/register-error! error)
 
   ;; We do not short-circuit regular error handling (e.g. console output).

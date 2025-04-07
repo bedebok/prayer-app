@@ -1,7 +1,13 @@
 (ns dk.cst.prayer.web.frontend.state)
 
+;; TODO: carry over from localStorage when available
+(def session-id
+  "For identifying the current session/user when logging frontend errors."
+  (random-uuid))
+
 (defonce state
-  (atom {:user {:pins []}}))
+  (atom {:user {:session-id session-id
+                :pins       []}}))
 
 ;; TODO: keep error log in the client?
 ;; The following data keys are allowed: :name, :message, :url, and :body.

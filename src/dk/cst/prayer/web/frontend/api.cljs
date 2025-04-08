@@ -3,6 +3,7 @@
   (:require [dk.cst.hiccup-tools.elem :as e]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.prayer.web :as web]
+            [dk.cst.prayer.web.frontend.error :as err]
             [dk.cst.prayer.web.frontend.state :as state :refer [state]]
             [lambdaisland.fetch :as fetch]))
 
@@ -49,11 +50,11 @@
             (let [url (some-> % meta ::fetch/request .-url)]
               ;; NOTE: when throwing an error inside a promise, the error will
               ;;       not be caught by window.onerror, so we should always
-              ;;       explicitly call `register-error!` in such cases!
-              (state/register-error! {:name    "Server error"
-                                      :message (str "status code " (:status %) " received")
-                                      :url     url
-                                      :body    (:body %)}))
+              ;;       explicitly call `register!` in such cases!
+              (err/display! {:name     "Server error"
+                             :message (str "status code " (:status %) " received")
+                             :url     url
+                             :body    (:body %)}))
             %)))
 
 ;; TODO: swap built-in fetch transit parsing for transito?
@@ -99,12 +100,12 @@
             (.then #(add-index "work" (:body %))))))
 
 (defn backend-log
-  [error]
-  (fetch/post (web/api-path "/api/error/" state/session-id) {:body error})
+  [error-data]
+  (fetch/post (web/api-path "/api/error/" state/session-id) {:body error-data})
 
   ;; ;; https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon
   ;; This is the ideal alternative, but it is blocked by e.g. UBlock Origin.
-  #_(.sendBeacon js/navigator (web/api-path "/api/error/" state/session-id) error))
+  #_(.sendBeacon js/navigator (web/api-path "/api/error/" state/session-id) error-data))
 
 (defn handle
   [req handler-data]

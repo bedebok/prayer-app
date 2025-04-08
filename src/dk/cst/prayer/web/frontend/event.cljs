@@ -3,7 +3,7 @@
   (:require [clojure.string :as str]
             [reitit.impl :refer [form-encode]]
             [dk.cst.prayer.web :as web]
-            [dk.cst.prayer.web.frontend.state :refer [state]]))
+            [dk.cst.prayer.web.frontend.state :as state :refer [state]]))
 
 (defn e->v
   [dom-event]
@@ -21,7 +21,9 @@
     ::throw (let [[_ {:keys [name message] :as m}] handler-data
                   ex-message (str/join ": " (remove nil? [name message]))]
               (throw (ex-info ex-message m)))
-    ::reset-state (swap! state select-keys [:location])
+    ::reset-state (reset! state (merge
+                                  (select-keys @state [:location])
+                                  (state/default-state)))
     ::pages-display (swap! state update-in [:user :prefs :pages-display] not)
     ::page (let [[_ id arg] handler-data]
              (.preventDefault dom-event)

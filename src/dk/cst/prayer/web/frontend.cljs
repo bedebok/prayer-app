@@ -2,8 +2,9 @@
   "The main namespace of the frontend single-page app."
   (:require [clojure.edn :as edn]
             [dk.cst.prayer.web :as web]
+            [dk.cst.prayer.web.frontend.error :as err]
             [dk.cst.prayer.web.frontend.event :as event]
-            [dk.cst.prayer.web.frontend.state :as state :refer [state]]
+            [dk.cst.prayer.web.frontend.state :refer [state]]
             [dk.cst.prayer.web.frontend.api :as api]
             [dk.cst.prayer.web.frontend.html :as html]
             [replicant.dom :as d]
@@ -67,17 +68,11 @@
   [ls]
   (some-> ls (.getItem "state") (count)))
 
-(defn ex-data+
-  [error]
-  (if (instance? ExceptionInfo error)
-    (ex-data error)
-    {:name    (.-name error)
-     :message (.-message error)}))
-
 (defn error-handling
   [_message _url _line-number _col-number error]
-  (api/backend-log (ex-data+ error))
-  (state/register-error! error)
+  (let [error-data (err/error->data error)]
+    (api/backend-log error-data)
+    (err/display! error-data))
 
   ;; We do not short-circuit regular error handling (e.g. console output).
   ;; To do that we would have to return true instead of returning false.

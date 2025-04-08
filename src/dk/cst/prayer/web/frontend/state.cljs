@@ -1,26 +1,15 @@
 (ns dk.cst.prayer.web.frontend.state)
 
-;; TODO: carry over from localStorage when available
-(def session-id
-  "For identifying the current session/user when logging frontend errors."
-  (random-uuid))
+(defn default-state
+  []
+  {:user {:session-id (random-uuid)
+          :pins       []}})
 
 (defonce state
-  (atom {:user {:session-id session-id
-                :pins       []}}))
+  (atom (default-state)))
 
-;; TODO: keep error log in the client?
-;; The following data keys are allowed: :name, :message, :url, and :body.
-(defn register-error!
-  "Universal registration of exceptions/errors for display in the UI."
-  [error]
-  (swap! state assoc :error (cond
-                              (map? error)
-                              error
-
-                              (instance? ExceptionInfo error)
-                              (ex-data error)
-
-                              :else
-                              {:name    (.-name error)
-                               :message (.-message error)})))
+;; NOTE: this value will be automatically carried over from localStorage unless
+;;       the user performs a hard page refresh!
+(def session-id
+  "For identifying the current session/user when logging frontend errors."
+  (get-in @state [:user :session-id]))

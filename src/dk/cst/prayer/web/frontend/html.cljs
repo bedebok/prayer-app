@@ -7,7 +7,7 @@
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as page]
             [dk.cst.prayer.web.frontend.event :as event]
-            [dk.cst.prayer.web.frontend.state :refer [state]]))
+            [dk.cst.prayer.web.frontend.state :as state :refer [state]]))
 
 (defn pp
   [x]
@@ -15,6 +15,9 @@
 
 (defn dev-view []
   [:div
+   [:button {:on {:click [::event/throw {:name    "Artificial error"
+                                         :message "Error induced by user"}]}}
+    "throw error"]
    [:button {:on {:click [::event/reset-state]}}
     "reset"]
    [:details [:summary "state"]
@@ -610,20 +613,23 @@
      [:button.remove-pin {:title "Unpin all"
                           :on    {:click [::event/reset-pins]}}]]))
 
-;; TODO: make more functional, e.g. send/log errors somewhere on request
 (defn error-message-view
   [{:keys [name message url body] :as error}]
   (when error
     [:dialog.error {:open true}
      [:h1 (or name "Unknown error")]
-     (when message
-       [:p [:strong "Message: "] (str/capitalize message)])
-     (when url
-       [:p [:strong "URL: "] [:a {:href url} url]])
+     [:ul
+      [:li [:strong "Session: "] state/session-id]
+      (when message
+        [:li [:strong "Message: "] (str/capitalize message)])
+      (when url
+        [:li [:strong "URL: "] [:a {:href url} url]])]
      (when body
        [:pre (str body)])
      [:form {:method "dialog"}
       [:button {:autofocus true
+                :style     {:width  "100%"
+                            :height "2em"}
                 :on        {:click [::event/reset-error]}}
        "OK"]]]))
 
@@ -636,12 +642,9 @@
     [:div.container {:class (if (empty? pins)
                               "single-document"
                               "multi-document")}
-     (header-view)
      #_(dev-view)
+     (header-view)
      (error-message-view error)
-     #_[:button {:on {:click [::event/throw {:name    "Artificial error"
-                                             :message "Error induced by user"}]}}
-        "throw error"]
      [:div.page-body-wrapper
       [:div.spacer]
       [:aside.spine {:aria-hidden "true"}

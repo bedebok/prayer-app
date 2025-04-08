@@ -551,6 +551,42 @@
    [:p "This project examines the role of Low German in the transition from Latin to Danish as the primary language of religious devotion."]
    [:p "A common misconception holds that religious devotion was practiced solely through the medium of Latin until the Reformation. However, devotional books already began to appear in the vernacular in Denmark during the Middle Ages; not only in Danish, but also in another vernacular, Low German."]])
 
+(defn privacy-policy-view
+  []
+  [:article
+   [:header
+    [:h1 "Privacy policy"]]
+   [:p "This is a research project by the University of Copenhagen. We are hosting it on servers operated by the university."]
+   [:p
+    "We do not make any use of personally identifiable user information. "
+    "The sparse information retained by this website serves purely functional needs (as explained below). "
+    "For this reason, we do not ask for any consent."]
+   [:h2 "Use of localStorage"]
+   [:p "We do not store any cookies in your browser at all, though we do make use of the browser's built-in "
+    [:a {:href "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage"} "localStorage"]
+    " (if available) in order to cache website data for faster load times as well as saving limited user state between sessions. "
+    "This data is local to the user's browser and isn't shared with the server at all."]
+   [:h2 "Logging"]
+   [:p
+    "We perform basic logging of HTTP requests, "
+    "i.e. when a user clicks on a hyperlink somewhere on our website or performs another action which necessitates communication with our server, "
+    "this operation will be logged."]
+   [:p
+    "We also log any unexpected errors that may occur during a visit so that we have a chance to correct these at a later point. "
+    "When an error occurs, either in the user's browser or on the server as a consequence of a request, "
+    "the user is presented with the same information that will be added to the logs."]
+   [:h2 "Session ID"]
+   [:p
+    "We make use of a randomly generated session ID as part of the logs. This is done to connect prior HTTP requests to relevant logged errors. "
+    "The " [:a {:href "https://en.wikipedia.org/wiki/Session_ID"} "session ID"]
+    " is a randomly generated string and isn't connected to any personally identifiable information. "
+    "Depending on the user's browser settings, the session ID may be reused between browser sessions, "
+    "as it is connected to the general caching mechanism used on the website. "]
+   [:p
+    "If you have experienced an error on the website that you would like someone to look at, you may report this at "
+    [:a {:href "https://github.com/bedebok/prayer-app/issues"} "our issue tracker"] ". Make sure to include the session ID!"]
+   [:p [:strong "NOTE:"] " the cached data (including the session ID) will be reset by performing a hard page refresh."]])
+
 (defn content-view
   []
   (let [{:keys [location user] :as state'} @state
@@ -563,6 +599,7 @@
                      :unpinned)]
     (condp = name
       ::page/main (frontpage-view)
+      ::page/privacy (privacy-policy-view)
       ::page/search (search-view query (get-in state' [:search query]))
       ::page/work (work-view id (get-in state' [:works id]))
       ::page/text (entity-view (get-in state' [:entities id]) pin-status)
@@ -585,7 +622,7 @@
           :title "Accessibility statement"}
       "Accessibility"]]
     [:li
-     [:a {:href  ""                                         ;TODO
+     [:a {:href  "/privacy"
           :title "Privacy policy"}
       "Privacy"]]
     [:li

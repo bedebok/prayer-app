@@ -66,6 +66,7 @@
 (def frontend-routes
   "Reitit routes for the frontend (also shared with the backend)."
   [["/" {:name ::main}]
+   ["/privacy" {:name ::privacy}]
    ["/texts" {:name   ::text-index
               :handle [::api/fetch-index "text"]}]
    ["/manuscripts" {:name   ::manuscript-index

@@ -27,6 +27,9 @@
   print it to the output stream of the HTTP request, and do not
   rethrow it."
   [context exception]
+  (t/log! {:level :error
+           :data  exception}
+          "Dev interceptor caught an exception; Forwarding it as the response.")
   (assoc context
     :response (-> (ring-response/response
                     (with-out-str (println "Error processing request!")

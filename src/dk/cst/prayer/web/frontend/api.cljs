@@ -62,7 +62,7 @@
 (defn fetch
   [url & [opts]]
   (->> (assoc opts
-         :headers {"x-session-id" state/session-id})        ; track in logs
+         :headers {"X-session-id" state/session-id})        ; track in logs
        (fetch/get url)
        (cancel-on-error!)))
 

@@ -61,6 +61,7 @@
          ::http/port            web/port
          ::http/resource-path   "public"
          ::http/secure-headers  {:content-security-policy-settings csp}
+         ::http/request-logger  ic/log-request
 
          ;; TODO: distinguish between dev/prod?
          ::http/allowed-origins (constantly true)}

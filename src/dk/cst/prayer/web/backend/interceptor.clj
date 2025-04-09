@@ -57,6 +57,31 @@
   (update service-map ::http/interceptors
           #(into [cors/dev-allow-origin fixed-exception-debug] %)))
 
+;; An alternative to the default request logger which also logs the session-id.
+(def log-request
+  "Log the request's method and uri."
+  (interceptor
+    {:name  ::log-request
+     :enter (fn [ctx]
+              (let [{:keys [request]} ctx
+                    {:keys [uri request-method headers]} request]
+                (t/log! {:level :info
+                         :data  (merge
+                                  (select-keys request [:remote-addr
+                                                        :scheme
+                                                        :content-type])
+
+                                  ;; Note that headers have been normalised to
+                                  ;; lower-case by Pedestal, e.g "x-session-id"!
+                                  (select-keys headers ["user-agent"
+                                                        "origin"
+                                                        "x-session-id"]))}
+                        (str
+                          (-> request-method name str/upper-case)
+                          " "
+                          uri))
+                ctx))}))
+
 (defn basic-response
   ([ctx]
    (update ctx :response merge {:status 201}))

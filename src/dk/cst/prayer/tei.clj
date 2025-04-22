@@ -2,13 +2,14 @@
   "Patterns/functions for scraping data from the project TEI files."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
+            [clojure.java.io :as io]
             [clojure.walk :as walk]
+            [taoensso.telemere :as t]
             [dk.cst.hiccup-tools.elem :as elem]
             [dk.cst.xml-hiccup :as xh]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.hiccup-tools.zip :as z]
-            [dk.cst.hiccup-tools.match :as match :refer [match]]
-            [clojure.java.io :as io])
+            [dk.cst.hiccup-tools.match :as match :refer [match]])
   (:import [java.io File FileNotFoundException]))
 
 (defn tei-ref
@@ -97,11 +98,24 @@
          ;; This data can be transacted into a Datomic-compatible db
          ;; e.g. Datalevin in our case.
          (apply merge-with (fn [v1 v2]
-                             ;; TODO: better exception handling when type doesn't match
-                             ;;       e.g. strings being merged.
-                             (if (sequential? v1)
+                             (cond
+                               (and (sequential? v1) (sequential? v2))
                                (into v1 v2)
-                               (merge v1 v2))))
+
+                               (and (map? v1) (map? v2))
+                               (merge v1 v2)
+
+                               :else
+                               (do
+                                 ;; TODO: hiccup should include filename as metadata for better debugging.
+                                 ;;       This could the be used for error logging such as here.
+                                 (t/log! {:level :error
+                                          :data  {:values [v1 v2]
+                                                  :hiccup hiccup}}
+                                         "Attempted merge of unsupported data type.")
+
+                                 ;; Return empty map to continue the operation.
+                                 {}))))
 
          ;; Keep Hiccup for every component for display purposes.
          ;; TODO: should recursive subsearches be removed from parent? (duplication)
@@ -391,21 +405,26 @@
   ;; test text conversion on a TEI body
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
   (binding [z/*custom-element-prefix* "tei"]
-    (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
+    (-> (io/file "../Data/Gold corpus/AM08-0073_237v.xml")
         (xh/parse)
         (h/reshape tei-html)))
 
   ;; Metadata retrieval from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0073_237v.org
-  (-> (io/file "test/Data/Prayers/xml/AM08-0073_237v.xml")
+  (-> (io/file "../Data/Gold corpus/AM08-0073_237v.xml")
       (xh/parse)
       (hiccup->entity tei-search-kvs)
       (dev-view))
 
-  ;; TODO: "test/Data/Prayers/xml/AM08-0073_237v.xml" and  "test/Data/Catalogue/xml/AM08-0073.xml" use the same ID!!
+  (-> (io/file "../Data/Gold corpus/MAGNIFICAT.xml")
+      (xh/parse)
+      (hiccup->entity tei-search-kvs)
+      (dev-view))
+
+  ;; TODO: "../Data/Gold corpus/AM08-0073_237v.xml" and  "../Data/Gold corpus/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0075_063r.org
-  (-> (io/file "test/Data/Catalogue/xml/AM08-0073.xml")
+  (-> (io/file "../Data/Gold corpus/AM08-0073.xml")
       (xh/parse)
       (hiccup->entity tei-search-kvs)
       (dev-view))

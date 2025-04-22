@@ -20,7 +20,7 @@
   "test/db")                                                ; dev value
 
 (def files-path
-  "test/Data")                                              ; dev value
+  "../Data/Gold corpus")                                    ; dev value
 
 (defn xml-files
   "Fetch XML File objects recursively from a starting `dir`."

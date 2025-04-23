@@ -107,12 +107,12 @@
 
                                :else
                                (do
-                                 ;; TODO: hiccup should include filename as metadata for better debugging.
-                                 ;;       This could the be used for error logging such as here.
                                  (t/log! {:level :error
-                                          :data  {:values [v1 v2]
-                                                  :hiccup hiccup}}
-                                         "Attempted merge of unsupported data type.")
+                                          :data  {:merge-params [v1 v2]
+                                                  :file-meta    (meta hiccup)}}
+                                         (str
+                                           "Attempted merge of unsupported data types, "
+                                           "likely because a TEI pattern meant to find a single occurrence has matched several."))
 
                                  ;; Return empty map to continue the operation.
                                  {}))))
@@ -380,9 +380,9 @@
 (defn file->entity
   "Convert a `file` into a Datom entity based on `search-kvs`."
   [^File file]
-  (merge (hiccup->entity (xh/parse file) tei-search-kvs)
-         {#_#_:file/src (slurp file)
-          :file/name (.getName file)}))
+  (-> (xh/parse file {:file-meta {:path :absolute}})
+      (hiccup->entity tei-search-kvs)
+      (merge {:file/name (.getName file)})))
 
 (defn dev-view
   "Recursively remove clutter from entity `m` (for development)."
@@ -416,10 +416,7 @@
       (hiccup->entity tei-search-kvs)
       (dev-view))
 
-  (-> (io/file "../Data/Gold corpus/MAGNIFICAT.xml")
-      (xh/parse)
-      (hiccup->entity tei-search-kvs)
-      (dev-view))
+  (file->entity (io/file "../Data/Gold corpus/MAGNIFICAT.xml"))
 
   ;; TODO: "../Data/Gold corpus/AM08-0073_237v.xml" and  "../Data/Gold corpus/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document

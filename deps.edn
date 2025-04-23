@@ -21,7 +21,7 @@
            instaparse/instaparse        {:mvn/version "1.5.0"}
 
            dk.cst/xml-hiccup            {:git/url "https://github.com/kuhumcst/xml-hiccup.git"
-                                         :sha     "346c6ed0d33c44082a5ab1e86a49e30838d2fe1e"}
+                                         :sha     "4ef121188032e835bd52d09e4d6ef2847ae5d2d3"}
            dk.cst/hiccup-tools          {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
                                          :sha     "c0b84e101e6edd8dee69935f8623908f23b5fcd8"}}
  :aliases {:dev      {:extra-paths ["dev/src"]}

@@ -246,7 +246,8 @@
         {:bedebok/id   id
          :bedebok/type type}))]
 
-   [:title
+   ;; Only matches the document title itself.
+   [(match :title (match/has-parent :titleStmt))
     (inner-text :tei/title)]
 
    ;; Only used for human-readable shelfmarks, e.g. for displaying on a website.

@@ -10,10 +10,10 @@
 (defonce server (atom nil))
 
 (def api-routes
-  #{["/api/entity/:id" :get [ic/with-entity ic/entity] :route-name ::entity]
+  #{["/api/entity/:id" :get [ic/with-eid ic/entity] :route-name ::entity]
     ["/api/index/:type" :get [ic/by-type] :route-name ::index]
     ["/api/works" :get [ic/works] :route-name ::work-index]
-    ["/api/work/:work" :get [ic/by-work] :route-name ::work]
+    ["/api/work/:id" :get [ic/with-eid ic/by-work] :route-name ::work]
     ["/api/search/:query" :get [ic/search] :route-name ::search]
     ["/api/error/:session-id" :post [(body-params) ic/frontend-error] :route-name ::frontend-error]})
 

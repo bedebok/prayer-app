@@ -439,8 +439,8 @@
          (section "Collation Data" collation)]])]))
 
 (defn work-view
-  [id work]
-  (let [n (count work)]
+  [id {:keys [type->document]}]
+  (let [n (count type->document)]
     [:article
      ;; TODO: needs a proper label
      [:header
@@ -453,7 +453,7 @@
                  1 "One result"
                  (str n " results"))
                [:dl.index
-                (for [[doc-type ks] (sort-by first work)]
+                (for [[doc-type ks] (sort-by first type->document)]
                   (list
                     [:dt {:id char} (str/capitalize doc-type)]
                     [:dd

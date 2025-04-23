@@ -124,22 +124,31 @@
               (d/close-db db)
               (dissoc ctx :db))}))
 
-(def with-entity
+(def with-eid
   (interceptor
     {:name  ::entity
      :enter (fn [{:keys [db request] :as ctx}]
-              (assoc ctx :id (->> (d/q '[:find ?e .
-                                         :in $ ?id
-                                         :where
-                                         [?e :bedebok/id ?id]]
-                                       db
-                                       (get-in request [:params :id])))))}))
+              (assoc ctx :eid (->> (d/q '[:find ?e .
+                                          :in $ ?id
+                                          :where
+                                          [?e :bedebok/id ?id]]
+                                        db
+                                        (get-in request [:params :id])))))}))
+
+;; TODO: use a proper solution to datafy
+;; https://github.com/juji-io/datalevin/issues/292
+(defn- datafy-entity
+  [e]
+  (-> (d/touch e)
+      (str)
+      (edn/read-string)
+      (dissoc :bedebok/text :db/id)))                       ; clean))
 
 (def entity
   (interceptor
     {:name  ::entity
-     :enter (fn [{:keys [db id] :as ctx}]
-              (let [e (d/entity db id)]
+     :enter (fn [{:keys [db eid] :as ctx}]
+              (let [e (d/entity db eid)]
                 (update
                   ctx :response merge
                   ;; As Datalevin seems to have a bug where entity
@@ -147,42 +156,43 @@
                   (if (> (count (keys e)) 1)
                     {:status  200
                      :headers {"Content-Type" "application/transit+json"}
-
-                     ;; TODO: use a proper solution to datafy
-                     ;; https://github.com/juji-io/datalevin/issues/292
-                     :body    (-> (d/touch e)
-                                  (str)
-                                  (edn/read-string)
-                                  (dissoc :bedebok/text :db/id) ; clean
-                                  (transito/write-str))}
+                     :body    (transito/write-str (datafy-entity e))}
                     {:status 404}))))}))
 
 (def by-work
   (interceptor
     {:name  ::by-work
-     :enter (fn [{:keys [db request] :as ctx}]
-              (let [key (get-in request [:params :work])
-                    res (-> (d/q '[:find ?id ?type
-                                   :in $ % ?key
-                                   :where
-                                   ;; Fetching relevant entities by searching
-                                   ;; the tree of manuscript items recursively.
-                                   (ancestor ?msItem ?e)
-                                   [?e :bedebok/type ?type]
-                                   (or [?e :bedebok/type "text"]
-                                       [?e :bedebok/type "manuscript"])
-                                   [?msItem :bedebok/work ?work]
-                                   [?work :tei/key ?key]
-                                   [?e :bedebok/id ?id]]
-                                 db
-                                 ;; The % added to the :in clause above
-                                 ;; references the rule set provided below.
-                                 db/manuscript-ancestor-rule
-                                 key)
-                            (->> (group-by second))
-                            (update-vals (fn [kvs]
-                                           (sort (map first kvs)))))]
-                (basic-response ctx res)))}))
+     :enter (fn [{:keys [db eid request] :as ctx}]
+              (let [key    (get-in request [:params :id])
+                    ;; NOTE: the entity map is treated as an optional part here!
+                    ;;       The incoming references to a work are the things
+                    ;;       that identifies it as a work, not its potential
+                    ;;       existence as a TEI document entity.
+                    entity (when eid
+                             (datafy-entity (d/entity db eid)))
+                    res    (-> (d/q '[:find ?id ?type
+                                      :in $ % ?key
+                                      :where
+                                      ;; Fetching relevant entities by searching
+                                      ;; the tree of manuscript items recursively.
+                                      (ancestor ?msItem ?e)
+                                      [?e :bedebok/type ?type]
+                                      (or [?e :bedebok/type "text"]
+                                          [?e :bedebok/type "manuscript"])
+                                      [?msItem :bedebok/work ?work]
+                                      [?work :tei/key ?key]
+                                      [?e :bedebok/id ?id]]
+                                    db
+                                    ;; The % added to the :in clause above
+                                    ;; references the rule set provided below.
+                                    db/manuscript-ancestor-rule
+                                    key)
+                               (->> (group-by second))
+                               (update-vals (fn [kvs]
+                                              (sort (map first kvs)))))]
+                (basic-response ctx (merge
+                                      {:type->document res}
+                                      entity))))}))
 
 (def works
   (interceptor

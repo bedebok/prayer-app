@@ -354,13 +354,17 @@
         (uncapitalize acquisition)])]))
 
 (defn page-header-view
-  [{:keys [tei/title tei/summary tei/head bedebok/type]
+  [{:keys [tei/title tei/summary tei/head bedebok/type bedebok/id]
     :as   entity}]
   [:header
    [:hgroup
     [:h1 title]
-    (when summary
-      [:p summary])]
+    (cond
+      summary
+      [:p summary]
+
+      (= type "text")
+      [:p [:strong "ID: "] id])]
    (when head
      [:p head])
    (descriptive-view entity)
@@ -507,17 +511,30 @@
           [:td.empty]
           [:td [:a {:href (str "#" k)} k]]))])])
 
+(defn find-duplicates
+  [vs]
+  (->> (frequencies vs)
+       (reduce (fn [acc [v n]]
+                 (if (> n 1)
+                   (conj acc v)
+                   acc))
+               #{})))
+
 (defn index-section
   [heading type-plural char->kvs]
   (section heading
            [:dl.index
             (for [[char kvs] char->kvs]
-              (list
-                [:dt {:id char} char]
-                [:dd
-                 [:ul
-                  (for [[k v] (sort-by second kvs)]
-                    [:li [:a {:href (str "/" type-plural "/" k)} v]])]]))]))
+              (let [duplicates (find-duplicates (map second kvs))]
+                (list
+                  [:dt {:id char} char]
+                  [:dd
+                   [:ul
+                    (for [[k v] (sort-by second kvs)]
+                      [:li
+                       [:a {:href (str "/" type-plural "/" k)} v]
+                       (when (get duplicates v)
+                         [:span.disambiguate (str " " k "")])])]])))]))
 
 (defn index-view
   [type index]
@@ -638,7 +655,8 @@
 
 (defn pinning-view []
   (let [{:keys [user entities] :as state'} @state
-        pins (:pins user)]
+        pins       (:pins user)
+        duplicates (find-duplicates (map :tei/title (map entities pins)))]
     [:section.pinning
      [:p "Pinned content: "]
      (for [id pins]
@@ -648,7 +666,11 @@
           [:input {:type    "checkbox"
                    :on      {:change [::event/pin id]}
                    :checked true}]
-          (or title id)]))
+          (if (get duplicates title)
+            [:ruby.disambiguate
+             [:rb title]
+             [:rt id]]
+            (or title id))]))
      [:button.remove-pin {:title "Unpin all"
                           :on    {:click [::event/reset-pins]}}]]))
 

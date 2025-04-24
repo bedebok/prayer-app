@@ -94,14 +94,12 @@ aside.spine {
 section.pinning {
     padding: 12px 32px;
     border-bottom: 2px solid black;
-}
-
-section.pinning > * {
-    display: inline-block;
+    display: flex;
+    align-items: center;
 }
 
 section.pinning * + * {
-    margin-left: 24px;
+    margin-left: 16px;
 }
 
 section.pinning label {
@@ -131,6 +129,11 @@ button.remove-pin {
 button.add-pin:focus,
 button.remove-pin:focus {
   outline: revert;
+}
+
+section.pinning button.remove-pin {
+    float: none;
+    margin-left: auto;
 }
 
 main {
@@ -252,6 +255,7 @@ input[type="checkbox"]:checked::after {
 aside.preferences {
     display: flex;
     justify-content: center;
+    margin-top: 24px;
 }
 
 section.tei-pages {
@@ -730,6 +734,24 @@ dl.index li {
 }
 dl.index li + li {
     border-top: 0.5px solid black;
+}
+
+span.disambiguate {
+    font-size: 14px;
+    margin-left: 8px;
+    opacity: 0.8;
+}
+
+ruby.disambiguate {
+    ruby-position: under;
+    ruby-align: center;
+    margin: 0;
+}
+
+ruby.disambiguate rt {
+    opacity: 0.8;
+    font-size: 12px;
+    margin: 0;
 }
 
 /* TODO: improve styles */

@@ -40,3 +40,8 @@ tei-p > br:first-child {
 
 [data-rend~=blue] { color: blue; }
 [data-rend~=red] { color: red; } /* red takes precedence over blue */
+
+tei-title, tei-persname {
+    font-weight: bold;
+    font-variant: small-caps;
+}

@@ -439,19 +439,21 @@
          (section "Collation Data" collation)]])]))
 
 (defn work-view
-  [id {:keys [type->document]}]
-  (let [n (count type->document)]
+  [id {:keys [type->document tei/title file/node]}]
+  (let [n (count (apply concat (vals type->document)))]
     [:article
      ;; TODO: needs a proper label
      [:header
       [:hgroup
-       [:h1 id]
-       [:p "References to this work"]]]
+       [:h1 (or title id)]
+       #_[:p "References to this work"]]]
+     (when node
+       [:section.tei-free-content node])
      [:section.list.single
       (section (case n
-                 0 "No results"
-                 1 "One result"
-                 (str n " results"))
+                 0 "No references"
+                 1 "One reference"
+                 (str n " references"))
                [:dl.index
                 (for [[doc-type ks] (sort-by first type->document)]
                   (list

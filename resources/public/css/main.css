@@ -316,7 +316,6 @@ article.tei-page {
     border-right-width: 6px;
     min-width: fit-content;
     padding: 24px;
-    font-size: 18px;
     background: white;
 }
 
@@ -332,6 +331,11 @@ article.tei-page header.tei-page-header {
 
 article.tei-page section.tei-page-content {
     align-self: center;
+    font-size: 18px;
+}
+
+section.tei-free-content {
+    font-size: 18px;
 }
 
 /* Allows for styling tr. */
@@ -432,7 +436,6 @@ section.list {
 section.list.single {
     display: flex;
     justify-content: center;
-    margin-top: 48px;
 }
 
 section.list.single > * {

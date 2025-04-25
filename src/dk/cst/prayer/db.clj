@@ -225,10 +225,13 @@
      [?parent :tei/msItem ?msItem]
      (ancestor ?parent ?ancestor)]])
 
+
 (defn run
   [db triples]
-  (if (not-empty triples)
-    (d/q (build-query triples) db manuscript-ancestor-rule)
+  (if-let [query (some-> triples not-empty build-query)]
+    (do
+      (t/log! {:level :info :data query} "Executed datalog query.")
+      (d/q query db manuscript-ancestor-rule))
     #{}))
 
 (defn search-intersection

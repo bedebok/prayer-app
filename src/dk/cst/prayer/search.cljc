@@ -1,10 +1,11 @@
 (ns dk.cst.prayer.search
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
+            [instaparse.core :as insta]
+            [taoensso.telemere :as t]
             [dk.cst.hiccup-tools.hiccup :as hiccup]
             [dk.cst.hiccup-tools.match :as match]
             [dk.cst.hiccup-tools.zip :as z]
-            [instaparse.core :as insta]
             #?(:cljs [shadow.resource :as resource])))
 
 (insta/defparser parse*
@@ -49,8 +50,16 @@
 (defn query->ast
   [query]
   (try
-    (simplify (parse query))
-    (catch #?(:clj Exception :cljs js/Error) _ nil)))
+    (doto (simplify (parse query))
+      (#(t/log! {:level :info
+                 :data  {:query query
+                         :ast   %}}
+                "Transformed search query into AST.")))
+    (catch #?(:clj Exception :cljs js/Error) e
+      (t/log! {:level :error
+               :data {:query query
+                      :error e}}
+              "Failed to transform search query into AST."))))
 
 (comment
   (query->ast "NOT corresp:AM08-0073")

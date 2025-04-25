@@ -210,11 +210,11 @@
   (into '[:find ?text ?e
           :in $ %
           :where
-          (ancestor ?msItem ?e)
           ;; Note that these required triples essentially limit the results
           ;; to certain results, e.g if we wanted manuscript items to be
           ;; directly searchable too we would need to modify this query.
-          (or [?e :bedebok/text ?text]                      ; for texts
+          ;; TODO: add more fulltext attributes
+          (or [?e :bedebok/text ?text]                      ; for texts/works
               [?e :tei/head ?text])]                        ; for manuscripts
         triples))
 
@@ -231,7 +231,13 @@
   (if-let [query (some-> triples not-empty build-query)]
     (do
       (t/log! {:level :info :data query} "Executed datalog query.")
-      (d/q query db manuscript-ancestor-rule))
+      ;; We execute two separate queries and return the union of the results.
+      ;; One of the queries contains a rule that assumes the existence of a
+      ;; :tei/msItem attribute, which isn't the case with e.g. work entities,
+      ;; thus requiring the two separate queries to run.
+      (set/union
+        (d/q (conj query '(ancestor ?msItem ?e)) db manuscript-ancestor-rule)
+        (d/q query db [])))
     #{}))
 
 (defn search-intersection

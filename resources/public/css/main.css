@@ -714,6 +714,9 @@ dl.index dt {
     border-right-width: 6px;
     border-bottom-width: 0.5px;
 }
+dl.index.table-like dt {
+    text-align: center;
+}
 dl.index dd {
     margin: 0;
 }

@@ -45,21 +45,41 @@
    :postprocess str/trim})
 
 (def tei-html
-  ;; Structural changes that emit valid HTML go here.
+  ;; Structural changes that emit valid HTML go here (exits after first match).
   {:single [[:teiHeader zip/remove]
             [:lb (fn [loc] (let [[_ & rem] (zip/node loc)]
                              (zip/replace loc (into [:br] rem))))]
 
             ;; Anything not matched above is turned into custom HTML elements.
-            [(match/any) z/html-safe]]
+            [(complement (match #{:ruby :rt})) z/html-safe]]
 
-   ;; Other changes go here (NOTE: outer matchers must match custom elements!)
-   :multi  {#{:tei-w :tei-pc} (fn [loc]
-                                (if-let [right (zip/right loc)]
-                                  (if ((match/tag :pc) right)
-                                    loc
-                                    (zip/insert-right loc " "))
-                                  loc))}})
+   ;; Other changes go below (all matchers are tested and possibly applied).
+   ;; NOTE: outer elements must match custom element prefix, i.e. tei- and the
+   ;;       attributes must be HTML-safe data-* attributes.
+   :multi  [[#{:tei-w :tei-pc} (fn [loc]
+                                 (if-let [right (zip/right loc)]
+                                   (if ((match/tag :pc) right)
+                                     loc
+                                     (zip/insert-right loc " "))
+                                   loc))]
+            [:tei-w (fn [loc]
+                      (let [w         (zip/node loc)
+                            {:keys [data-lemma
+                                    data-pos]} (elem/attr w)
+                            data-pos' (when data-pos
+                                        (str/replace data-pos #"HiNTS=" ""))
+                            title     (not-empty (str/join " | " [data-lemma data-pos']))]
+                        ;; The combination of zip/insert-left and zip/remove
+                        ;; basically results in a replace-and-skip operation
+                        ;; when used in conjunction with a zip/next loop.
+                        (-> loc
+                            (zip/insert-left [:ruby.token {:title title}
+                                              [:ruby
+                                               (binding [z/*custom-element-prefix* "tei"]
+                                                 (h/reshape w tei-html))
+                                               [:rt.lemma (or (not-empty data-lemma) "□")]]
+                                              [:rt.pos (or (not-empty data-pos') "□")]])
+                            (zip/remove))))]]})
 
 (defn hiccup->entity
   "Convert TEI `hiccup` into an Datom entity based on a `search-kvs`."

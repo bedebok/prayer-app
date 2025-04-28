@@ -320,12 +320,16 @@
 (defn pages-view
   [id]
   (let [state'        @state
+        token-display (boolean (get-in state' [:user :prefs :token-display]))
         {:keys [n]} (get-in state' [:user :entities id])
         pages         (get-in state' [:cached id :pages])
         pages-display (boolean (get-in state' [:user :prefs :pages-display]))]
-    (if pages-display
-      [:section.tei-pages (map page-view pages)]
-      [:section.tei-pages (controls-view id) (page-view (nth pages (or n 0)))])))
+    [:section.tei-pages {:class (when-not token-display
+                                  "no-token-metadata")}
+     (if pages-display
+       (map page-view pages)
+       (list (controls-view id)
+             (page-view (nth pages (or n 0)))))]))
 
 (defn uncapitalize
   [s]
@@ -369,13 +373,19 @@
      [:p head])
    (descriptive-view entity)
    (when (= type "text")
-     (let [pages-display (boolean (get-in @state [:user :prefs :pages-display]))]
+     (let [pages-display (boolean (get-in @state [:user :prefs :pages-display]))
+           token-display (boolean (get-in @state [:user :prefs :token-display]))]
        [:aside.preferences
         [:label [:input {:type    "checkbox"
                          :title   "Toggle single/multi page view"
                          :checked pages-display
                          :on      {:change [::event/pages-display]}}]
-         " show all pages"]]))])
+         " all pages"]
+        [:label [:input {:type    "checkbox"
+                         :title   "Toggle lemma & part-of-speech tag view"
+                         :checked token-display
+                         :on      {:change [::event/token-display]}}]
+         " token metadata"]]))])
 
 (defn- section
   [title view & [attr]]

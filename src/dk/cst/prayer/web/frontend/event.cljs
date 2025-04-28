@@ -25,6 +25,7 @@
                                   (select-keys @state [:location])
                                   (state/default-state)))
     ::pages-display (swap! state update-in [:user :prefs :pages-display] not)
+    ::token-display (swap! state update-in [:user :prefs :token-display] not)
     ::page (let [[_ id arg] handler-data]
              (.preventDefault dom-event)
              (cond

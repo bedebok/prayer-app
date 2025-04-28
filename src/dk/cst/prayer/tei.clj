@@ -316,6 +316,12 @@
    [:width
     (inner-text :tei/dimensions :tei/width)]
 
+   [:attDef
+    (fn [node]
+      (let [{:keys [ident]} (elem/attr node)
+            desc (h/hiccup->text node tei-conversion)]
+        {:bedebok/process {(keyword ident) desc}}))]
+
    [(match [:settlement {:key true}] (match/has-parent :msIdentifier))
     (fn [node]
       (let [{:keys [key]} (elem/attr node)]

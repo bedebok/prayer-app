@@ -209,9 +209,9 @@
             (basic-field-search k v)
 
             ;; Put simple inline tables here.
-            #_:tei/origPlace
-            #_[:table.common
-               (map (partial table-tr-view k) v)]
+            #{:bedebok/process}
+            [:table.common
+             (map (partial table-tr-view k) v)]
 
             ;; else
             (if (set? v)

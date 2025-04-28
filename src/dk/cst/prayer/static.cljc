@@ -82,7 +82,7 @@
    :tei/material      {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
                        :db/doc         "<material> (material) contains a word or phrase describing the material of which the object being described is composed. [11.3.2 Material and Object Type]"}
-
+   :bedebok/process   {:db/doc "Notes on data processing."}
    :tei/origDate      {:db/cardinality :db.cardinality/one
                        :db/valueType   :db.type/ref
                        :db/isComponent true

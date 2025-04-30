@@ -256,6 +256,10 @@ aside.preferences {
     display: flex;
     justify-content: center;
     margin-top: 24px;
+
+    /* wrap to the next line on overflow. */
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 aside.preferences * + * {

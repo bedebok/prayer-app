@@ -9,12 +9,14 @@ tei-p, tei-rubric, tei-incipit, tei-explicit {
 }
 
 /* Content added by editor is marked with [...]. */
+tei-supplied::before,
 tei-ex::before {
     content: "[";
     opacity: 0.33;
     font-weight: 100;
 }
 
+tei-supplied::after,
 tei-ex::after {
     content: "]";
     opacity: 0.33;

@@ -48,7 +48,10 @@
   ;; Structural changes that emit valid HTML go here (exits after first match).
   {:single [[:teiHeader zip/remove]
             [:lb (fn [loc] (let [[_ & rem] (zip/node loc)]
-                             (zip/replace loc (into [:br] rem))))]
+                             (-> loc
+                                 (zip/replace (into [:tei-lb] rem))
+                                 (zip/insert-right [:br])
+                                 (zip/right))))]
 
             ;; Anything not matched above is turned into custom HTML elements.
             [(complement (match #{:ruby :rt})) z/html-safe]]

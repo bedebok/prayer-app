@@ -785,6 +785,14 @@ ruby.token rt.pos {
     display: none;
 }
 
+.no-paragraph-marks tei-p > *:last-child::after {
+    content: "";
+}
+
+.no-lb-marks tei-lb::after {
+    content: "";
+}
+
 /* TODO: improve styles */
 dialog.error pre {
     width: 70vw;

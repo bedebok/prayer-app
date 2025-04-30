@@ -319,13 +319,17 @@
 
 (defn pages-view
   [id]
-  (let [state'        @state
-        token-display (boolean (get-in state' [:user :prefs :token-display]))
+  (let [state'            @state
+        token-display     (boolean (get-in state' [:user :prefs :token-display]))
+        lb-display        (boolean (get-in state' [:user :prefs :lb-display]))
+        paragraph-display (boolean (get-in state' [:user :prefs :paragraph-display]))
         {:keys [n]} (get-in state' [:user :entities id])
-        pages         (get-in state' [:cached id :pages])
-        pages-display (boolean (get-in state' [:user :prefs :pages-display]))]
-    [:section.tei-pages {:class (when-not token-display
-                                  "no-token-metadata")}
+        pages             (get-in state' [:cached id :pages])
+        pages-display     (boolean (get-in state' [:user :prefs :pages-display]))]
+    [:section.tei-pages {:class (cond-> []
+                                  (not token-display) (conj "no-token-metadata")
+                                  (not paragraph-display) (conj "no-paragraph-marks")
+                                  (not lb-display) (conj "no-lb-marks"))}
      (if pages-display
        (map page-view pages)
        (list (controls-view id)
@@ -373,19 +377,31 @@
      [:p head])
    (descriptive-view entity)
    (when (= type "text")
-     (let [pages-display (boolean (get-in @state [:user :prefs :pages-display]))
-           token-display (boolean (get-in @state [:user :prefs :token-display]))]
+     (let [pages-display    (boolean (get-in @state [:user :prefs :pages-display]))
+           token-display    (boolean (get-in @state [:user :prefs :token-display]))
+           lb-display       (boolean (get-in @state [:user :prefs :lb-display]))
+           pargraph-display (boolean (get-in @state [:user :prefs :token-display]))]
        [:aside.preferences
         [:label [:input {:type    "checkbox"
                          :title   "Toggle single/multi page view"
                          :checked pages-display
-                         :on      {:change [::event/pages-display]}}]
+                         :on      {:change [::event/toggle :pages-display]}}]
          " all pages"]
         [:label [:input {:type    "checkbox"
                          :title   "Toggle lemma & part-of-speech tag view"
                          :checked token-display
-                         :on      {:change [::event/token-display]}}]
-         " token metadata"]]))])
+                         :on      {:change [::event/toggle :token-display]}}]
+         " token metadata"]
+        [:label [:input {:type    "checkbox"
+                         :title   "Toggle line-break marks"
+                         :checked lb-display
+                         :on      {:change [::event/toggle :lb-display]}}]
+         " line-break marks"]
+        [:label [:input {:type    "checkbox"
+                         :title   "Toggle paragraph marks"
+                         :checked pargraph-display
+                         :on      {:change [::event/toggle :paragraph-display]}}]
+         " paragraph marks"]]))])
 
 (defn- section
   [title view & [attr]]

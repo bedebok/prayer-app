@@ -21,6 +21,19 @@ tei-ex::after {
     font-weight: 100;
 }
 
+tei-lb::after {
+    content: " ↵";
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+/* Pilcrow symbol. */
+tei-p > *:last-child::after {
+    content: " ¶";
+    font-size: 12px;
+    opacity: 0.5;
+}
+
 /* Headings */
 [data-type=rubric] {
     display: block;

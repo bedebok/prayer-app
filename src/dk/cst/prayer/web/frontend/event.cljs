@@ -24,8 +24,7 @@
     ::reset-state (reset! state (merge
                                   (select-keys @state [:location])
                                   (state/default-state)))
-    ::pages-display (swap! state update-in [:user :prefs :pages-display] not)
-    ::token-display (swap! state update-in [:user :prefs :token-display] not)
+    ::toggle (swap! state update-in [:user :prefs (second handler-data)] not)
     ::page (let [[_ id arg] handler-data]
              (.preventDefault dom-event)
              (cond

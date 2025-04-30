@@ -29,6 +29,11 @@ tei-lb::after {
     opacity: 0.5;
 }
 
+tei-w[data-split=before]::after {
+    content: "-";
+    opacity: 0.33;
+}
+
 /* Pilcrow symbol. */
 tei-p > *:last-child::after {
     content: " ¶";

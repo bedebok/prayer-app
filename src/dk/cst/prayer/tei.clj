@@ -44,9 +44,48 @@
                  :lb             z/append-lb}
    :postprocess str/trim})
 
+(def tei-w-html
+  {:single [[(complement (match :tei-w)) z/html-safe]]})
+
+(defn strip-lb
+  [node]
+  (let [[tag attr children] (elem/parts node)]
+    (->> children
+         (remove #(and (vector? %) (= (first %) :lb)))
+         (into [tag attr]))))
+
 (def tei-html
   ;; Structural changes that emit valid HTML go here (exits after first match).
   {:single [[:teiHeader zip/remove]
+
+            ;; This rather complex operation looks for words that break in the
+            ;; middle -- either due to line-breaks, page beginnings, or both!
+            ;; Since we need to insert token metadata correctly later using
+            ;; <ruby> elements, we must ensure that these words are duplicated.
+            [(match :w #{(match/has-child :lb) (match/has-child :pb)})
+             (fn [loc]
+               (let [w       (zip/node loc)
+                     has-pb? (->> (elem/children w)
+                                  (filter #(and (vector? %) (= (first %) :pb)))
+                                  (not-empty))
+
+                     ;; If there is a page break in the middle of a word,
+                     ;; the line-breaks are essentially superfluous and only
+                     ;; make display more complex, so we remove them entirely.
+                     [_ w1 lb w2] (if has-pb?
+                                    (h/split (match/tag :pb)
+                                             [:root (strip-lb (zip/node loc))]
+                                             {:retain :between})
+                                    (h/split (match/tag :lb)
+                                             [:root (zip/node loc)]
+                                             {:retain :between}))]
+                 (-> loc
+                     (zip/replace (assoc-in w1 [1 :split] "before"))
+                     ;; Manually apply html-safe since this node won't be hit.
+                     (z/html-safe)
+                     (zip/insert-right (assoc-in w2 [1 :split] "after"))
+                     (zip/insert-right lb))))]
+
             [:lb (fn [loc] (let [[_ & rem] (zip/node loc)]
                              (-> loc
                                  (zip/replace (into [:tei-lb] rem))
@@ -79,7 +118,7 @@
                             (zip/insert-left [:ruby.token {:title title}
                                               [:ruby
                                                (binding [z/*custom-element-prefix* "tei"]
-                                                 (h/reshape w tei-html))
+                                                 (h/reshape w tei-w-html))
                                                [:rt.lemma (or (not-empty data-lemma) "□")]]
                                               [:rt.pos (or (not-empty data-pos') "□")]])
                             (zip/remove))))]]})

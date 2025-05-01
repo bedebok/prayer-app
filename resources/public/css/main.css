@@ -773,16 +773,19 @@ ruby.token {
 
 ruby.token rt {
     font-size: 10px;
-    margin: 0;
 }
 
 ruby.token rt.lemma {
-    color: #DD2211;
+    color: #888;
 }
 
 ruby.token rt.pos {
+    color: #DD2211;
+    margin-bottom: 24px;
+}
+
+ruby.token:nth-child(even) rt.pos {
     color: #FF9922;
-    margin-bottom: 12px;
 }
 
 .no-token-metadata rt {

@@ -208,6 +208,14 @@
               :tei/otherLangs}
             (basic-field-search k v)
 
+            :bedebok/mentions
+            (->> (sort-by :tei/label v)
+                 (map (fn [{:keys [tei/key tei/label]}]
+                        [:a {:title (str "Find other documents with this mention")
+                             :href  (str "/search/mentions=" key)}
+                         label]))
+                 (interpose ", "))
+
             ;; Put simple inline tables here.
             #{:bedebok/process}
             [:table.common

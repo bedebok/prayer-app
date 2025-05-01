@@ -37,6 +37,10 @@
                        :db/cardinality :db.cardinality/many
                        :db/fulltext    true
                        :db/doc         "A human-readable label for an entity."}
+   :bedebok/mentions  {:db/valueType   :db.type/ref
+                       :db/cardinality :db.cardinality/many
+                       :db/isComponent true
+                       :db/doc         "Any individual mentioned in the source TEI document."}
 
    :tei/title         {:db/valueType   :db.type/string
                        :db/cardinality :db.cardinality/one
@@ -176,6 +180,7 @@
    "supportDesc" '[?e :tei/supportDesc ?supportDesc :tei/material]
    "support"     '[?e :tei/supportDesc ?supportDesc :tei/material]
    "material"    '[?e :tei/supportDesc ?supportDesc :tei/material]
+   "mentions"    '[?e :bedebok/mentions ?mention :tei/key]
    "mainlang"    '[?msItem :tei/mainLang]
    "otherlangs"  '[?msItem :tei/otherLangs]
    #_#_"locus" :tei/locus                                   ; TODO: subfield

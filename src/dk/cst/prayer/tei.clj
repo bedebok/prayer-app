@@ -123,13 +123,25 @@
                                               [:rt.pos (or (not-empty data-pos') "□")]])
                             (zip/remove))))]]})
 
+(defn hiccup->mentions
+  [hiccup]
+  (some->> (h/search hiccup {:persName [:persName {:key true}]})
+           (:persName)
+           (map (fn [[_ {:keys [key]} label]]
+                  {:tei/key   key
+                   :tei/label label}))
+           (set)))
+
 (defn hiccup->entity
   "Convert TEI `hiccup` into an Datom entity based on a `search-kvs`."
   [hiccup search-kvs]
   (let [matchers (map-indexed (fn [n [matcher _]]
                                 [n (match matcher)]) search-kvs)
         fns      (map-indexed (fn [n [_ process]] [n process]) search-kvs)
-        result   (h/search hiccup matchers :on-match :skip-tree)]
+        result   (h/search hiccup matchers :on-match :skip-tree)
+        mentions (when-let [ms (hiccup->mentions hiccup)]
+                   {:bedebok/mentions ms})]
+
     (->> fns
 
          (mapcat (fn [[k process]]
@@ -182,7 +194,8 @@
          ;; Keep Hiccup for every component for display purposes.
          ;; TODO: should recursive subsearches be removed from parent? (duplication)
          (merge {:file/node (binding [z/*custom-element-prefix* "tei"]
-                              (h/reshape hiccup tei-html))}))))
+                              (h/reshape hiccup tei-html))}
+                mentions))))
 
 
 (defn inner-text
@@ -485,7 +498,9 @@
       (hiccup->entity tei-search-kvs)
       (dev-view))
 
-  (file->entity (io/file "../Data/Gold corpus/MAGNIFICAT.xml"))
+  (-> (io/file "../Data/Gold corpus/MAGNIFICAT.xml")
+      (xh/parse {:file-meta {:path :absolute}})
+      (hiccup->mentions))
 
   ;; TODO: "../Data/Gold corpus/AM08-0073_237v.xml" and  "../Data/Gold corpus/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document

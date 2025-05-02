@@ -178,7 +178,12 @@
 
       text (concat
              (for [s text]
-               [(list 'fulltext '$ s) '[[?e ?a ?text]]])
+               ;; We need to ignore stop-words in queries, as their presence can
+               ;; otherwise result in false negatives since they always return
+               ;; empty results, e.g. [:INTERSECTION "Canticle" "of" "Mary"]
+               ;; would return a false negative due to the presence of "of".
+               (when-not (da/en-stop-words? s)
+                 [(list 'fulltext '$ s) '[[?e ?a ?text]]]))
 
              ;; Phrase matching is added for every multi-token search string.
              ;; This will ensure that entire phrases are matched, not just the
@@ -202,7 +207,10 @@
       ;; Unions/or-clauses are not included in the initial datalog query.
       ;; Instead, they are set aside for subsequent queries that will run
       ;; sequentially. The union of every query result set is returned instead.
-      UNION (with-meta {:UNION UNION}))))
+      UNION (with-meta {:UNION UNION})
+
+      ;; In cases where we end up with no search triples, we return nil.
+      true (->> (remove nil?) (not-empty)))))
 
 (defn build-query
   "Build a datalog query from a coll of `triples`."
@@ -226,7 +234,7 @@
      (ancestor ?parent ?ancestor)]])
 
 
-(defn run
+(defn run-search
   [db triples]
   (if-let [query (some-> triples not-empty build-query)]
     (do
@@ -243,7 +251,7 @@
 (defn search-intersection
   "Query the `db` for the `intersection-ast`."
   [db intersection-ast]
-  (run db (intersection->triples intersection-ast)))
+  (run-search db (intersection->triples intersection-ast)))
 
 (defn search-union
   "Query the `db` sequentially for each part of the `union-ast`, given a
@@ -269,7 +277,7 @@
   "Execute a search query `ast` in `db`."
   [db ast]
   (let [triples        (intersection->triples ast)
-        initial-result (run db triples)]
+        initial-result (run-search db triples)]
     (if-let [or-clauses (:UNION (meta triples))]
       (->> (map (comp (partial search-union db initial-result)) or-clauses)
            (reduce result-intersection))

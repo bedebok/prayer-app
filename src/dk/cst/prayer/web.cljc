@@ -9,7 +9,7 @@
 
 ;; NOTE: must be 0.0.0.0 when running in a container, cannot be localhost!
 (def host
-  "0.0.0.0")
+  "localhost")
 
 (def protocol
   "http://")

@@ -32,6 +32,9 @@ Quite a subtle difference! Not really sure what to make of it.
 The `key` attribute is different in that it  references a known text that isn't
 a part of the corpus.
 
+## Setup
+Datalevin (the database) requires a few native libraries to be present. See the [official page](https://github.com/juji-io/datalevin/blob/master/doc/install.md#native-dependencies) for more.
+
 ## Architecture
 The general design of the system is as a single-page app where routing takes place entirely on the frontend, except when the backend API needs to be accessed via HTTP requests.
 

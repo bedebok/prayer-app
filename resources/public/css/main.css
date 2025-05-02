@@ -788,14 +788,17 @@ ruby.token:nth-child(even) rt.pos {
     color: #FF9922;
 }
 
+.tei-free-content rt,
 .no-token-metadata rt {
     display: none;
 }
 
+.tei-free-content tei-p > *:last-child::after,
 .no-paragraph-marks tei-p > *:last-child::after {
     content: "";
 }
 
+.tei-free-content tei-lb::after,
 .no-lb-marks tei-lb::after {
     content: "";
 }

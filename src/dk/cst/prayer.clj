@@ -2,6 +2,7 @@
   "The entry namespace of the system; both dev and prod envs boot from here."
   (:require [dk.cst.prayer.db :as db]
             [taoensso.telemere :as t]
+            [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.backend :as backend])
   (:gen-class))
 
@@ -18,6 +19,9 @@
   ;; Hardcoded production paths as they are used in the Docker container.
   (alter-var-root #'db/files-path (constantly "/etc/prayer-app/files"))
   (alter-var-root #'db/db-path (constantly "/etc/prayer-app/db"))
+
+  ;; #15 Required to listen outside the Docker container itself.
+  (alter-var-root #'web/host (constantly "0.0.0.0"))
 
   (db/build-db! "/etc/prayer-app/files" "/etc/prayer-app/db")
   (backend/start-prod))

@@ -10,7 +10,10 @@ RUN apt-get clean && \
     curl \
     rlwrap \
     locales \
-    sed
+    sed \
+    libgomp1 \
+    g++-12 \
+    gcc-12
 
 # Fix emojis not showing up on HTML pages
 # https://medium.com/quiq-blog/handling-emoticons-or-other-unicode-characters-beware-of-docker-images-f0f11673dac4

@@ -76,5 +76,5 @@ TBD
 ## Dev and production
 
 ```shell
-PRAYER_APP_FILES_DIR=/Users/rqf595/Code/prayer-app/test/Data docker compose up --build
+PRAYER_APP_FILES_DIR=/Users/rqf595/Code/Data/Gold\ corpus docker compose up --build
 ```

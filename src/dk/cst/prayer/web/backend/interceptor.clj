@@ -119,7 +119,7 @@
   (interceptor
     {:name  ::with-db
      :enter (fn [ctx]
-              (assoc ctx :db (d/db (d/get-conn db/db-path static/schema))))
+              (assoc ctx :db (d/db (db/get-conn))))
      :leave (fn [{:keys [db] :as ctx}]
               (d/close-db db)
               (dissoc ctx :db))}))

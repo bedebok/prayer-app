@@ -4,7 +4,7 @@
             [clojure.java.io :as io]
             [datalevin.core :as d]
             [datalevin.analyzer :as da]
-            [datalevin.search-utils :as dsu]
+            [datalevin.search-utils :as su]
             [taoensso.telemere :as t]
             [dk.cst.xml-hiccup :as xh]
             [dk.cst.prayer.tei.schema :as schema]
@@ -21,6 +21,26 @@
 
 (def files-path
   "../Data/Gold corpus")                                    ; dev value
+
+;; This custom token analyzer foregoes any kind of stop words, as they interfere
+;; with phrase search (see comments in issue #19). This code is based roughly on
+;; https://clojurians.slack.com/archives/C01RD3AF336/p1708690854918189
+;; I initially tried modifying the en-analyzer fn, but just couldn't get it to
+;; work. This was a lot simpler. If the punctuation regex below is too lax or
+;; aggressive, that too can be easily fixed at a later date.
+(def analyzer
+  (su/create-analyzer
+    {:tokenizer     (su/create-regexp-tokenizer #"[\s:/\.;,!=?\"'()\[\]{}|<>&@#^*\\~`]+")
+     :token-filters [su/lower-case-token-filter]}))
+
+;; https://github.com/juji-io/datalevin/blob/master/doc/search.md#search-domains
+(def search-opts
+  {:search-domains {"datalevin" {:index-position? true
+                                 :analyzer        analyzer}}})
+
+(defn get-conn
+  []
+  (d/get-conn db-path static/schema search-opts))
 
 (defn xml-files
   "Fetch XML File objects recursively from a starting `dir`."
@@ -39,7 +59,7 @@
 (defn delete-db!
   "Close any previous db at `db-path` and remove the data."
   [db-path]
-  (d/close (d/get-conn db-path static/schema))
+  (d/close (get-conn))
   (rmdir db-path))
 
 (defn validate-files
@@ -56,7 +76,7 @@
   (io/make-parents db-path)
   (let [files    (validate-files (xml-files files-path))
         entities (map tei/file->entity files)
-        conn     (d/get-conn db-path static/schema)]
+        conn     (get-conn)]
     (when-let [error (some-> files meta :error not-empty)]
       (t/log! {:level :warn
                :data  error}
@@ -79,6 +99,7 @@
        (map (fn [id]
               (d/touch (d/entity db id))))))
 
+;; TODO: remove this now that the built-in phrase search is in use?
 ;; The phrase search implementation: Datalevin's existing full-text search is
 ;; augmented with a fairly loose regex search for the required phrase.
 ;; NOTE: Datalevin returns the UNION of results rather than the INTERSECTION,
@@ -167,30 +188,22 @@
   "Convert an `intersection` element from the search query AST into datalog
   triples to be used in a datalog query.
 
-  Unions/or-clauses found within the intersection are set aside as metadata."
+  There's no explicit handling of INTERSECTION, as that is removed during the
+  assumed preceding call to 'simplify' which converts the raw search query parse
+  tree into an AST.
+
+  UNION/or-clauses found within the intersection are set aside as metadata."
   [[_ & vs :as intersection]]
   (let [{:keys [text FIELD NEGATION UNION]} (group-by operand-type vs)]
     (cond-> []
 
-      ;; NOTE: there's no explicit handling of INTERSECTION, as it is removed
-      ;; during the assumed simplify call which converts the raw search query
-      ;; parse tree into an AST.
-
+      ;; Text search is simplified in the code, by turning every single fulltext
+      ;; call into an explicit phrase search. This may have some performance
+      ;; drawbacks (I'm not sure), but I don't think it matters in our case.
       text (concat
              (for [s text]
-               ;; We need to ignore stop-words in queries, as their presence can
-               ;; otherwise result in false negatives since they always return
-               ;; empty results, e.g. [:INTERSECTION "Canticle" "of" "Mary"]
-               ;; would return a false negative due to the presence of "of".
-               (when-not (da/en-stop-words? s)
-                 [(list 'fulltext '$ s) '[[?e ?a ?text]]]))
-
-             ;; Phrase matching is added for every multi-token search string.
-             ;; This will ensure that entire phrases are matched, not just the
-             ;; UNION of tokens in the search string which is what Datalevin
-             ;; defaults to.
-             (for [phrase (filter #(re-find #"\s" %) text)]
-               [(list 'contains-phrase '?text phrase)]))
+               ;; All fulltext attributes participate in the "datalevin" domain.
+               [(list 'fulltext '$ {:phrase s} {:domains ["datalevin"]}) '[[?e ?a ?text]]]))
 
       ;; Fields are only included when they match a known field type.
       FIELD (concat (->> (for [[_ k v] FIELD]
@@ -427,65 +440,6 @@
                    :other 789
                    :text  "Moby Dick is a story of a whale and a man obsessed."}]))]
     (search-intersection db ["Mary" "little lamb"]))
-
-
-
-
-
-
-
-  ;; TODO: why isn't redef working?? I need to ignore English stop words
-  ;; Combining full-text search with triple patterns
-  (with-redefs [datalevin.analyzer/en-stop-words? (constantly false)]
-    (let [db (-> (d/empty-db "/tmp/mydb"
-                             {:bedebok/text {:db/valueType :db.type/string
-                                             :db/fulltext  true}}
-                             {:search-engine {:analyzer (dsu/create-analyzer {:tokenizer da/en-analyzer})}})
-                 (d/db-with
-                   [{:db/id        1,
-                     :other        123
-                     :bedebok/text "The quick red fox jumped over the lazy red dogs."}
-                    {:db/id        2,
-                     :other        456
-                     :bedebok/text "Mary had a little lamb whose fleece was red as fire."}
-                    {:db/id        3,
-                     :other        789
-                     :bedebok/text "Moby Dick is a story of a whale and a man obsessed."}]))]
-      (d/q '[:find ?text ?e :in $ :where
-             [?e :bedebok/text ?text]
-             [(fulltext $ "red") [[?e ?a ?text]]]
-             #_[(fulltext $ "as") [[?e ?a ?text]]]]
-           db)
-      #_(search db "was red")))
-
-  (let [db (-> (d/empty-db "/tmp/glen"
-                           {:text {:db/valueType :db.type/string
-                                   :db/fulltext  true}}
-                           {:search-engine {:analyzer (datalevin.search-utils/create-analyzer {:tokenizer (datalevin.interpret/inter-fn [x] (datalevin.analyzer/en-analyzer x))})}})
-               (d/db-with
-                 [{:db/id 1
-                   :text  "The quick red fox jumped over the lazy red dogs."}]))]
-    (d/q '[:find ?text ?e
-           :in $
-           :where
-           [?e :text ?text]
-           [(fulltext $ "red") [[?e ?a ?text]]]]
-         db))
-
-
-
-
-
-
-
-
-
-
-
-
-
-  (d/q [:find ?text ?e :in $ :where [?e :bedebok/text ?text] [(fulltext $ "red") [[?e ?a ?text]]] [(fulltext $ "as") [[?e ?a ?text]]]]
-       db)
 
   (do
     (d/close (d/get-conn db-path static/schema))

@@ -18,28 +18,24 @@
 
 (defn add-entity
   [id entity]
-  (when-not (empty? entity)
-    (swap! state assoc-in [:entities id] entity)
+  (swap! state assoc-in [:entities id] entity)
 
-    ;; Generate paginated content and cache it for subsequent views.
-    (when (= "text" (:bedebok/type entity))
-      (swap! state assoc-in [:cached id :pages]
-             (node->pages (:file/node entity))))))
+  ;; Generate paginated content and cache it for subsequent views.
+  (when (= "text" (:bedebok/type entity))
+    (swap! state assoc-in [:cached id :pages]
+           (node->pages (:file/node entity)))))
 
 (defn add-work
   [id work]
-  (when-not (empty? work)
-    (swap! state assoc-in [:works id] work)))
+  (swap! state assoc-in [:works id] work))
 
 (defn add-search-result
   [query search-result]
-  (when-not (empty? search-result)
-    (swap! state assoc-in [:search query] search-result)))
+  (swap! state assoc-in [:search query] search-result))
 
 (defn add-index
   [type kvs]
-  (when-not (empty? kvs)
-    (swap! state assoc-in [:index type] kvs)))
+  (swap! state assoc-in [:index type] kvs))
 
 ;; TODO: create a macro for the (some-> ...) code?
 (defn cancel-on-error!
@@ -69,33 +65,33 @@
 (defn fetch-entity
   [{:keys [params]}]
   (let [{:keys [id]} params]
-    (when-not (get-in @state [:entities id])
+    (when-not (contains? (:entities @state) id)
       (some-> (fetch (web/api-path "/api/entity/" id))
               (.then #(add-entity id (:body %)))))))
 
 (defn fetch-work
   [{:keys [params]}]
   (let [{:keys [id]} params]
-    (when-not (get-in @state [:works id])
+    (when-not (contains? (:works @state) id)
       (some-> (fetch (web/api-path "/api/work/" id))
               (.then #(add-work id (:body %)))))))
 
 (defn search
   [{:keys [params]}]
   (let [{:keys [query]} params]
-    (when-not (get-in @state [:search query])
+    (when-not (contains? (:search @state) query)
       (some-> (fetch (web/api-path "/api/search/" query))
               (.then #(add-search-result query (:body %)))))))
 
 (defn fetch-index
   [type]
-  (when-not (get-in @state [:index type])
+  (when-not (contains? (:index @state) type)
     (some-> (fetch (web/api-path "/api/index/" type))
             (.then #(add-index type (:body %))))))
 
 (defn fetch-works
   []
-  (when-not (get-in @state [:index "work"])
+  (when-not (contains? (:index @state) "work")
     (some-> (fetch (web/api-path "/api/works"))
             (.then #(add-index "work" (:body %))))))
 

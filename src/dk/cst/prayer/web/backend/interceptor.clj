@@ -221,7 +221,11 @@
      :enter (fn [{:keys [db request] :as ctx}]
               (let [query (form-decode (get-in request [:params :query]))
                     res   (db/search db query)]
-                (basic-response ctx res)))}))
+                (update
+                  ctx :response merge
+                  {:status  200
+                   :headers {"Content-Type" "application/transit+json"}
+                   :body    (transito/write-str res)})))}))
 
 (def by-type
   (interceptor

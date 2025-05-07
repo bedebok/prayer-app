@@ -521,7 +521,7 @@
      [:header
       [:hgroup
        [:h1 "Search result"]
-       [:p query
+       [:p (form-decode query)
         ;; TODO: visualise search query?
         #_(str (search/simplify (search/parse query)))]]
       (case n

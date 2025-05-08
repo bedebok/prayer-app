@@ -701,12 +701,12 @@
     [:section.pinning
      [:p "Pinned content: "]
      (for [id pins]
-       (let [{:keys [tei/title bedebok/type]} (get entities id)]
-         [:label {:id    (str id "-checkbox")
-                  :title (str "Unpin: " id)}
-          [:input {:type    "checkbox"
-                   :on      {:change [::event/pin id]}
-                   :checked true}]
+       (let [{:keys [tei/title]} (get entities id)]
+         [:label
+          [:input {:replicant/key (str id "-checkbox")
+                   :type          "checkbox"
+                   :on            {:change [::event/pin id]}
+                   :checked       true}]
           (if (get duplicates title)
             [:ruby.disambiguate
              [:rb title]

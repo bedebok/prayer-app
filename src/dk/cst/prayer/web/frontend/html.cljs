@@ -3,6 +3,7 @@
   (:require [cljs.pprint :refer [pprint]]
             [clojure.string :as str]
             [reitit.impl :refer [form-decode]]
+            [taoensso.telemere :as t]
             [dk.cst.prayer.search :as search]
             [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as page]
@@ -37,18 +38,6 @@
        [:input#searchbar {:on          {:focus [::event/select]}
                           :value       (when (= name ::page/search)
                                          (-> (get-in location [:params :query])
-
-
-
-
-
-                                             ;; TODO: the decoding should occur elsewhere, not here
-
-
-
-
-
-
                                              (form-decode)))
                           :placeholder "search"
                           :type        "search"
@@ -70,8 +59,8 @@
             ((fn [[_ n rv]]
                [(parse-long n) rv])))
     ;; In case of missing data, we put these cases at the end.
-    ;; TODO: log the missing data
-    [9999 "v"]))
+    (do (t/log! {:level :warn} "Missing locus; placing at end.")
+        [9999 "v"])))
 
 ;; This assumes we have put :tei/from and :tei/to into a vector in :tei/locus.
 (def locus-order
@@ -327,17 +316,17 @@
 
 (defn pages-view
   [id]
-  (let [state'            @state
-        token-display     (boolean (get-in state' [:user :prefs :token-display]))
-        lb-display        (boolean (get-in state' [:user :prefs :lb-display]))
-        paragraph-display (boolean (get-in state' [:user :prefs :paragraph-display]))
+  (let [state'        @state
+        token-display (boolean (get-in state' [:user :prefs :token-display]))
+        lbm-display   (boolean (get-in state' [:user :prefs :lbm-display]))
+        pm-display    (boolean (get-in state' [:user :prefs :pm-display]))
         {:keys [n]} (get-in state' [:user :entities id])
-        pages             (get-in state' [:cached id :pages])
-        pages-display     (boolean (get-in state' [:user :prefs :pages-display]))]
+        pages         (get-in state' [:cached id :pages])
+        pages-display (boolean (get-in state' [:user :prefs :pages-display]))]
     [:section.tei-pages {:class (cond-> []
                                   (not token-display) (conj "no-token-metadata")
-                                  (not paragraph-display) (conj "no-paragraph-marks")
-                                  (not lb-display) (conj "no-lb-marks"))}
+                                  (not pm-display) (conj "no-paragraph-marks")
+                                  (not lbm-display) (conj "no-lb-marks"))}
      (if pages-display
        (map page-view pages)
        (list (controls-view id)
@@ -385,30 +374,38 @@
      [:p head])
    (descriptive-view entity)
    (when (= type "text")
-     (let [pages-display    (boolean (get-in @state [:user :prefs :pages-display]))
-           token-display    (boolean (get-in @state [:user :prefs :token-display]))
-           lb-display       (boolean (get-in @state [:user :prefs :lb-display]))
-           pargraph-display (boolean (get-in @state [:user :prefs :token-display]))]
+     (let [mpv-display  (boolean (get-in @state [:user :prefs :pages-display]))
+           meta-display (boolean (get-in @state [:user :prefs :token-display]))
+           lbm-display  (boolean (get-in @state [:user :prefs :lbm-display]))
+           pm-display   (boolean (get-in @state [:user :prefs :pm-display]))]
        [:aside.preferences
-        [:label [:input {:type    "checkbox"
-                         :title   "Toggle single/multi page view"
-                         :checked pages-display
-                         :on      {:change [::event/toggle :pages-display]}}]
+        [:label
+         [:input {:id      "toggle-pages"
+                  :type    "checkbox"
+                  :title   "Toggle single/multi page view"
+                  :checked mpv-display
+                  :on      {:change [::event/toggle :pages-display]}}]
          " all pages"]
-        [:label [:input {:type    "checkbox"
-                         :title   "Toggle lemma & part-of-speech tag view"
-                         :checked token-display
-                         :on      {:change [::event/toggle :token-display]}}]
+        [:label
+         [:input {:id      "toggle-token"
+                  :type    "checkbox"
+                  :title   "Toggle lemma & part-of-speech tag view"
+                  :checked meta-display
+                  :on      {:change [::event/toggle :token-display]}}]
          " token metadata"]
-        [:label [:input {:type    "checkbox"
-                         :title   "Toggle line-break marks"
-                         :checked lb-display
-                         :on      {:change [::event/toggle :lb-display]}}]
+        [:label
+         [:input {:id      "toggle-lbm"
+                  :type    "checkbox"
+                  :title   "Toggle line-break marks"
+                  :checked lbm-display
+                  :on      {:change [::event/toggle :lbm-display]}}]
          " line-break marks"]
-        [:label [:input {:type    "checkbox"
-                         :title   "Toggle paragraph marks"
-                         :checked pargraph-display
-                         :on      {:change [::event/toggle :paragraph-display]}}]
+        [:label
+         [:input {:id      "toggle-pm"
+                  :type    "checkbox"
+                  :title   "Toggle paragraph marks"
+                  :checked pm-display
+                  :on      {:change [::event/toggle :pm-display]}}]
          " paragraph marks"]]))])
 
 (defn- section
@@ -497,7 +494,6 @@
 (defn work-view
   [id {:keys [type->document tei/title file/node] :as entity}]
   [:article
-   ;; TODO: needs a proper label
    [:header
     [:hgroup
      [:h1 (or title id)]
@@ -743,8 +739,6 @@
   []
   (let [{:keys [user error] :as state'} @state
         {:keys [pins]} user]
-    ;; Some kind of ID is needed for replicant to properly re-render
-    ;; TODO: is there a better ID?
     [:div.container {:class (if (empty? pins)
                               "single-document"
                               "multi-document")}
@@ -756,6 +750,8 @@
       [:aside.spine {:aria-hidden "true"}
        "When " [:span.red "Danes"] " Prayed in " [:span.yellow "German"]]
       [:section.page-body
+       ;; Some kind of ID is needed for replicant to properly re-render
+       ;; TODO: is there a better ID?
        (if (empty? pins)
          [:main {:id js/window.location.pathname}
           (content-view)]

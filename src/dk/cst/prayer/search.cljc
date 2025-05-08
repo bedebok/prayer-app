@@ -46,7 +46,6 @@
       [:INTERSECTION inner]
       inner)))
 
-;; TODO: log the error? Or return some kind of debugging output?
 (defn query->ast
   [query]
   (try

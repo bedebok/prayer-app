@@ -413,10 +413,10 @@
             label (h/hiccup->text node tei-conversion)]
         (when (and key type)
           ;; NOTE: upserts require both composite & constituent parts!
-          {:tei/named [(cond-> {:tei/entity {:tei/name+type [key type]
-                                             :tei/name      key
-                                             :tei/type      type}}
-                         label (assoc :bedebok/label label))]})))]
+          {:bedebok/named [(cond-> {:bedebok/entity {:tei/name+type [key type]
+                                                     :tei/name      key
+                                                     :tei/type      type}}
+                             label (assoc :bedebok/label label))]})))]
 
    ;; TODO: ensure that these exist in prototypical files
    ;; These sentence references seem to be another type of named entity.
@@ -425,10 +425,10 @@
       (let [{:keys [type n]} (elem/attr node)
             label (h/hiccup->text node tei-conversion)]
         ;; NOTE: upserts require both composite & constituent parts!
-        {:tei/named [(cond-> {:tei/entity {:tei/name+type [key type]
-                                           :tei/name      key
-                                           :tei/type      type}}
-                       label (assoc :bedebok/label label))]}))]
+        {:bedebok/named [(cond-> {:bedebok/entity {:tei/name+type [key type]
+                                                   :tei/name      key
+                                                   :tei/type      type}}
+                           label (assoc :bedebok/label label))]}))]
 
    ;; The raw document text is included to facilitate full-text search.
    ;; This is enabled in the db schema definition for :tei/text.
@@ -502,7 +502,6 @@
       (xh/parse {:file-meta {:path :absolute}})
       (hiccup->mentions))
 
-  ;; TODO: "../Data/Gold corpus/AM08-0073_237v.xml" and  "../Data/Gold corpus/AM08-0073.xml" use the same ID!!
   ;; Triple generation from a document
   ;; compare: https://github.com/bedebok/Data/blob/main/Prayers/org/AM08-0075_063r.org
   (-> (io/file "../Data/Gold corpus/AM08-0073.xml")

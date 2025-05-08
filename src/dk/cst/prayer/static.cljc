@@ -136,8 +136,7 @@
                        :db/cardinality :db.cardinality/many
                        :db/doc         "<explicit> (explicit) contains the explicit of a item, that is, the closing words of the text proper, exclusive of any rubric or colophon which might follow it. [11.6.1 The msItem and msItemStruct Elements]"}
 
-   ;; TODO: maybe rename to :bedebok/entity since this't in the TEI standard?
-   :tei/entity        {:db/cardinality :db.cardinality/one
+   :bedebok/entity    {:db/cardinality :db.cardinality/one
                        :db/valueType   :db.type/ref
                        :db/doc         (str "For internal entities appearing across the documents "
                                             "such as named entities or biblical references. "
@@ -153,8 +152,7 @@
                        :db/tupleAttrs  [:tei/name :tei/type]
                        :db/cardinality :db.cardinality/one
                        :db/unique      :db.unique/identity}
-   ;; TODO: use bedebok instead? I don't think this is from TEI.
-   :tei/named         {:db/cardinality :db.cardinality/many
+   :bedebok/named     {:db/cardinality :db.cardinality/many
                        :db/valueType   :db.type/ref
                        :db/isComponent true
                        :db/doc         (str "A named entity reference.")}

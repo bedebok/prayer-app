@@ -33,10 +33,34 @@
     (-> negation-loc zip/down z/splice z/splice)
     negation-loc))
 
+(defn- apply-de-morgans-laws
+  [tag child-loc]
+  (into [tag] (for [child (zip/children child-loc)] [:NEGATION child])))
+
+;; https://en.wikipedia.org/wiki/De_Morgan%27s_laws
+(defn handle-de-morgans-laws
+  "If this `negation-loc` negates either a union or an intersection, apply
+  De Morgan's Laws such that the negated union/intersection is swapped with an
+  intersection/union containing the negated parts of the former."
+  [negation-loc]
+  (if (= 1 (count (zip/children negation-loc)))
+    (let [child-loc (zip/down negation-loc)]
+      (cond
+        ((match/match :INTERSECTION) child-loc)
+        (zip/replace negation-loc (apply-de-morgans-laws :UNION child-loc))
+
+        ((match/match :UNION) child-loc)
+        (zip/replace negation-loc (apply-de-morgans-laws :INTERSECTION child-loc))
+
+        :else negation-loc))
+    negation-loc))
+
+
 (def parse-tree-simplification
-  {:multi {#{:QUIRK intersection+} z/splice
-           #{:IGNORED}             zip/remove
-           :NEGATION               handle-double-negative}})
+  {:multi [[#{:QUIRK intersection+} z/splice]
+           [#{:IGNORED} zip/remove]
+           [:NEGATION handle-double-negative]
+           [:NEGATION handle-de-morgans-laws]]})
 
 (defn simplify
   "Simplify a Hiccup `parse-tree`."
@@ -62,7 +86,8 @@
 
 (comment
   (query->ast "NOT corresp:AM08-0073")
-  (simplify (parse "NOT corresp:AM08-0073"))
+  (simplify (parse "NOT (NOT NOT NOT NOT børge & glen)"))
+  (simplify (parse "NOT (glen & glen)"))
   (simplify (parse "NOT corresp:AM08-0073 glen"))
 
   (parse "!(this that)")

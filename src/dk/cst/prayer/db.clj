@@ -183,7 +183,6 @@
         (recur (subvec rem-path 2) (conj triples path-triple)))
       (conj triples rem-path))))
 
-;; TODO: full-text negations
 (defn intersection->triples
   "Convert an `intersection` element from the search query AST into datalog
   triples to be used in a datalog query.
@@ -220,10 +219,7 @@
       ;; Unions/or-clauses are not included in the initial datalog query.
       ;; Instead, they are set aside for subsequent queries that will run
       ;; sequentially. The union of every query result set is returned instead.
-      UNION (with-meta {:UNION UNION})
-
-      ;; In cases where we end up with no search triples, we return nil.
-      true (->> (remove nil?) (not-empty)))))
+      UNION (with-meta {:UNION UNION}))))
 
 (defn build-query
   "Build a datalog query from a coll of `triples`."
@@ -246,10 +242,9 @@
      [?parent :tei/msItem ?msItem]
      (ancestor ?parent ?ancestor)]])
 
-
 (defn run-search
   [db triples]
-  (if-let [query (some-> triples not-empty build-query)]
+  (if-let [query (some->> triples (remove nil?) not-empty build-query)]
     (do
       (t/log! {:level :info :data query} "Executed datalog query.")
       ;; We execute two separate queries and return the union of the results.
@@ -308,6 +303,7 @@
 (comment
   (search (d/db (d/get-conn db-path static/schema)) "class=antiphone")
   (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
+  (search (d/db (d/get-conn db-path static/schema)) "NOT (corresp:AM08-0073)")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
   (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")
   (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" corresp:AM08-0073")

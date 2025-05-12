@@ -91,6 +91,137 @@
            :href  (str "/search/" (str (name k) "=" v'))}
        (label-view k v)])))
 
+(defn uncapitalize
+  [s]
+  (str (str/lower-case (subs s 0 1))
+       (subs s 1)))
+
+(defn descriptive-view
+  [entity]
+  (let [kvs (sort-by first entity)]
+    [:ul.descriptive
+     (for [[k v] kvs]
+       [:li
+        [:strong (when-let [title (static/attr-doc k)] {:title title})
+         (name k) ": "]
+        (uncapitalize v)])]))
+
+
+(defn cell-data-view
+  [bedebok-type k v]
+  (condp in k
+    #{:tei/msItem :tei/collationItem}
+    (table-views (map #(assoc % :bedebok/type k) v))
+
+    :tei/locus
+    (locus-view v)
+
+    :tei/dimensions
+    (let [{:keys [tei/height tei/width]} v
+          ratio (if (and height width)
+                  (/ height width)
+                  1)]
+      [:table.dimensions
+       [:tr
+        [:td]
+        [:td.dimensions-width width]]
+       [:tr
+        [:td.dimensions-height height]
+        [:div.dimensions-model {:style {:height (* ratio 100)
+                                        :width  100}}]]])
+
+    :tei/author
+    (let [{:keys [tei/key tei/title]} v]
+      [:a {:href  (str "/search/" (str "author=" key))
+           :title "Find more with this author"}
+       title])
+
+    :tei/origDate
+    (let [{:keys [tei/notAfter tei/notBefore tei/title]} v]
+      (if title
+        (list title [:br] " (c. " notBefore "–" notAfter ")")
+        (str "c. " notBefore "–" notAfter)))
+
+    :tei/origPlace
+    (let [{:keys [tei/key tei/title]} v]
+      [:a {:href  (str "/search/" (str "origPlace=" key))
+           :title "Find more with this place"}
+
+       title])
+
+    :tei/supportDesc
+    (let [{:keys [tei/support tei/material]} v]
+      [:a {:href  (str "/search/" (str "material=" material))
+           :title "Find more with this material"}
+       support])
+
+    :tei/respStmt
+    (let [{:keys [tei/key tei/resp tei/persName]} v
+          year (:tei/when v)]
+      (list
+        resp [:br]
+        " ("
+        (when year
+          (str year " "))
+        (if key
+          [:a {:href  (str "/search/" (str "resp=" key))
+               :title "Find more with this person"}
+           persName]
+          resp)
+        ")"))
+
+    :bedebok/work
+    (let [{:keys [tei/key tei/title]} v]
+      [:a {:href  (str "/works/" key)
+           :title "View documents referencing this work"}
+       title])
+
+    :tei/corresp
+    [:a (if (= bedebok-type "text")
+          {:href  (str "/manuscripts/" v)
+           :title "View corresponding manuscript"}
+          {:href  (str "/texts/" v)
+           :title "View corresponding text"})
+     v]
+
+    #_:bedebok/type
+    #_[:a {:href  (str "/" bedebok-type "s")
+           :title "View more of this type"}
+       v]
+
+    ;; TODO: need the inline language info here too
+    #{:tei/rubric :tei/incipit :tei/explicit}
+    (if (= (count v) 1)
+      (first v)
+      [:ul
+       (for [s (sort v)]
+         [:li s])])
+
+    #{:bedebok/type
+      :tei/class
+      :tei/settlement
+      :tei/repository
+      :tei/mainLang
+      :tei/otherLangs}
+    (basic-field-search k v)
+
+    :bedebok/mentions
+    (->> (sort-by :tei/label v)
+         (map (fn [{:keys [tei/key tei/label]}]
+                [:a {:title (str "Find other documents with this mention")
+                     :href  (str "/search/mentions=" key)}
+                 label]))
+         (interpose ", "))
+
+    ;; Put simple inline tables here.
+    #{:bedebok/process}
+    (descriptive-view v)
+
+    ;; else
+    (if (set? v)
+      (list-view (map (partial label-view k) v))
+      (label-view k v))))
+
 (defn table-tr-view
   [bedebok-type [k v]]
   ;; NOTE: we are overloading the :bedebok/type value with keywords to better
@@ -101,119 +232,7 @@
      [:td (when-let [doc (static/attr-doc k)]
             {:title doc})
       (name k)]
-     [:td (condp in k
-            #{:tei/msItem :tei/collationItem}
-            (table-views (map #(assoc % :bedebok/type k) v))
-
-            :tei/locus
-            (locus-view v)
-
-            :tei/dimensions
-            (let [{:keys [tei/height tei/width]} v
-                  ratio (if (and height width)
-                          (/ height width)
-                          1)]
-              [:table.dimensions
-               [:tr
-                [:td]
-                [:td.dimensions-width width]]
-               [:tr
-                [:td.dimensions-height height]
-                [:div.dimensions-model {:style {:height (* ratio 100)
-                                                :width  100}}]]])
-
-            :tei/author
-            (let [{:keys [tei/key tei/title]} v]
-              [:a {:href  (str "/search/" (str "author=" key))
-                   :title "Find more with this author"}
-               title])
-
-            :tei/origDate
-            (let [{:keys [tei/notAfter tei/notBefore tei/title]} v]
-              (if title
-                (list title [:br] " (c. " notBefore "–" notAfter ")")
-                (str "c. " notBefore "–" notAfter)))
-
-            :tei/origPlace
-            (let [{:keys [tei/key tei/title]} v]
-              [:a {:href  (str "/search/" (str "origPlace=" key))
-                   :title "Find more with this place"}
-
-               title])
-
-            :tei/supportDesc
-            (let [{:keys [tei/support tei/material]} v]
-              [:a {:href  (str "/search/" (str "material=" material))
-                   :title "Find more with this material"}
-               support])
-
-            :tei/respStmt
-            (let [{:keys [tei/key tei/resp tei/persName]} v
-                  year (:tei/when v)]
-              (list
-                resp [:br]
-                " ("
-                (when year
-                  (str year " "))
-                (if key
-                  [:a {:href  (str "/search/" (str "resp=" key))
-                       :title "Find more with this person"}
-                   persName]
-                  resp)
-                ")"))
-
-            :bedebok/work
-            (let [{:keys [tei/key tei/title]} v]
-              [:a {:href  (str "/works/" key)
-                   :title "View documents referencing this work"}
-               title])
-
-            :tei/corresp
-            [:a (if (= bedebok-type "text")
-                  {:href  (str "/manuscripts/" v)
-                   :title "View corresponding manuscript"}
-                  {:href  (str "/texts/" v)
-                   :title "View corresponding text"})
-             v]
-
-            #_:bedebok/type
-            #_[:a {:href  (str "/" bedebok-type "s")
-                   :title "View more of this type"}
-               v]
-
-            ;; TODO: need the inline language info here too
-            #{:tei/rubric :tei/incipit :tei/explicit}
-            (if (= (count v) 1)
-              (first v)
-              [:ul
-               (for [s (sort v)]
-                 [:li s])])
-
-            #{:bedebok/type
-              :tei/class
-              :tei/settlement
-              :tei/repository
-              :tei/mainLang
-              :tei/otherLangs}
-            (basic-field-search k v)
-
-            :bedebok/mentions
-            (->> (sort-by :tei/label v)
-                 (map (fn [{:keys [tei/key tei/label]}]
-                        [:a {:title (str "Find other documents with this mention")
-                             :href  (str "/search/mentions=" key)}
-                         label]))
-                 (interpose ", "))
-
-            ;; Put simple inline tables here.
-            #{:bedebok/process}
-            [:table.common
-             (map (partial table-tr-view k) v)]
-
-            ;; else
-            (if (set? v)
-              (list-view (map (partial label-view k) v))
-              (label-view k v)))]]))
+     [:td (cell-data-view bedebok-type k v)]]))
 
 (defn prepare-for-table
   "Modifies the data of `m` for table display."
@@ -332,32 +351,6 @@
        (list (controls-view id)
              (page-view (nth pages (or n 0)))))]))
 
-(defn uncapitalize
-  [s]
-  (str (str/lower-case (subs s 0 1))
-       (subs s 1)))
-
-(defn descriptive-view
-  [{:keys [tei/origin tei/provenance tei/acquisition] :as entity}]
-  (cond
-    (or origin provenance)
-    [:ul.descriptive
-     (when origin
-       [:li#origin
-        [:strong {:title (static/attr-doc :tei/origin)}
-         "ORIGIN"] ": "
-        (uncapitalize origin)])
-     (when provenance
-       [:li#provenance
-        [:strong {:title (static/attr-doc :tei/provenance)}
-         "PROVENANCE"] ": "
-        (uncapitalize provenance)])
-     (when acquisition
-       [:li#acquisition
-        [:strong {:title (static/attr-doc :tei/acquisition)}
-         "ACQUISITION"] ": "
-        (uncapitalize acquisition)])]))
-
 (defn page-header-view
   [{:keys [tei/title tei/summary tei/head bedebok/type bedebok/id]
     :as   entity}]
@@ -372,7 +365,7 @@
       [:p [:strong "ID: "] id])]
    (when head
      [:p head])
-   (descriptive-view entity)
+   (descriptive-view (select-keys entity [:tei/origin :tei/provenance :tei/acquisition]))
    (when (= type "text")
      (let [mpv-display  (boolean (get-in @state [:user :prefs :pages-display]))
            meta-display (boolean (get-in @state [:user :prefs :token-display]))

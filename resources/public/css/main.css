@@ -11,7 +11,8 @@
     src: url(/fonts/SortsMillGoudy-Regular.ttf);
 }
 
-table [title]:not(a), ul.descriptive strong {
+table [title]:not(a),
+ul.descriptive strong[title] {
     cursor: help;
 }
 
@@ -422,6 +423,15 @@ table.common ul {
     list-style-type: square;
 }
 
+table.common ul.descriptive {
+    padding-left: 0;
+    list-style-type: none;
+}
+
+table.common ul.descriptive > li + li {
+    margin-top: 12px;
+}
+
 details > table.common {
     margin: 12px 0 0 0;
 }
@@ -574,21 +584,26 @@ ul.descriptive {
     padding-left: 24px;
 }
 
-ul.descriptive li {
+ul.descriptive > li {
     padding-left: 4px;
 }
 
-ul.descriptive li + li {
+ul.descriptive > li + li {
     margin-top: 4px;
 }
 
-p, ul.descriptive li {
+p,
+header > ul.descriptive > li {
     font-size: 18px;
     line-height: 1.8;
     letter-spacing: 1px;
     text-align: justify;
     text-justify: inter-word;
     margin: 0;
+}
+
+ul.descriptive > li > strong {
+    text-transform: uppercase;
 }
 
 * + p {

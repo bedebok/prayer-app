@@ -667,7 +667,7 @@
     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]
    [:ul.links
     [:li
-     [:a {:href  ""                                         ;TODO
+     [:a {:href  "https://was.digst.dk/bedebog-dk"
           :title "Accessibility statement"}
       "Accessibility"]]
     [:li

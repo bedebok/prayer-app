@@ -125,15 +125,17 @@
                        :db/cardinality :db.cardinality/one}
 
    ;; These attributes form a sort of summary of a prayer.
-   ;; TODO: should it one-to-one for each language?
-   :tei/rubric        {:db/valueType   :db.type/string
-                       :db/cardinality :db.cardinality/many
+   :tei/rubric        {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
                        :db/doc         "<rubric> (rubric) contains the text of any rubric or heading attached to a particular manuscript item, that is, a string of words through which a manuscript or other object signals the beginning of a text division, often with an assertion as to its author and title, which is in some way set off from the text itself, typically in red ink, or by use of different size or type of script, or some other such visual device. [11.6.1 The msItem and msItemStruct Elements]"}
-   :tei/incipit       {:db/valueType   :db.type/string
-                       :db/cardinality :db.cardinality/many
+   :tei/incipit       {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
                        :db/doc         "<incipit> contains the incipit of a manuscript or similar object item, that is the opening words of the text proper, exclusive of any rubric which might precede it, of sufficient length to identify the work uniquely; such incipits were, in former times, frequently used a means of reference to a work, in place of a title. [11.6.1 The msItem and msItemStruct Elements]"}
-   :tei/explicit      {:db/valueType   :db.type/string
-                       :db/cardinality :db.cardinality/many
+   :tei/explicit      {:db/cardinality :db.cardinality/many
+                       :db/valueType   :db.type/ref
+                       :db/isComponent true
                        :db/doc         "<explicit> (explicit) contains the explicit of a item, that is, the closing words of the text proper, exclusive of any rubric or colophon which might follow it. [11.6.1 The msItem and msItemStruct Elements]"}
 
    :bedebok/entity    {:db/cardinality :db.cardinality/one

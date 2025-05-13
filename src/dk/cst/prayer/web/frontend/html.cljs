@@ -102,10 +102,11 @@
     [:ul.descriptive
      (for [[k v] kvs]
        [:li
-        [:strong (when-let [title (static/attr-doc k)] {:title title})
-         (name k) ": "]
-        (uncapitalize v)])]))
-
+        (when k
+          [:strong (when-let [title (static/attr-doc k)] {:title title})
+           (name k) ": "])
+        (when (and v (string? v))
+          (uncapitalize v))])]))
 
 (defn cell-data-view
   [bedebok-type k v]
@@ -189,14 +190,6 @@
            :title "View more of this type"}
        v]
 
-    ;; TODO: need the inline language info here too
-    #{:tei/rubric :tei/incipit :tei/explicit}
-    (if (= (count v) 1)
-      (first v)
-      [:ul
-       (for [s (sort v)]
-         [:li s])])
-
     #{:bedebok/type
       :tei/class
       :tei/settlement
@@ -212,6 +205,9 @@
                      :href  (str "/search/mentions=" key)}
                  label]))
          (interpose ", "))
+
+    #{:tei/rubric :tei/incipit :tei/explicit}
+    (descriptive-view (map (juxt :xml/lang :bedebok/text) v))
 
     ;; Put simple inline tables here.
     #{:bedebok/process}

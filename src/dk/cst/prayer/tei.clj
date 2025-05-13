@@ -261,18 +261,12 @@
           {:tei/author {:tei/key   key
                         :tei/title (or title key)}})))]
 
-   [:rubric
+   [#{:rubric :incipit :explicit}
     (fn [node]
-      {:tei/rubric [(h/hiccup->text node tei-conversion)]})]
-
-   ;; TODO: also register xml:lang and type, see: AM08-0073.xml
-   [:incipit
-    (fn [node]
-      {:tei/incipit [(h/hiccup->text node tei-conversion)]})]
-
-   [:explicit
-    (fn [node]
-      {:tei/explicit [(h/hiccup->text node tei-conversion)]})]])
+      (let [[tag {:keys [xml/lang]}] (elem/parts node)
+            attribute (keyword "tei" (name tag))]
+        {attribute [(cond-> {:bedebok/text (h/hiccup->text node tei-conversion)}
+                      lang (assoc :xml/lang lang))]}))]])
 
 (def collationItem-search-kvs
   "The [matcher process] kvs for doing a recursive sweep of <item> elements

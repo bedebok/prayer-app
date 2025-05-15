@@ -5,6 +5,7 @@
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.frontend.error :as err]
             [dk.cst.prayer.web.frontend.state :as state :refer [state]]
+            [taoensso.telemere :as t]
             [lambdaisland.fetch :as fetch]))
 
 (defn node->pages
@@ -37,63 +38,91 @@
   [type kvs]
   (swap! state assoc-in [:index type] kvs))
 
+(defn coll-body
+  "Make sure that only a collection is returned from the `response`.
+
+  This is to ensure that e.g. error strings or other unexpected output doesn't
+  blow up the frontend in some way."
+  [response]
+  (let [body (:body response)]
+    (if (coll? body)
+      body
+      (do (t/log! {:level    :warn
+                   :url      (some-> response meta ::fetch/request .-url)
+                   :response response}
+                  "Response body is not a collection, ignoring.")
+          nil))))
+
 ;; TODO: create a macro for the (some-> ...) code?
-(defn cancel-on-error!
+(defn cancel-on-5xx!
   "Return nil on server error in `fetch-promise` and write to error log."
   [fetch-promise]
   (.then fetch-promise
-         #(if (<= 500 (:status %) 511)
+         #(if (<= 500 (:status %) 599)
             (let [url (some-> % meta ::fetch/request .-url)]
               ;; NOTE: when throwing an error inside a promise, the error will
               ;;       not be caught by window.onerror, so we should always
-              ;;       explicitly call `register!` in such cases!
-              (err/display! {:name     "Server error"
+              ;;       explicitly call `display!` in such cases!
+              (err/display! {:name    "Server error"
                              :message (str "status code " (:status %) " received")
                              :url     url
                              :body    (:body %)}))
             %)))
 
+(defn warn-on-4xx!
+  "Return nil on server error in `fetch-promise` and write to error log."
+  [fetch-promise]
+  (.then fetch-promise
+         #(if (<= 400 (:status %) 499)
+            (let [url    (some-> % meta ::fetch/request .-url)
+                  status (:status %)]
+              (t/log! {:level :warn
+                       :data  {:url    url
+                               :status status}}
+                      (str "Could not fetch: " url " (" status ")")))
+            %)))
+
 ;; TODO: swap built-in fetch transit parsing for transito?
-;; TODO: handle 404?
 (defn fetch
   [url & [opts]]
   (->> (assoc opts
          :headers {"X-session-id" state/session-id})        ; track in logs
        (fetch/get url)
-       (cancel-on-error!)))
+       (warn-on-4xx!)
+       (cancel-on-5xx!)))
 
 (defn fetch-entity
   [{:keys [params]}]
   (let [{:keys [id]} params]
     (when-not (contains? (:entities @state) id)
       (some-> (fetch (web/api-path "/api/entity/" id))
-              (.then #(add-entity id (:body %)))))))
+              (.then #(add-entity id (coll-body %)))))))
 
 (defn fetch-work
   [{:keys [params]}]
   (let [{:keys [id]} params]
     (when-not (contains? (:works @state) id)
       (some-> (fetch (web/api-path "/api/work/" id))
-              (.then #(add-work id (:body %)))))))
+              (.then #(add-work id (coll-body %)))))))
 
 (defn search
   [{:keys [params]}]
   (let [{:keys [query]} params]
     (when-not (contains? (:search @state) query)
       (some-> (fetch (web/api-path "/api/search/" query))
-              (.then #(add-search-result query (:body %)))))))
+              (.then #(add-search-result query (coll-body %)))))))
 
 (defn fetch-index
   [type]
   (when-not (contains? (:index @state) type)
     (some-> (fetch (web/api-path "/api/index/" type))
-            (.then #(add-index type (:body %))))))
+            (.then #(add-index type (coll-body %))))))
 
 (defn fetch-works
   []
   (when-not (contains? (:index @state) "work")
     (some-> (fetch (web/api-path "/api/works"))
-            (.then #(add-index "work" (:body %))))))
+            (.then #(add-index "work" (coll-body %))))))
 
 (defn backend-log
   [error-data]

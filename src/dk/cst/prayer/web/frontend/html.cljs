@@ -636,9 +636,18 @@
     [:a {:href "https://github.com/bedebok/prayer-app/issues"} "our issue tracker"] ". Make sure to include the session ID!"]
    [:p [:strong "NOTE:"] " the cached data (including the session ID) will be reset by performing a hard page refresh."]])
 
+(defn unavailable-view
+  [id]
+  [:article
+   [:header
+    [:hgroup
+     [:h1 "Missing content"]
+     [:p [:strong "ID: "] id]]]
+   [:p "The requested content is unavailable."]])
+
 (defn content-view
   []
-  (let [{:keys [location user] :as state'} @state
+  (let [{:keys [location user entities] :as state'} @state
         {:keys [pins]} user
         {:keys [name params]} location
         {:keys [query id]} params
@@ -646,16 +655,21 @@
         ;; and this is set manually for the pinned content.
         pin-status (when (empty? (filter #{id} pins))
                      :unpinned)]
-    (condp = name
-      ::page/main (frontpage-view)
-      ::page/privacy (privacy-policy-view)
-      ::page/search (search-view query (get-in state' [:search query]))
-      ::page/work (work-view id (get-in state' [:works id]))
-      ::page/text (entity-view (get-in state' [:entities id]) pin-status)
-      ::page/manuscript (entity-view (get-in state' [:entities id]) pin-status)
-      ::page/text-index (index-view "text" (get-in state' [:index "text"]))
-      ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
-      ::page/work-index (index-view "work" (get-in state' [:index "work"])))))
+    ;; TODO: need a universal check for 4xx that isn't just texts/manuscripts
+    (if (and (get #{::page/text ::page/manuscript} name)
+             (contains? entities id)
+             (nil? (get-in state' [:entities id])))
+      (unavailable-view id)
+      (condp = name
+        ::page/main (frontpage-view)
+        ::page/privacy (privacy-policy-view)
+        ::page/search (search-view query (get-in state' [:search query]))
+        ::page/work (work-view id (get-in state' [:works id]))
+        ::page/text (entity-view (get-in state' [:entities id]) pin-status)
+        ::page/manuscript (entity-view (get-in state' [:entities id]) pin-status)
+        ::page/text-index (index-view "text" (get-in state' [:index "text"]))
+        ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
+        ::page/work-index (index-view "work" (get-in state' [:index "work"]))))))
 
 (defn footer-view
   []
@@ -731,7 +745,7 @@
     [:div.container {:class (if (empty? pins)
                               "single-document"
                               "multi-document")}
-     #_(dev-view)
+     (dev-view)
      (header-view)
      (error-message-view error)
      [:div.page-body-wrapper

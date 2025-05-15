@@ -39,13 +39,14 @@
   ;;   --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
   ;; This requires running shadow-cljs to access the frontend:
   ;;   $ npx shadow-cljs watch app
-  (do
+  (try
     (do
       (db/delete-db! db/db-path)
-      (db/build-db! db/files-path db/db-path)
-      nil)
-    (backend/restart)
-    nil)
+      (db/build-db! db/files-path db/db-path))
+    (catch Exception e
+      (throw e))
+    (finally
+      (backend/restart)))
 
   (stop-dev)
   #_.)

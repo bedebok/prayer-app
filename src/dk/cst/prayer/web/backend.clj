@@ -35,14 +35,11 @@
     [path :get [ic/app] :route-name name :constraints constraints]
     [path :get [ic/app] :route-name name]))
 
-(def routes
+(defn routes
+  []
   (route/expand-routes
     (set (into (map backend-route api-routes)
                (map frontend-route web/frontend-routes)))))
-
-(defn current-routes
-  []
-  routes)
 
 (defn ->service-map
   []
@@ -55,7 +52,7 @@
                :font-src    "'self'"
                :style-src   "'self' 'unsafe-inline'"
                :base-uri    "'self'"})]
-    (-> {::http/routes          #((deref #'current-routes))
+    (-> {::http/routes          #((deref #'routes))
          ::http/type            :jetty
          ::http/host            web/host
          ::http/port            web/port

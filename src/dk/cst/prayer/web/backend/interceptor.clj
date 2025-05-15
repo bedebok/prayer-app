@@ -9,7 +9,6 @@
             [io.pedestal.http :as http]
             [io.pedestal.http.cors :as cors]
             [reitit.impl :refer [form-decode]]
-            [dk.cst.prayer.static :as static]
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.backend.html :as html]
             [com.wsscode.transito :as transito]
@@ -147,17 +146,21 @@
 (def entity
   (interceptor
     {:name  ::entity
-     :enter (fn [{:keys [db eid] :as ctx}]
+     :enter (fn [{:keys [db eid request] :as ctx}]
               (let [e (d/entity db eid)]
                 (update
                   ctx :response merge
-                  ;; As Datalevin seems to have a bug where entity
-                  ;; always non-empty, we need to check this.
+                  ;; As Datalevin seems to have a bug where an entity is
+                  ;; always non-empty, we need to check it this way.
                   (if (> (count (keys e)) 1)
                     {:status  200
                      :headers {"Content-Type" "application/transit+json"}
                      :body    (transito/write-str (datafy-entity e))}
-                    {:status 404}))))}))
+                    (let [id (get-in request [:params :id])]
+                      (t/log! {:level :warn
+                               :data  {:id id}}
+                              (str "Unknown entity (" id "); no eid exists."))
+                      {:status 404})))))}))
 
 (def by-work
   (interceptor

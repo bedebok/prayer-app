@@ -1,7 +1,7 @@
 # Prayer app
 
 ## Data modeling
-A lot of the data is described in the form of the [TEI Manuscript Description](https://tei-c.org/release/doc/tei-p5-doc/en/html/MS.html) element and its associated subelements.
+A lot of the data is described in the form of the [TEI Manuscript Description](https://tei-c.org/release/doc/tei-p5-doc/en/html/MS.html) element and its associated sub-elements.
 
 The project defines the following entities which map to the TEI standard in the following way:
 
@@ -11,8 +11,6 @@ The project defines the following entities which map to the TEI standard in the 
   * In TEI →  the `msItem` tag (located within `msContents`) contains information used to identify a **text**.
 * **work**: a class of **text** instances.
   * In TEI → the `msItem` tag references the relevant **work** using an `xml:id` for a specific TEI document or the `key` attribute for a known, non-file **work** (if applicable).
-* **catalogue**: a digital document created by the researchers that contains either a detailed table of **text**, **work**, or **manuscript** entities.
-  * In TEI → the manuscript tags are repurposed for this special entity, such that `msIdentifier` is used to identify the **catalogue** entity and `msItem` contains each item/row in the table.
 
 Seán Vrieland maintains overviews of the TEI files too:
 
@@ -71,7 +69,16 @@ Datalevin has the advantage of having a similar query language to Asami, while a
 It is probably a bit more unstable than Asami, e.g. I already discovered two (what I would call) bugs and a core missing feature. However, the developer behind Datalevin is pretty quick and responsive towards issues/feature requests.
 
 #### Replicant
-TBD
+I am using Replicant to render Hiccup in the frontend. It is similar in style to Reagent and Rum, which are both React-wrappers, but don't depend on React.
+
+### Telemere
+This universal logging/metrics CLJ(S) library seems to be the best option today.
+
+### Instaparse
+I use Instaparse to parse my search query language EBNF.
+
+### Handling TEI
+I use my own libraries for parsing and paginating TEI documents.
 
 ## Dev and production
 

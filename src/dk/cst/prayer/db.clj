@@ -1,9 +1,12 @@
 (ns dk.cst.prayer.db
+  "Database creation and search logic.
+
+  For the code that parses search query language, see: 'dk.cst.prayer.search'.
+  For the code that parses TEI, see: 'dk.cst.prayer.tei'."
   (:require [clojure.set :as set]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [datalevin.core :as d]
-            [datalevin.analyzer :as da]
             [datalevin.search-utils :as su]
             [taoensso.telemere :as t]
             [dk.cst.xml-hiccup :as xh]

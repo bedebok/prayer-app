@@ -1,5 +1,7 @@
 (ns dk.cst.prayer.web.frontend.html
-  "Frontend HTML-generation, returning Replicant-style Hiccup."
+  "Frontend HTML-generation, returning Replicant-style Hiccup.
+
+  As this is a single-page app, nearly all HTML is generated in the frontend."
   (:require [cljs.pprint :refer [pprint]]
             [clojure.string :as str]
             [reitit.impl :refer [form-decode]]

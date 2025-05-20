@@ -1,4 +1,6 @@
 (ns dk.cst.prayer.search
+  "Parsing of search query language into an AST that can be executed by the
+  search functions in the 'dk.cst.prayer.db' namespace."
   (:require [clojure.string :as str]
             [clojure.zip :as zip]
             [instaparse.core :as insta]

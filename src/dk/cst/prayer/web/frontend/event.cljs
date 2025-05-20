@@ -1,5 +1,7 @@
 (ns dk.cst.prayer.web.frontend.event
-  "Handlers for Replicant event dispatches."
+  "Handlers for Replicant event dispatches.
+
+  For handlers accessing the backend, see: 'dk.cst.prayer.web.frontend.api'."
   (:require [clojure.string :as str]
             [reitit.impl :refer [form-encode]]
             [dk.cst.prayer.web :as web]

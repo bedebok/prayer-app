@@ -1,4 +1,5 @@
-(ns dk.cst.prayer.web.frontend.state)
+(ns dk.cst.prayer.web.frontend.state
+  "The state referenced in various parts of the frontend code.")
 
 (defn default-state
   []

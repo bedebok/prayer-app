@@ -1,5 +1,6 @@
 (ns dk.cst.prayer.web.frontend.api
-  "Handlers for Reitit frontend routing matches."
+  "Handlers for Reitit frontend routing matches that all directly translate into
+  async backend API calls."
   (:require [dk.cst.hiccup-tools.elem :as e]
             [dk.cst.hiccup-tools.hiccup :as h]
             [dk.cst.prayer.web :as web]

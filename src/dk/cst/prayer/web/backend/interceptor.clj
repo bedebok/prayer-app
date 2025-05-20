@@ -1,5 +1,7 @@
 (ns dk.cst.prayer.web.backend.interceptor
-  "Pedestal interceptors for the backend web service."
+  "Pedestal interceptors for the backend web service.
+
+  These contain the logic of the backend API that called by the frontend app."
   (:require [clj-commons.format.exceptions :as exceptions]
             [clojure.edn :as edn]
             [clojure.pprint :as pprint]

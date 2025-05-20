@@ -1,4 +1,5 @@
 (ns dk.cst.prayer.web.frontend.error
+  "Frontend error handling."
   (:require [dk.cst.prayer.web.frontend.state :refer [state]]))
 
 (defn error->data

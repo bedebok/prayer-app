@@ -1,5 +1,8 @@
 (ns dk.cst.prayer.web
-  "Code shared between the frontend single-page app and backend web service."
+  "Code shared between the frontend single-page app and backend web service.
+
+  This also includes the various frontend routes, which need to be known by both
+  the backend and the frontend."
   (:require [dk.cst.prayer.web.frontend.api :as-alias api]
             #?(:cljs [reitit.frontend.easy :as rfe])
             #?(:cljs [reitit.frontend.history :as rfh])))

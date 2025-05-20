@@ -1,4 +1,5 @@
-(ns dk.cst.prayer.static)
+(ns dk.cst.prayer.static
+  "Completely static data, including the Datalevin database schema.")
 
 (def schema
   {;; Meta attributes about the relevant file and XML nodes.

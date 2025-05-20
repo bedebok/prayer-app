@@ -1,5 +1,8 @@
 (ns dk.cst.prayer.web.backend.html
-  "Server-side HTML generation."
+  "Server-side HTML generation.
+
+  Since this is a single-page app, most of the HTML is generated in the frontend
+  and the only HTML generated server-side is a skeleton page."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [huff2.core :as h])

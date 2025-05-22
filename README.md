@@ -31,22 +31,48 @@ The `key` attribute is different in that it  references a known text that isn't
 a part of the corpus.
 
 ## Setup
-Datalevin (the database) requires a few native libraries to be present. See the [official page](https://github.com/juji-io/datalevin/blob/master/doc/install.md#native-dependencies) for more.
+
+### Development environment
+* Development itself requires a JDK and Clojure. The system uses the Clojure CLI/deps.edn to organise the project dependencies.
+* Datalevin (the database) requires a few native libraries to be present during development; see the [official page](https://github.com/juji-io/datalevin/blob/master/doc/install.md#native-dependencies) for more.
+
+During development, the Pedestal server and Datalevin database are run through the REPL as is the standard for Clojure projects.
+
+Navigate to the comment block of `dk.cst.prayer` to find the bit of code that boots the system. Keep in mind that the [bedebok/Data](https://github.com/bedebok/Data) project needs to be available at the path stated in `dk.cst.prayer.db`.
+
+### Production environment
+The production setup requires Docker. It consists of two separate Docker containers: one for running the system and one for running Caddy, acting as a reverse proxy.
+
+When running the Docker compose setup, you must proide a directory of TEI files as an environmental variable:
+
+```shell
+PRAYER_APP_FILES_DIR=/Users/rqf595/Code/Data/Gold\ corpus docker compose up --build
+```
+
+> NOTE: if running Caddy alongside the system isn't desired (e.g. while testing locally) you can comment out that part from the `docker-compose.yml` file.
+
 
 ## Architecture
-The general design of the system is as a single-page app where routing takes place entirely on the frontend, except when the backend API needs to be accessed via HTTP requests.
 
-The API is based on a few routes which transmit transit-encoded EDN data between client and server.
+### Overview
+The system is designed as a single-page app (**SPA**) where routing takes place entirely on the client/**frontend**. The backend server serves the same skeleton HTML page for any valid route, with the notable exception of the backend API which the SPA accesses via HTTP requests based on user actions.
 
-The database only needs to be read-only, so it is ephemeral, created on-demand on system boot and based on a directory of input XML files.
+The **backend API** routes all serve transit-encoded EDN data. These EDN data structures are decoded and stored in a local cache in the client's web browser using [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
 
-### Library choices
-I am compiling [a list of various libraries under consideration](https://github.com/stars/simongray/lists/when-danes-prayed-in-german).
+The **database**, which is the source of all of the data that can be accessed through the API endpoints, can be entirely read-only, so it is treated as an ephemeral entity which is created on-demand on system boot and based on a directory of input XML files.
 
-#### Pedestal
+In the **production** system, this architecture is packaged as a single artifact within a Docker container. A separate Docker container contains a **reverse proxy**/gateway server which handles SSL certificates, compression and more general security features.
+
+### Data and search
+TODO...
+
+### Technology choices
+These are the core technologies/libraries chosen for this project along with some justification of their use.
+
+#### Pedestal (web server and backend router)
 I am using Pedestal once more to make the web service since I have much experience with it, so there is a lot of code and experience that can be re-applied.
 
-#### Reitit
+#### Reitit (frontend router)
 I use Reitit in the frontend since it is the mainstream choice for a full-featured frontend SPA router + I have previous experience using it.
 
 While it would be nice to only focus on a single router model, the use of Reitit in the backend isn't advisable at this time. Reitit's does have an improved handling of wildcard routes and it handles trailing slashes by default, but it loses out in the following ways:
@@ -56,32 +82,29 @@ While it would be nice to only focus on a single router model, the use of Reitit
 
 One advantage of Reitit in the backend is the Metosin library ecosystem built around it, e.g. for coercion. Many of these could have relevant applications. It is possible that some of these could still be used directly with Pedestal, though.
 
-#### Transito
+#### Transito (encoding/decoding)
 I am using Transito again since its primary value proposition (CLJV encoding/decoding of transit) still applies.
 
 I could have used Metosin's [Muuntaja](https://github.com/metosin/muuntaja) to encode/decode on the server, however that still leaves the frontend lacking an implementation.
 
-#### Datalevin
+#### Datalevin (database)
 I considered using Asami again, but since there is no hard requirement for RDF and since the data is less reliant on linked entities than Glossematics, it didn't seem like the best choice of database.
 
 Datalevin has the advantage of having a similar query language to Asami, while also providing full-text searches and "easy" reconstruction of input document entities, similar to how Datomic does it.
 
 It is probably a bit more unstable than Asami, e.g. I already discovered two (what I would call) bugs and a core missing feature. However, the developer behind Datalevin is pretty quick and responsive towards issues/feature requests.
 
-#### Replicant
+#### Replicant (HTML generation)
 I am using Replicant to render Hiccup in the frontend. It is similar in style to Reagent and Rum, which are both React-wrappers, but don't depend on React.
 
-### Telemere
+#### Telemere (logging)
 This universal logging/metrics CLJ(S) library seems to be the best option today.
 
-### Instaparse
+#### Instaparse (parsing)
 I use Instaparse to parse my search query language EBNF.
 
-### Handling TEI
+#### Handling TEI
 I use my own libraries for parsing and paginating TEI documents.
 
-## Dev and production
-
-```shell
-PRAYER_APP_FILES_DIR=/Users/rqf595/Code/Data/Gold\ corpus docker compose up --build
-```
+#### Caddy (reverse proxy & certificates)
+Caddy is the simplest way to set up these things.

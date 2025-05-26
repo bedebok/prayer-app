@@ -1,7 +1,10 @@
-# Prayer app
+# When Danes Prayed in German
+This is the source code for the website at [bedebog.dk](https://bedebog.dk).
+
+The system indexes a directory of relevant TEI documents (old prayer books that have been digitized) in order to produce a website for exploring these documents interactively. The documents are made searchable via a common search query language. The website also provides additional features such as the ability to pin multiple documents and a way to customize the display of texts.
 
 ## Data modeling
-A lot of the data is described in the form of the [TEI Manuscript Description](https://tei-c.org/release/doc/tei-p5-doc/en/html/MS.html) element and its associated sub-elements.
+The data displayed on the website comes from TEI documents that the researchers on the project have produced. A lot of this data is described in the form of the [TEI Manuscript Description](https://tei-c.org/release/doc/tei-p5-doc/en/html/MS.html) element and its associated sub-elements.
 
 The project defines the following entities which map to the TEI standard in the following way:
 
@@ -12,12 +15,7 @@ The project defines the following entities which map to the TEI standard in the 
 * **work**: a class of **text** instances.
   * In TEI → the `msItem` tag references the relevant **work** using an `xml:id` for a specific TEI document or the `key` attribute for a known, non-file **work** (if applicable).
 
-Seán Vrieland maintains overviews of the TEI files too:
-
-- [Prayers](https://github.com/bedebok/Data/blob/main/Prayers/xml/README.org)
-- [Catalogue](https://github.com/bedebok/Data/blob/main/Catalogue/xml/README.org)
-
-Some important takeways from Seán's writings:
+Seán Vrieland maintains overviews of the TEI files too in the project [Data repository](https://github.com/bedebok/Data). An important takeway from Seán's writings is:
 
 > Note that in both sections attributes will be used to point to elements in 
 > other files. In catalogue files and text description files these attributes
@@ -25,7 +23,7 @@ Some important takeways from Seán's writings:
 > tagged as @corresp (for manuscript shelfmarks) or @key (for titles of texts).
 
 So `xml:id` refers to a shelfmark ID while `corresp` references a shelfmark ID.
-Quite a subtle difference! Not really sure what to make of it.
+Quite a subtle difference!
 
 The `key` attribute is different in that it  references a known text that isn't
 a part of the corpus.
@@ -51,10 +49,7 @@ PRAYER_APP_FILES_DIR=/Users/rqf595/Code/Data/Gold\ corpus docker compose up --bu
 
 > NOTE: if running Caddy alongside the system isn't desired (e.g. while testing locally) you can comment out that part from the `docker-compose.yml` file.
 
-
 ## Architecture
-
-### Overview
 The system is designed as a single-page app (**SPA**) where routing takes place entirely on the client/**frontend**. The backend server serves the same skeleton HTML page for any valid route, with the notable exception of the backend API which the SPA accesses via HTTP requests based on user actions.
 
 The **backend API** routes all serve transit-encoded EDN data. These EDN data structures are decoded and stored in a local cache in the client's web browser using [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).

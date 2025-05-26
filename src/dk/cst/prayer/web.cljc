@@ -18,9 +18,15 @@
   "http://")
 
 (def api-prefix
-  (str protocol host ":" port))
+  #?(:cljs (if (= js/window.location.hostname "bedebog.dk")
+             ""
+             (str protocol host ":" port))
+     :clj  (str protocol host ":" port)))
 
 (defn api-path
+  "Add a prefix to a `path` to ensure that it fetches from the correct server,
+  e.g. in a dev environment, shadow-cljs and the dev backend server will run on
+  separate ports."
   [& path]
   (apply str api-prefix path))
 

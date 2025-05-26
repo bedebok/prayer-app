@@ -23,7 +23,8 @@
   ;; #15 Required to listen outside the Docker container itself.
   (alter-var-root #'web/host (constantly "0.0.0.0"))
 
-  (db/build-db! "/etc/prayer-app/files" "/etc/prayer-app/db")
+  (db/delete-db! db/db-path)
+  (db/build-db! db/files-path db/db-path)
   (backend/start-prod))
 
 (comment

@@ -747,7 +747,7 @@
     [:div.container {:class (if (empty? pins)
                               "single-document"
                               "multi-document")}
-     (dev-view)
+     #_(dev-view)
      (header-view)
      (error-message-view error)
      [:div.page-body-wrapper

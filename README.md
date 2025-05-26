@@ -44,7 +44,7 @@ The production setup requires Docker. It consists of two separate Docker contain
 When running the Docker compose setup, you must proide a directory of TEI files as an environmental variable:
 
 ```shell
-PRAYER_APP_FILES_DIR=/Users/rqf595/Code/Data/Gold\ corpus docker compose up --build
+PRAYER_APP_FILES_DIR=/opt/Data/Gold\ corpus docker compose up --build -d
 ```
 
 > NOTE: if running Caddy alongside the system isn't desired (e.g. while testing locally) you can comment out that part from the `docker-compose.yml` file.

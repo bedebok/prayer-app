@@ -70,11 +70,10 @@
 
         #_(http/enable-debug-interceptor-observer)
 
-        ;; TODO: for testing locally, disable this in prod!
         ;; The reason this is enabled for now is that I have no way of
         ;; discerning if something that is running in a Docker container using
         ;; the release version of the app is running in prod or just locally.
-        (cond-> true #_html/dev? (ic/dev-interceptors)))))
+        (cond-> html/dev? (ic/dev-interceptors)))))
 
 (defn start-prod []
   (let [service-map (->service-map)]

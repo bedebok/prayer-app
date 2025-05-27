@@ -41,9 +41,8 @@
   {:search-domains {"datalevin" {:index-position? true
                                  :analyzer        analyzer}}})
 
-(defn get-conn
-  []
-  (d/get-conn db-path static/schema search-opts))
+(def conn
+  (delay (d/get-conn db-path static/schema search-opts)))
 
 (defn xml-files
   "Fetch XML File objects recursively from a starting `dir`."
@@ -62,7 +61,7 @@
 (defn delete-db!
   "Close any previous db at `db-path` and remove the data."
   [db-path]
-  (d/close (get-conn))
+  (d/close @conn)
   (rmdir db-path))
 
 (defn validate-files
@@ -78,8 +77,7 @@
   [files-path db-path]
   (io/make-parents db-path)
   (let [files    (validate-files (xml-files files-path))
-        entities (map tei/file->entity files)
-        conn     (get-conn)]
+        entities (map tei/file->entity files)]
     (when-let [error (some-> files meta :error not-empty)]
       (t/log! {:level :warn
                :data  error}
@@ -88,7 +86,7 @@
              :data  (update-vals (group-by :bedebok/type entities)
                                  (comp sort #(map :file/name %)))}
             (str "Populating database with " (count entities) " documents."))
-    (d/transact! conn entities)))
+    (d/transact! @conn entities)))
 
 (defn top-items
   "Get the top-level <msItem> data, i.e. not the children."

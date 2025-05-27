@@ -23,7 +23,13 @@
   ;; #15 Required to listen outside the Docker container itself.
   (alter-var-root #'web/host (constantly "0.0.0.0"))
 
-  (db/delete-db! db/db-path)
+  ;; This will hopefully mitigate potential database corruption scenarios.
+  ;; See 'datalevin.core/open-kv' for more on this.
+  (.addShutdownHook (Runtime/getRuntime) (Thread. #(db/delete-db! db/db-path)))
+
+  ;; We clear any previous database remnants, (re-)build the database and only
+  ;; then start up the backend web server.
+  (db/rmdir db/db-path)
   (db/build-db! db/files-path db/db-path)
   (backend/start-prod))
 
@@ -42,12 +48,14 @@
   ;;   $ npx shadow-cljs watch app
   (try
     (do
-      (db/delete-db! db/db-path)
+      (db/rmdir db/db-path)
       (db/build-db! db/files-path db/db-path))
     (catch Exception e
       (throw e))
     (finally
       (backend/restart)))
+
+  (db/delete-db! db/db-path)
 
   (stop-dev)
   #_.)

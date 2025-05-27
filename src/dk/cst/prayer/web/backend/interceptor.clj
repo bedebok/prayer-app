@@ -120,10 +120,7 @@
   (interceptor
     {:name  ::with-db
      :enter (fn [ctx]
-              (assoc ctx :db (d/db (db/get-conn))))
-     :leave (fn [{:keys [db] :as ctx}]
-              (d/close-db db)
-              (dissoc ctx :db))}))
+              (assoc ctx :db (d/db @db/conn)))}))
 
 (def with-eid
   (interceptor

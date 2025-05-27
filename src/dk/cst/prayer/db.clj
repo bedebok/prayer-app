@@ -299,16 +299,19 @@
        (execute-search-ast db)
        (map (fn [[?text ?e]]
               (d/pull db [:bedebok/type :bedebok/id] ?e)))
+       ;; Since we only accept entities with a type and id, but currently allow
+       ;; index other types of entities, we have to remove all nil results.
+       (remove nil?)
        (not-empty)))
 
 (comment
-  (search (d/db (d/get-conn db-path static/schema)) "class=antiphone")
-  (search (d/db (d/get-conn db-path static/schema)) "NOT corresp:AM08-0073")
-  (search (d/db (d/get-conn db-path static/schema)) "NOT (corresp:AM08-0073)")
-  (search (d/db (d/get-conn db-path static/schema)) "\"deme stole\" deme stole")
-  (search (d/db (d/get-conn db-path static/schema)) "\"deme stasaole\" | corresp:AM08-0073")
-  (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" corresp:AM08-0073")
-  (search (d/db (d/get-conn db-path static/schema)) "\"syneme arme\" | glen")
+  (search (d/db @conn) "herren")
+  (search (d/db @conn) "NOT corresp:AM08-0073")
+  (search (d/db @conn) "NOT (corresp:AM08-0073)")
+  (search (d/db @conn) "\"deme stole\" deme stole")
+  (search (d/db @conn) "\"deme stasaole\" | corresp:AM08-0073")
+  (search (d/db @conn) "\"syneme arme\" corresp:AM08-0073")
+  (search (d/db @conn) "\"syneme arme\" | glen")
 
 
   (d/q '[:find ?text ?e

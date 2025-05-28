@@ -27,6 +27,21 @@
     (and (exists? (.-localStorage js/window))
          (.-localStorage js/window))))
 
+(defn handle-error
+  [error]
+  (let [error-data (err/error->data error)]
+    (api/backend-log error-data)
+    (err/log! error-data)
+    (err/display! error-data)))
+
+(defn on-error
+  [_message _url _line-number _col-number error]
+  (handle-error error)
+
+  ;; We do not short-circuit regular error handling (e.g. console output).
+  ;; To do that we would have to return true instead of returning false.
+  false)
+
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
 (defn on-navigate
@@ -52,11 +67,20 @@
   []
   (rfe/start! router on-navigate {:use-fragment false}))
 
-(defn render
+;; NOTE: cannot render inside the <body> as this element contains a <script>
+;;       element with version-specific values in it, e.g. versionHash!
+(defn safe-render
+  "Render the page in a safe way, i.e. ensuring the any potential errors in the
+  various view functions do not break the whole application."
   []
-  ;; NOTE: cannot render inside the <body> as this element contains a <script>
-  ;;       element with version-specific values in it, e.g. versionHash!
-  (d/render (js/document.getElementById "app") (html/page)))
+  (try
+    (d/render (js/document.getElementById "app") (html/page))
+    (catch js/Error e
+      ;; For whatever reason, I can't just throw the error and let it be handled
+      ;; by js/window.onerror, so it must be handled directly here.
+      (handle-error e)
+      (vswap! d/state (constantly {}))                      ; reset Replicant
+      (.back js/window.history))))                          ; last working page
 
 (defn scroll-to
   [id]
@@ -68,30 +92,20 @@
   [ls]
   (some-> ls (.getItem "state") (count)))
 
-(defn error-handling
-  [_message _url _line-number _col-number error]
-  (let [error-data (err/error->data error)]
-    (api/backend-log error-data)
-    (err/display! error-data))
-
-  ;; We do not short-circuit regular error handling (e.g. console output).
-  ;; To do that we would have to return true instead of returning false.
-  false)
-
 (defn ^:dev/after-load init!
   []
   ;; Refer all uncaught errors to a universal error handler.
   ;; https://www.staticapps.org/articles/front-end-error-handling/
-  (set! (.-onerror js/window) error-handling)
+  (set! (.-onerror js/window) on-error)
 
   ;; Reitit (frontend routing)
   (set-up-navigation!)
 
   ;; Replicant (rendering and events)
   (d/set-dispatch! event/handle)
-  (render)
+  (safe-render)
   (add-watch state ::render (fn [_ _ _ _new-state]
-                              (render)
+                              (safe-render)
                               (scroll-to (:fragment @state))))
 
   ;; Caching

@@ -176,7 +176,7 @@ main > article {
 }
 
 .container.multi-document main > article + article {
-    border-left: 0.5px solid black;
+    border-left: 1px solid #888;
     padding-left: 32px;
 }
 
@@ -369,7 +369,7 @@ table.common {
 }
 
 tr:not(:last-child) {
-  border-bottom: 0.5px solid black;
+    border-bottom: 1px solid #888;
 }
 
 table.common table.common {
@@ -380,11 +380,19 @@ table.common + table.common {
     margin-top: 32px;
 }
 
+table.common > tr:nth-child(2) > td {
+    border-top: none;
+}
+
+table.common > tr:first-child {
+    border-bottom: none;
+}
+
 table.common > tr > td:first-child {
     text-align: right;
     font-weight: bold;
     font-variant: small-caps;
-    border-right: 0.5px solid black;
+    border-right: 1px solid #888;
     width: 80px;
 }
 
@@ -554,7 +562,7 @@ table.skiplinks {
 }
 
 table.skiplinks td {
-    border: 0.5px solid black;
+    border: 1px solid #888;
     text-align: center;
     font-weight: bold;
     background: white;
@@ -705,11 +713,11 @@ ul.links li {
 }
 
 ul.links li:nth-child(1), ul.links li:nth-child(2) {
-    border-right: 0.5px solid black;
+    border-right: 1px solid #888;
 }
 
 ul.links li:nth-child(1), ul.links li:nth-child(3) {
-    border-bottom: 0.5px solid black;
+    border-bottom: 1px solid #888;
 }
 
 ul.links a {
@@ -759,7 +767,7 @@ dl.index li {
     font-size: 18px;
 }
 dl.index li + li {
-    border-top: 0.5px solid black;
+    border-top: 1px solid #888;
 }
 
 span.disambiguate {

@@ -314,6 +314,7 @@ section.tei-page-controls > select {
     flex-grow: 1;
     text-align: center;
     border-radius: 0;
+    text-align-last: center; /* Needed by Safari. */
 }
 
 section.tei-page-controls > *:last-child {
@@ -605,8 +606,7 @@ header > ul.descriptive > li {
     font-size: 18px;
     line-height: 1.8;
     letter-spacing: 1px;
-    text-align: justify;
-    text-justify: inter-word;
+    word-spacing: 2px;
     margin: 0;
 }
 
@@ -677,6 +677,7 @@ nav input[type=search] {
    width: 0;
    font-size: 24px;
    padding: 32px 8px 8px 16px;
+   background: white; /* Safari on iPhone needs this. */
    border: none;
    align-self: stretch;
    font-family: var(--font-family);

@@ -1,16 +1,16 @@
-# /etc/systemd/system/prayer-app.service
+# /etc/systemd/system/prayer.service
 # based on: https://gist.github.com/mosquito/b23e1c1e5723a7fd9e6568e5cf91180f
 
 [Unit]
-Description=The When Danes Prayed in German web service.
+Description=The bedebog.dk website (When Danes Prayed in German)
 Requires=docker.service
 After=docker.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
-WorkingDirectory=/etc/prayer-app/prayer-app/docker
-Environment="PRAYER_APP_FILES_DIR=/etc/prayer-app/files"
+WorkingDirectory=/opt/prayer-app/docker
+Environment="PRAYER_APP_FILES_DIR=/opt/tei-files"
 ExecStart=/bin/docker compose up -d --build --remove-orphans
 ExecStop=/bin/docker compose down
 

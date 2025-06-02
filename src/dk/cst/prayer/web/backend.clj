@@ -60,8 +60,9 @@
          ::http/secure-headers  {:content-security-policy-settings csp}
          ::http/request-logger  ic/log-request
 
-         ;; TODO: distinguish between dev/prod?
-         ::http/allowed-origins (constantly true)}
+         ::http/allowed-origins (if html/dev?
+                                  (constantly true)
+                                  "https://bedebog.dk")}
 
         ;; Extending default interceptors here.
         (http/default-interceptors)

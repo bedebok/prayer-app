@@ -65,6 +65,13 @@ The frontend is developed using shadow-cljs hot-reloading:
 npx shadow-cljs watch app
 ```
 
+## Maintenance
+Take advantage of [this Clojure CLI tool](https://github.com/liquidz/antq) to upgrade the project dependencies.
+
+```shell
+clojure -Tantq outdated :check-clojure-tools true :upgrade true
+```
+
 ## Data modeling
 The data displayed on the website comes from TEI documents that the researchers on the project have produced. A lot of this data is described in the form of the [TEI Manuscript Description](https://tei-c.org/release/doc/tei-p5-doc/en/html/MS.html) element and its associated sub-elements.
 

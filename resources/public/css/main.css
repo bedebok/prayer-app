@@ -834,6 +834,12 @@ dialog.error pre {
     overflow: scroll;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid black;
+    margin: 36px 0;
+}
+
 @media (width <= 932px) {
     .page-body-wrapper {
         flex-direction: column;

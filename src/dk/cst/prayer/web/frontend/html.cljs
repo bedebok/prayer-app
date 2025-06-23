@@ -501,6 +501,30 @@
      [:section.list.single
       (work-references-section type->document)])])
 
+(defn search-result-view
+  [search-result]
+  [:section.list.single
+   [:dl.index
+    (for [[type hits] (group-by :bedebok/type search-result)]
+      (list
+        [:dt (str/capitalize type)]
+        [:dd
+         [:ul
+          (for [{:keys [bedebok/id]} (sort-by :bedebok/id hits)]
+            [:li [:a {:href (str "/" type "s/" id)} id]])]]))]])
+
+(defn search-tips-view []
+  (list
+    [:hr]
+    [:p "Use operators to construct advanced queries:"]
+    [:ul
+     [:li "Parentheses can be used to group terms, e.g. " [:strong "(...)"] ". Combine this with other operators."]
+     [:li "You can use " [:strong "OR"] " or " [:strong "AND"] " to combine query terms (or alternatively " [:strong "|"] " and " [:strong "&"] ")."]
+     [:li [:strong "NOT"] " or " [:strong "!"] " will negate a query term or group of terms."]
+     [:li "Enclosing a string inside " [:strong "\"...\""] " will perform a phrase search rather than a token search."]
+     [:li "Insert " [:strong ":"] " or " [:strong "="] " between a field name and its value to perform a field match, e.g. " [:a {:title "Find manuscripts"
+                                                                                                                                  :href  "/search/type=manuscript"}"type=manuscript"] "."]]))
+
 (defn search-view
   [query search-result]
   (let [n (count search-result)]
@@ -512,18 +536,14 @@
         ;; TODO: visualise search query?
         #_(str (search/simplify (search/parse query)))]]
       (case n
-        0 [:p "No documents match this query."]
-        1 [:p "The following document matches this query:"]
-        [:p "The following " n " documents match this query:"])]
-     [:section.list
-      [:dl.index
-       (for [[type hits] (group-by :bedebok/type search-result)]
-         (list
-           [:dt (str/capitalize type)]
-           [:dd
-            [:ul
-             (for [{:keys [bedebok/id]} (sort-by :bedebok/id hits)]
-               [:li [:a {:href (str "/" type "s/" id)} id]])]]))]]]))
+        0 (list [:p "No documents match this specific query."]
+                (search-tips-view))
+        1 (list [:p "The following document matches this query:"]
+                (search-result-view search-result)
+                (search-tips-view))
+        (list [:p "The following " n " documents match this query:"]
+              (search-result-view search-result)
+              (search-tips-view)))]]))
 
 (defn alphabetical
   [s]

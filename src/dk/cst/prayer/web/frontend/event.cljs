@@ -52,5 +52,5 @@
                                           (map (juxt first second))
                                           (into {}))
                      path (str "/search/" (form-encode query))]
-                 (when (not= path js/location.pathname)
+                 (when (and (not-empty query) (not= path js/location.pathname))
                    (web/navigate-to path))))))

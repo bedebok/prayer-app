@@ -168,10 +168,21 @@
                            [{k (mapv #(hiccup->entity % search-kvs) matches)}]
                            [{k (mapv #(hiccup->entity % v) matches)}]))))))
 
+         ;; If debugging the system, this can be a useful source of information.
+         ((fn [x]
+            (t/log! {:level :debug
+                     :data  (with-out-str (clojure.pprint/pprint x))}
+                    "Intermediate TEI entity data.")
+            x))
+
          ;; The entity and its components are merged into a single data structure.
          ;; This data can be transacted into a Datomic-compatible db
          ;; e.g. Datalevin in our case.
          (apply merge-with (fn [v1 v2]
+                             (t/log! {:level :info
+                                      :data  {:merge-params [v1 v2]
+                                              :file-meta    (meta hiccup)}}
+                                     "Merge-with")
                              (cond
                                (and (sequential? v1) (sequential? v2))
                                (into v1 v2)
@@ -325,10 +336,12 @@
       (let [idno (first (elem/children node))
             {:keys [corresp]} (elem/attr node)]
         (if corresp
-          {:tei/corresp corresp}
-          {:tei/idno idno})))]
+          {:tei/corresp [corresp]}
+          {:tei/idno [idno]})))]
 
-   [:head
+   ;; This needs to be qualified as <head> is also used as a structural element
+   ;; inside certain <text> elements.
+   [(match :head (match/has-parent :msDesc))
     (inner-text :tei/head)]
 
    [:provenance
@@ -457,6 +470,11 @@
   "Convert a `file` into a Datom entity based on `search-kvs`."
   [^File file]
   (-> (xh/parse file {:file-meta {:path :absolute}})
+      ((fn [x]
+         (t/log! {:level :info
+                  :data  (meta x)}
+                 "Extracting data from parsed TEI XML.")
+         x))
       (hiccup->entity tei-search-kvs)
       (merge {:file/name (.getName file)})))
 

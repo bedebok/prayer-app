@@ -49,10 +49,12 @@
   (do
     (db/rmdir db/db-path)
     (db/build-db! db/db-path
-      "../Data/Manuscripts/xml"
-      "../Data/Texts/xml"
-      "../Data/Works/xml")
+                  "../Data/Gold corpus"
+                  "../Data/Manuscripts/xml"
+                  "../Data/Texts/xml"
+                  "../Data/Works/xml")
     (backend/restart))
 
   (db/delete-db! db/db-path)
+  (datalevin.core/close @db/conn)
   #_.)

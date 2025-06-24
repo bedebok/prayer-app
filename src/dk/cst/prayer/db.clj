@@ -87,16 +87,34 @@
   (io/make-parents db-path)
   (let [files    (validate-tei-files (apply xml-files files-path files-paths))
         entities (map tei/file->entity files)]
+
+    ;; The first line of defence is validation based on the official TEI schema.
     (when-let [error (some-> files meta :error not-empty)]
       (swap! error-data assoc :validation error)
       (t/log! {:level :error
                :data  error}
               (str "TEI validation error: " (count error) " file(s) excluded")))
+
+    ;; Before transacting we present an overview of the validated files.
     (t/log! {:level :info
              :data  (update-vals (group-by :bedebok/type entities)
                                  (comp sort #(map :file/name %)))}
             (str "Populating database with " (count entities) " documents."))
-    (d/transact! @conn entities)))
+
+    ;; Files are transacted one at a time to allow for a partial success.
+    (doseq [entity entities]
+      (try
+        (if (and (contains? entity :bedebok/id)
+                 (nil? (:bedebok/id entity)))
+          (t/log! {:level :error
+                   :data  entity}
+                  (str (:file/name entity) " is missing an xml:id, excluded from database."))
+          (do
+            (t/log! {:level :info
+                     :data  {:bedebok/id (:bedebok/id entity)
+                             :keys       (keys entity)}}
+                    (str "Transacting entity: " (:bedebok/id entity)))
+            (d/transact! @conn [entity])))))))
 
 (defn top-items
   "Get the top-level <msItem> data, i.e. not the children."

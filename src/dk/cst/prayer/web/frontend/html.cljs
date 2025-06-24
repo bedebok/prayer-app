@@ -180,12 +180,13 @@
        title])
 
     :tei/corresp
-    [:a (if (= bedebok-type "text")
-          {:href  (str "/manuscripts/" v)
-           :title "View corresponding manuscript"}
-          {:href  (str "/texts/" v)
-           :title "View corresponding text"})
-     v]
+    (for [id v]
+      [:a (if (= bedebok-type "text")
+            {:href  (str "/manuscripts/" id)
+             :title "View corresponding manuscript"}
+            {:href  (str "/texts/" id)
+             :title "View corresponding text"})
+       id])
 
     #_:bedebok/type
     #_[:a {:href  (str "/" bedebok-type "s")

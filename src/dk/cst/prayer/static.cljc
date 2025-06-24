@@ -13,12 +13,12 @@
    :bedebok/id        {:db/valueType :db.type/string
                        :db/unique    :db.unique/identity
                        :db/doc       (str "Used to identify each of the three core entities.")}
-   :tei/corresp       {:db/valueType :db.type/string
-                       :db/unique    :db.unique/identity
-                       :db/doc       (str "Used to reference a text or manuscript within a manuscript or text.")}
-   :tei/idno          {:db/valueType :db.type/string
-                       :db/unique    :db.unique/identity
-                       :db/doc       "<idno> (identifier) supplies any form of identifier used to identify some object, such as a bibliographic item, a person, a title, an organization, etc. in a standardized way. [14.3.1 Basic Principles2.2.4 Publication, Distribution, Licensing, etc.2.2.5 The Series Statement3.12.2.4 Imprint, Size of a Document, and Reprint Information]"}
+   :tei/corresp       {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many
+                       :db/doc         (str "Used to reference a text or manuscript within a manuscript or text.")}
+   :tei/idno          {:db/valueType   :db.type/string
+                       :db/cardinality :db.cardinality/many
+                       :db/doc         "<idno> (identifier) supplies any form of identifier used to identify some object, such as a bibliographic item, a person, a title, an organization, etc. in a standardized way. [14.3.1 Basic Principles2.2.4 Publication, Distribution, Licensing, etc.2.2.5 The Series Statement3.12.2.4 Imprint, Size of a Document, and Reprint Information]"}
    ;;TODO: keep using this?
    :tei/key           {:db/valueType :db.type/string}
 

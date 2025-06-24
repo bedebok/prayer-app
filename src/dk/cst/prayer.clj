@@ -48,10 +48,11 @@
   ;;   $ npx shadow-cljs watch app
   (do
     (db/rmdir db/db-path)
-    (db/build-db! db/files-path db/db-path)
+    (db/build-db! db/db-path
+      "../Data/Manuscripts/xml"
+      "../Data/Texts/xml"
+      "../Data/Works/xml")
     (backend/restart))
 
   (db/delete-db! db/db-path)
-
-  (stop-dev)
   #_.)

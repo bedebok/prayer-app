@@ -667,9 +667,25 @@
      [:p [:strong "ID: "] id]]]
    [:p "The requested content is unavailable."]])
 
+(defn db-error-view
+  [{:keys [validation] :as db-error}]
+  [:article
+   [:header
+    [:hgroup
+     [:h1 "Database errors"]]
+    [:h2 "TEI validation"]
+    (if validation
+      (list
+        [:p "The following TEI files have not been indexed in the database due to validation errors:"]
+        [:dl
+         (for [[filename error-message] (sort-by first validation)]
+           (list [:dt [:span.yellow "⚠ "] filename ": "]
+                 [:dd error-message]))])
+      [:p "No TEI validation errors were discovered."])]])
+
 (defn content-view
   []
-  (let [{:keys [location user entities] :as state'} @state
+  (let [{:keys [location user entities db-error] :as state'} @state
         {:keys [pins]} user
         {:keys [name params]} location
         {:keys [query id]} params
@@ -691,7 +707,8 @@
         ::page/manuscript (entity-view (get-in state' [:entities id]) pin-status)
         ::page/text-index (index-view "text" (get-in state' [:index "text"]))
         ::page/manuscript-index (index-view "manuscript" (get-in state' [:index "manuscript"]))
-        ::page/work-index (index-view "work" (get-in state' [:index "work"]))))))
+        ::page/work-index (index-view "work" (get-in state' [:index "work"]))
+        ::page/db-error (db-error-view db-error)))))
 
 (defn footer-view
   []

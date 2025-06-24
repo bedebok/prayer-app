@@ -840,6 +840,28 @@ hr {
     margin: 36px 0;
 }
 
+dl {
+    font-size: 18px;
+}
+
+dt {
+    font-weight: bold;
+    font-variant: small-caps;
+    font-size: 24px;
+}
+
+dd {
+    margin-left: 24px;
+}
+
+dd + dt {
+    margin-top: 24px;
+}
+
+dt + dd {
+}
+
+
 @media (width <= 932px) {
     .page-body-wrapper {
         flex-direction: column;

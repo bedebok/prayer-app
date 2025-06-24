@@ -15,6 +15,7 @@
     ["/api/works" :get [ic/works] :route-name ::work-index]
     ["/api/work/:id" :get [ic/with-eid ic/by-work] :route-name ::work]
     ["/api/search/:query" :get [ic/search] :route-name ::search]
+    ["/api/db-error" :get [ic/db-error] :route-name ::db-error]
     ["/api/error/:session-id" :post [(body-params) ic/frontend-error] :route-name ::frontend-error]})
 
 (defn backend-route

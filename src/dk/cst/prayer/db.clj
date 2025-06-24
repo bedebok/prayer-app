@@ -16,6 +16,9 @@
             [dk.cst.prayer.tei :as tei])
   (:import [java.io File]))
 
+(defonce error-data
+  (atom {}))
+
 ;; The db-path and files-path values are meant only for the dev environment.
 ;; In the production server they are replaced with hardcoded values as part of
 ;; executing the -main function.
@@ -44,12 +47,16 @@
 (def conn
   (delay (d/get-conn db-path static/schema search-opts)))
 
-(defn xml-files
-  "Fetch XML File objects recursively from a starting `dir`."
+(defn- xml-files*
   [dir]
   (->> (file-seq (io/file dir))
        (remove (fn [^File f] (.isDirectory f)))
        (filter (fn [^File f] (str/ends-with? (.getName f) ".xml")))))
+
+(defn xml-files
+  "Fetch XML File objects recursively from a starting `dir`."
+  [dir & dirs]
+  (mapcat xml-files* (into [dir] dirs)))
 
 (defn rmdir
   [dir]
@@ -64,22 +71,25 @@
   (d/close @conn)
   (rmdir db-path))
 
-(defn validate-files
-  [files]
+(defn validate-tei-files
+  "Validate `tei-files` against the TEI spec, only keeping the valid ones.
+  Invalid files are kept as metadata along with the validation error message."
+  [tei-files]
   (reduce (fn [acc file]
             (if-let [error (schema/validate-tei file)]
               (vary-meta acc update :error assoc (.getName file) error)
               (conj acc file)))
           ^{:error {}} []
-          files))
+          tei-files))
 
 (defn build-db!
-  [files-path db-path]
+  [db-path files-path & files-paths]
   (io/make-parents db-path)
-  (let [files    (validate-files (xml-files files-path))
+  (let [files    (validate-tei-files (apply xml-files files-path files-paths))
         entities (map tei/file->entity files)]
     (when-let [error (some-> files meta :error not-empty)]
-      (t/log! {:level :warn
+      (swap! error-data assoc :validation error)
+      (t/log! {:level :error
                :data  error}
               (str "TEI validation error: " (count error) " file(s) excluded")))
     (t/log! {:level :info
@@ -357,7 +367,7 @@
   (search (d/db (d/get-conn db-path static/schema)) "AND geist fiel:glen")
   (search (d/db (d/get-conn db-path static/schema)) "AND geist & (den | den)")
   (xml-files files-path)
-  (build-db! files-path db-path)
+  (build-db! db-path files-path)
 
   (search-intersection (d/db (d/get-conn db-path static/schema))
                        ["grote den herren"])

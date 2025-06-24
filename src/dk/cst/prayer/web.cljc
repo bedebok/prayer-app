@@ -89,4 +89,8 @@
    ["/texts/:id" {:name   ::text
                   :handle [::api/fetch-entity]}]
    ["/manuscripts/:id" {:name   ::manuscript
-                        :handle [::api/fetch-entity]}]])
+                        :handle [::api/fetch-entity]}]
+
+   ;; Semi-public maintenance/administration routes
+   ["/error/db" {:name   ::db-error
+                 :handle [::api/fetch-db-error]}]])

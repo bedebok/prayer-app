@@ -244,6 +244,12 @@
                               type)]
                 (basic-response ctx res)))}))
 
+(def db-error
+  (interceptor
+    {:name  ::db-error
+     :enter (fn [ctx]
+              (basic-response ctx @db/error-data))}))
+
 (def frontend-error
   (interceptor
     {:name  ::frontend-error

@@ -125,6 +125,12 @@
     (some-> (fetch (web/api-path "/api/works"))
             (.then #(add-index "work" (coll-body %))))))
 
+(defn fetch-db-error
+  []
+  (when-not (contains? (:error @state) :db)
+    (some-> (fetch (web/api-path "/api/db-error"))
+            (.then #(swap! state assoc :db-error (coll-body %))))))
+
 (defn backend-log
   [error-data]
   (fetch/post (web/api-path "/api/error/" state/session-id) {:body error-data})
@@ -136,9 +142,10 @@
 (defn handle
   [req handler-data]
   (condp = handler-data
+    [::search] (search req)
+    [::fetch-db-error] (fetch-db-error)
     [::fetch-entity] (fetch-entity req)
     [::fetch-work] (fetch-work req)
-    [::search] (search req)
     [::fetch-index "work"] (fetch-works)
     [::fetch-index "text"] (fetch-index "text")
     [::fetch-index "manuscript"] (fetch-index "manuscript")))

@@ -30,7 +30,7 @@
   ;; We clear any previous database remnants, (re-)build the database and only
   ;; then start up the backend web server.
   (db/rmdir db/db-path)
-  (db/build-db! db/files-path db/db-path)
+  (db/build-db! db/db-path db/files-path)
   (backend/start-prod))
 
 (comment

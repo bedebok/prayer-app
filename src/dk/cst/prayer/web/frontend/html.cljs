@@ -669,7 +669,7 @@
    [:p "The requested content is unavailable."]])
 
 (defn db-error-view
-  [{:keys [validation] :as db-error}]
+  [{:keys [validation other] :as db-error}]
   [:article
    [:header
     [:hgroup
@@ -682,7 +682,21 @@
          (for [[filename error-message] (sort-by first validation)]
            (list [:dt [:span.yellow "⚠ "] filename ": "]
                  [:dd error-message]))])
-      [:p "No TEI validation errors were discovered."])]])
+      [:p "No TEI validation errors were discovered."])
+    [:h2 "Other issues"]
+    (if other
+      (list
+        [:p "The following TEI files have not been indexed in the database due to various other issues:"]
+        [:dl
+         (for [[filename error-messages] (sort-by first other)]
+           (list [:dt [:span.yellow "⚠ "] filename ": "]
+                 [:dd
+                  (if (= 1 (count error-messages))
+                    (first error-messages)
+                    [:ul
+                     (for [error-message error-messages]
+                       [:li error-message])])]))])
+      [:p "No other issues were discovered."])]])
 
 (defn content-view
   []

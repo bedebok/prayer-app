@@ -106,9 +106,11 @@
       (try
         (if (and (contains? entity :bedebok/id)
                  (nil? (:bedebok/id entity)))
-          (t/log! {:level :error
-                   :data  entity}
-                  (str (:file/name entity) " is missing an xml:id, excluded from database."))
+          (do
+            (t/log! {:level :error
+                     :data  entity}
+                    (str (:file/name entity) " is missing an xml:id, excluded from database."))
+            (swap! error-data update-in [:other (:file/name entity)] conj "The document is missing an xml:id."))
           (do
             (t/log! {:level :info
                      :data  {:bedebok/id (:bedebok/id entity)

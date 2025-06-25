@@ -82,6 +82,26 @@
           ^{:error {}} []
           tei-files))
 
+(defn check-required-data!
+  "Returns TRUE if the TEI `entity` has the required data. Any missing required
+  data will be both logged and displayed on the db error page."
+  [entity]
+  (if-let [missing-data (-> (select-keys entity [:bedebok/id :bedebok/type])
+                            (set/rename-keys {:bedebok/id   "xml:id"
+                                              :bedebok/type "type"})
+                            (->> (remove second))
+                            (keys))]
+    (do
+      (t/log! {:level :warn
+               :data  missing-data}
+              (str (:file/name entity) " is missing required data. "
+                   "It has been excluded from the database."))
+      (doseq [field missing-data]
+        (swap! error-data update-in [:other (:file/name entity)]
+               conj (str "The document is missing the required data: " field)))
+      false)
+    true))
+
 (defn build-db!
   [db-path files-path & files-paths]
   (io/make-parents db-path)
@@ -89,9 +109,10 @@
         entities (map tei/file->entity files)]
 
     ;; The first line of defence is validation based on the official TEI schema.
+    ;; Invalid TEI is removed from the pipeline and added to the db error page.
     (when-let [error (some-> files meta :error not-empty)]
       (swap! error-data assoc :validation error)
-      (t/log! {:level :error
+      (t/log! {:level :warn
                :data  error}
               (str "TEI validation error: " (count error) " file(s) excluded")))
 
@@ -102,21 +123,16 @@
             (str "Populating database with " (count entities) " documents."))
 
     ;; Files are transacted one at a time to allow for a partial success.
+    ;; Before transacting, any TEI entities without required data are removed
+    ;; and their removal is logged on the db error page.
     (doseq [entity entities]
-      (try
-        (if (and (contains? entity :bedebok/id)
-                 (nil? (:bedebok/id entity)))
-          (do
-            (t/log! {:level :error
-                     :data  entity}
-                    (str (:file/name entity) " is missing an xml:id, excluded from database."))
-            (swap! error-data update-in [:other (:file/name entity)] conj "The document is missing an xml:id."))
-          (do
-            (t/log! {:level :info
-                     :data  {:bedebok/id (:bedebok/id entity)
-                             :keys       (keys entity)}}
-                    (str "Transacting entity: " (:bedebok/id entity)))
-            (d/transact! @conn [entity])))))))
+      (when (check-required-data! entity)
+        (do
+          (t/log! {:level :info
+                   :data  {:bedebok/id (:bedebok/id entity)
+                           :keys       (keys entity)}}
+                  (str "Transacting entity: " (:bedebok/id entity)))
+          (d/transact! @conn [entity]))))))
 
 (defn top-items
   "Get the top-level <msItem> data, i.e. not the children."

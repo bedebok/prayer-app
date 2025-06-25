@@ -32,10 +32,10 @@
     [:header.top
      [:nav
       [:ul
-       [:li [:a (when-not (= name ::page/main) {:href "/"}) "Home"]]
-       [:li [:a (when-not (= name ::page/text-index) {:href "/texts"}) "Texts"]]
-       [:li [:a (when-not (= name ::page/manuscript-index) {:href "/manuscripts"}) "Manuscripts"]]
-       [:li [:a (when-not (= name ::page/work-index) {:href "/works"}) "Works"]]]
+       [:li [:a (if (= name ::page/main) {} {:href "/"}) "Home"]]
+       [:li [:a (if (= name ::page/text-index) {} {:href "/texts"}) "Texts"]]
+       [:li [:a (if (= name ::page/manuscript-index) {} {:href "/manuscripts"}) "Manuscripts"]]
+       [:li [:a (if (= name ::page/work-index) {} {:href "/works"}) "Works"]]]
       [:form {:on {:submit [::event/search]}}
        [:input#searchbar {:on          {:focus [::event/select]}
                           :value       (when (= name ::page/search)

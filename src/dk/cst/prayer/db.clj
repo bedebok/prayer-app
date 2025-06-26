@@ -102,6 +102,20 @@
       false)
     true))
 
+(defn- get-duplicate-ids
+  [entities]
+  (->> (group-by :bedebok/id entities)
+       (filter (comp #(> % 1) count second))
+       (vals)
+       (apply concat)
+       (map :bedebok/id)
+       (set)))
+
+(defn- entity-summary
+  [entity]
+  {:bedebok/id (:bedebok/id entity)
+   :keys       (sort (keys entity))})
+
 (defn build-db!
   [db-path files-path & files-paths]
   (io/make-parents db-path)
@@ -116,23 +130,36 @@
                :data  error}
               (str "TEI validation error: " (count error) " file(s) excluded")))
 
-    ;; Before transacting we present an overview of the validated files.
-    (t/log! {:level :info
-             :data  (update-vals (group-by :bedebok/type entities)
-                                 (comp sort #(map :file/name %)))}
-            (str "Populating database with " (count entities) " documents."))
+    (let [duplicate-ids (get-duplicate-ids entities)
+          duplicate?    (comp duplicate-ids :bedebok/id)
+          duplicates    (filter duplicate? entities)
 
-    ;; Files are transacted one at a time to allow for a partial success.
-    ;; Before transacting, any TEI entities without required data are removed
-    ;; and their removal is logged on the db error page.
-    (doseq [entity entities]
-      (when (check-required-data! entity)
-        (do
-          (t/log! {:level :info
-                   :data  {:bedebok/id (:bedebok/id entity)
-                           :keys       (keys entity)}}
-                  (str "Transacting entity: " (:bedebok/id entity)))
-          (d/transact! @conn [entity]))))))
+          ;; Before transacting, any TEI entities without required data are
+          ;; removed and their removal is logged on the db error page.
+          entities'     (->> (remove duplicate? entities)
+                             (filter check-required-data!))]
+
+      ;; Some TEI files might not have unique IDs, so they are excluded next.
+      (doseq [duplicate duplicates]
+        (swap! error-data assoc-in [:other (:file/name duplicate)]
+               #{(str "The document has a duplicate xml:id: " (:bedebok/id duplicate))}))
+      (t/log! {:level :warn
+               :data  {:affected-ids duplicate-ids
+                       :duplicates   (map entity-summary duplicates)}}
+              (str "Duplicate IDs found: " (count duplicates) " files(s) excluded."))
+
+      ;; Before transacting we present an overview of the validated files.
+      (t/log! {:level :info
+               :data  (update-vals (group-by :bedebok/type entities')
+                                   (comp sort #(map :file/name %)))}
+              (str (count entities') " documents are ready to be transacted."))
+
+      ;; Files are transacted one at a time to allow for a partial success.
+      (doseq [entity entities']
+        (t/log! {:level :info
+                 :data  (entity-summary entity)}
+                (str "Transacting entity: " (:bedebok/id entity)))
+        (d/transact! @conn [entity])))))
 
 (defn top-items
   "Get the top-level <msItem> data, i.e. not the children."

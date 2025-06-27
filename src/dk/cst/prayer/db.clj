@@ -139,9 +139,10 @@
 (defn check-illegal-id!
   "Returns TRUE if the TEI `entity` isn't missing the initial <pb> tag."
   [{:keys [file/name bedebok/id tei/corresp] :as entity}]
-  (let [bad-id      (not (re-matches alphanumeric-id id))
-        bad-corresp (and corresp
-                         (not (re-matches alphanumeric-id corresp)))]
+  (let [bad? #(and (string? %)
+                   (not (re-matches alphanumeric-id %)))
+        bad-id      (bad? id)
+        bad-corresp (some bad? corresp)]
     (if (and (not bad-id) (not bad-corresp))
       true
       (do
@@ -157,7 +158,7 @@
           (t/log! {:level :warn
                    :data  (entity-summary entity)}
                   (str "The corresp attribute of " name " should be an alphanumeric string,"
-                       " not " corresp ". "
+                       " not " (str/join ", " corresp) ". "
                        "It has been excluded from the database."))
           (swap! error-data update-in [:other name]
                  conj (str "The corresp attribute should be an alphanumeric string.")))))))

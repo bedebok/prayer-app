@@ -6,9 +6,12 @@
   (:require [clojure.set :as set]
             [clojure.string :as str]
             [clojure.java.io :as io]
+            [clojure.zip :as zip]
             [datalevin.core :as d]
             [datalevin.search-utils :as su]
             [taoensso.telemere :as t]
+            [dk.cst.hiccup-tools.hiccup :as h]
+            [dk.cst.hiccup-tools.match :refer [match]]
             [dk.cst.xml-hiccup :as xh]
             [dk.cst.prayer.tei.schema :as schema]
             [dk.cst.prayer.search :as search]
@@ -82,6 +85,11 @@
           ^{:error {}} []
           tei-files))
 
+(defn- entity-summary
+  [entity]
+  {:bedebok/id (:bedebok/id entity)
+   :keys       (sort (keys entity))})
+
 (defn check-required-data!
   "Returns TRUE if the TEI `entity` has the required data. Any missing required
   data will be both logged and displayed on the db error page."
@@ -102,6 +110,29 @@
       false)
     true))
 
+(defn- initial-pb?
+  [node]
+  (let [body         (h/get node :tei-body)
+        pb-or-string (match #{(comp string? zip/node)
+                              [:tei-pb]})]
+    (not (string? (h/get body (match pb-or-string))))))
+
+(defn check-missing-initial-pb!
+  "Returns TRUE if the TEI `entity` isn't missing the initial <pb> tag."
+  [entity]
+  (if (and (= (:bedebok/type entity) "text")
+           (not (initial-pb? (:file/node entity))))
+    (do
+      (t/log! {:level :warn
+               :data  (entity-summary entity)}
+              (str "The text body in " (:file/name entity)
+                   " is missing an initial <pb> tag. "
+                   "It has been excluded from the database."))
+      (swap! error-data update-in [:other (:file/name entity)]
+             conj (str "The text body is missing an initial <pb> tag."))
+      false)
+    true))
+
 (defn- get-duplicate-ids
   [entities]
   (->> (group-by :bedebok/id entities)
@@ -110,11 +141,6 @@
        (apply concat)
        (map :bedebok/id)
        (set)))
-
-(defn- entity-summary
-  [entity]
-  {:bedebok/id (:bedebok/id entity)
-   :keys       (sort (keys entity))})
 
 (defn build-db!
   [db-path files-path & files-paths]
@@ -137,7 +163,8 @@
           ;; Before transacting, any TEI entities without required data are
           ;; removed and their removal is logged on the db error page.
           entities'     (->> (remove duplicate? entities)
-                             (filter check-required-data!))]
+                             (filter check-required-data!)
+                             (filter check-missing-initial-pb!))]
 
       ;; Some TEI files might not have unique IDs, so they are excluded next.
       (doseq [duplicate duplicates]
@@ -152,9 +179,11 @@
       (t/log! {:level :info
                :data  (update-vals (group-by :bedebok/type entities')
                                    (comp sort #(map :file/name %)))}
-              (str (count entities') " documents are ready to be transacted."))
+              (str (count entities') " documents are ready to be transacted ("
+                   (- (count entities)
+                      (count entities')) " documents were excluded)."))
 
-      ;; Files are transacted one at a time to allow for a partial success.
+      ;; Files are transacted one at a time to allow for a partial success,
       (doseq [entity entities']
         (t/log! {:level :info
                  :data  (entity-summary entity)}

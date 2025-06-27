@@ -11,7 +11,14 @@ The production setup requires Docker. It consists of two separate Docker contain
 
 The production TEI files must all go somewhere into the `/opt/tei-files` directory. Whenever the system is (re)started it will look inside this directory for compatible files to build a new database from. This database is what populates the various pages of the website.
 
-The current production version of the system is kept as a Git repo in `/opt/prayer-app` while a snapshot of the Data repository is kept in `/opt/Data`.
+The current production version of the system is kept as a Git repo in `/opt/prayer-app` while a snapshot of the Data repository is kept in `/opt/Data`. You can run a shell script such as this one to quickly copy files from `/opt/Data` to `/opt/tei-files`:
+
+```shell
+yes | cp Data/Texts/xml/*.xml tei-files
+yes | cp Data/Works/xml/*.xml tei-files
+yes | cp Data/Manuscripts/xml/*.xml tei-files
+yes | cp Data/Gold\ corpus/*.xml tei-files
+```
 
 #### Systemd service
 In the production environment, the Docker setup is ideally [run as a Systemd service](https://www.linode.com/docs/guides/introduction-to-systemctl/):

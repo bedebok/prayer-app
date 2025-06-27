@@ -133,6 +133,35 @@
       false)
     true))
 
+(def alphanumeric-id
+  #"[0-9a-zA-ZæøåÆØÅ_-]+")
+
+(defn check-illegal-id!
+  "Returns TRUE if the TEI `entity` isn't missing the initial <pb> tag."
+  [{:keys [file/name bedebok/id tei/corresp] :as entity}]
+  (let [bad-id      (not (re-matches alphanumeric-id id))
+        bad-corresp (and corresp
+                         (not (re-matches alphanumeric-id corresp)))]
+    (if (and (not bad-id) (not bad-corresp))
+      true
+      (do
+        (when bad-id
+          (t/log! {:level :warn
+                   :data  (entity-summary entity)}
+                  (str "The ID of " name " should be an alphanumeric string,"
+                       " not " id ". "
+                       "It has been excluded from the database."))
+          (swap! error-data update-in [:other name]
+                 conj (str "The xml:id should be an alphanumeric string.")))
+        (when bad-corresp
+          (t/log! {:level :warn
+                   :data  (entity-summary entity)}
+                  (str "The corresp attribute of " name " should be an alphanumeric string,"
+                       " not " corresp ". "
+                       "It has been excluded from the database."))
+          (swap! error-data update-in [:other name]
+                 conj (str "The corresp attribute should be an alphanumeric string.")))))))
+
 (defn- get-duplicate-ids
   [entities]
   (->> (group-by :bedebok/id entities)
@@ -164,7 +193,8 @@
           ;; removed and their removal is logged on the db error page.
           entities'     (->> (remove duplicate? entities)
                              (filter check-required-data!)
-                             (filter check-missing-initial-pb!))]
+                             (filter check-missing-initial-pb!)
+                             (filter check-illegal-id!))]
 
       ;; Some TEI files might not have unique IDs, so they are excluded next.
       (doseq [duplicate duplicates]

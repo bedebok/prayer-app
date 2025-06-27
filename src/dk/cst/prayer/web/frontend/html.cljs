@@ -583,10 +583,18 @@
                   [:dt {:id char} char]
                   [:dd
                    [:ul
-                    (for [[k v] (sort-by second kvs)]
+                    (for [[k v corresp] (sort-by second kvs)]
                       [:li
                        [:a {:href (str "/" type-plural "/" k)} v]
-                       (when (get duplicates v)
+                       (cond
+                         ;; Seán requested that Texts should always be
+                         ;; disambiguated by the corresponding manuscript.
+                         corresp
+                         [:span.disambiguate (str " " corresp "")]
+
+                         ;; In other cases we only explicitly disambiguate if
+                         ;; there's a title clash (highly unlikely).
+                         (get duplicates v)
                          [:span.disambiguate (str " " k "")])])]])))]))
 
 (defn index-view

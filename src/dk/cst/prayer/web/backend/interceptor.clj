@@ -234,12 +234,21 @@
     {:name  ::by-type
      :enter (fn [{:keys [db request] :as ctx}]
               (let [type (get-in request [:params :type])
-                    res  (d/q '[:find ?id ?title
-                                :in $ ?type
-                                :where
-                                [?e :bedebok/type ?type]
-                                [?e :bedebok/id ?id]
-                                [?e :tei/title ?title]]
+                    res  (d/q (if (= type "text")
+                                '[:find ?id ?title ?corresp
+                                  :in $ ?type
+                                  :where
+                                  [?e :bedebok/type ?type]
+                                  [?e :bedebok/id ?id]
+                                  [?e :tei/title ?title]
+                                  [?e :tei/corresp ?corresp]]
+                                '[:find ?id ?title
+                                  :in $ ?type
+                                  :where
+                                  [?e :bedebok/type ?type]
+                                  [?e :bedebok/id ?id]
+                                  [?e :tei/title ?title]])
+
                               db
                               type)]
                 (basic-response ctx res)))}))

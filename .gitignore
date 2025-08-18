@@ -2,6 +2,7 @@
 .cpcache
 .idea/
 .nrepl-port
+.clj-kondo
 test/db
 
 /node_modules/

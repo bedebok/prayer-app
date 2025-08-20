@@ -1,5 +1,7 @@
 # Setup for clojure-mcp
 
+## Installing
+
 > These are the various steps I took to set up [clojure-mcp](https://github.com/bhauman/clojure-mcp) for this project.
 
 I added this alias to the project `deps.edn`:
@@ -19,7 +21,7 @@ I added this alias to the project `deps.edn`:
 Then I used it to start an NREPL session for the project:
 
 ```shell
- clojure -M:nrepl:jvm-base
+clojure -M:nrepl:jvm-base
 ```
 
 I added this clojure-mcp section to `~/Library/Application Support/Claude/claude_desktop_config.json`:
@@ -38,6 +40,8 @@ I added this clojure-mcp section to `~/Library/Application Support/Claude/claude
 }
 ```
 
+> NOTE: on my personal laptop the bash binary was at `/bin/bash` instead of `/usr/local/bin/bash`.
+
 I added this alias to my personal deps.edn available at  `~/.clojure/deps.edn` (not the project one):
 
 ```clojure
@@ -53,3 +57,6 @@ I added this alias to my personal deps.edn available at  `~/.clojure/deps.edn` (
 ```
 
 Then I started up Claude which was able to connect to the NREPL and apply the various tools of clojure-mcp.
+
+## Workflow
+The first task of Claude (in this case Sonnet 4.0) was to generate a `PROJECT_SUMMARY.md` which is the recommended first step in the clojure-mcp setup guide.

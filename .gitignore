@@ -3,6 +3,7 @@
 .idea/
 .nrepl-port
 .clj-kondo
+.clojure-mcp
 test/db
 
 /node_modules/

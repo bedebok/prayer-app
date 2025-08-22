@@ -292,14 +292,17 @@
 
 ;; TODO: accept Danish labels too?
 (defn fuzzy-value
-  "Attempt to match a fuzzy input value `v` of the attribute `a` to an already
-  known value of that attribute."
+  "Normalize user input `v` to canonical forms for use in database queries."
   [a v]
-  (let [v' (str/upper-case v)]
+  (let [abbr (str/upper-case v)]
     (or
-      (and (get-in static/labels [a v']) v')                ; short-form
-      (get-in field-by-label [a (str/lower-case v)])        ; long-form (label)
-      v)))                                                  ; raw value
+      ;; Look up either by long-form label or by the canonical abbreviation.
+      ;; NOTE: it is the abbreviated form that is returned in either case!
+      (and (get-in static/labels [a abbr]) abbr)            ; by abbreviation
+      (get-in field-by-label [a (str/lower-case v)])        ; by long-form
+
+      ;; The fallback (i.e. no match) is to return the raw value.
+      v)))
 
 (def field->attribute
   (comp static/field->attribute str/lower-case))

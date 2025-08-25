@@ -141,7 +141,7 @@
 
 (defn handle
   [req handler-data]
-  (condp = handler-data
+  (case handler-data
     [::search] (search req)
     [::fetch-db-error] (fetch-db-error)
     [::fetch-entity] (fetch-entity req)

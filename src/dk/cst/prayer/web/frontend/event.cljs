@@ -18,16 +18,16 @@
   (vec (remove #{v} coll)))
 
 (defn handle
-  [{:keys [replicant/dom-event replicant/node] :as replicant-data} handler-data]
-  (condp = (first handler-data)
-    ::throw (let [[_ {:keys [name message] :as m}] handler-data
+  [{:keys [replicant/dom-event replicant/node] :as replicant-data} [handler-type & handler-args]]
+  (case handler-type
+    ::throw (let [[{:keys [name message] :as m}] handler-args
                   ex-message (str/join ": " (remove nil? [name message]))]
               (throw (ex-info ex-message m)))
     ::reset-state (reset! state (merge
                                   (select-keys @state [:location])
                                   (state/default-state)))
-    ::toggle (swap! state update-in [:user :prefs (second handler-data)] not)
-    ::page (let [[_ id arg] handler-data]
+    ::toggle (swap! state update-in [:user :prefs (first handler-args)] not)
+    ::page (let [[id arg] handler-args]
              (.preventDefault dom-event)
              (cond
                (= arg :forward) (swap! state update-in [:user :entities id :n] inc)
@@ -35,11 +35,11 @@
                :else (let [v* (e->v dom-event)
                            v  (if v* (parse-double v*) 0)]
                        (swap! state assoc-in [:user :entities id :n] v))))
-    ::pin (let [id   (second handler-data)
+    ::pin (let [id (first handler-args)
                 pins (get-in @state [:user :pins])]
-            (if (empty? (filter #{id} pins))
-              (swap! state update-in [:user :pins] conj id)
-              (swap! state update-in [:user :pins] vec-disj id)))
+            (if (some #{id} pins)
+              (swap! state update-in [:user :pins] vec-disj id)
+              (swap! state update-in [:user :pins] conj id)))
     ::reset-pins (swap! state update-in [:user :pins] empty)
     ::reset-error (swap! state assoc :error nil)
     ::select (do

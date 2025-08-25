@@ -226,9 +226,11 @@ The frontend uses a component-based architecture with Replicant instead of React
 - Prefer transducers for threading macros with significantly more steps than usual
 
 ### Parameters & Destructuring
-- Use destructuring in function parameters when accessing keys in map
-- Also use destructuring in let bindings when accessing keys in map
-- Example: `[{:keys [zloc match-form] :as ctx}]` for regular keywords
+- Use destructuring in function parameters when accessing elements in collections (maps, vectors, etc.)
+- Also use destructuring in let bindings when accessing elements in collections
+- For maps: `[{:keys [zloc match-form] :as ctx}]` for regular keywords
+- For vectors: `[[first-elem & rest-elems]]` or `[[type & args]]` instead of calling `first` and `rest`
+- Prefer destructuring over explicit calls to `first`, `second`, `nth`, etc.
 
 ### Control Flow
 - Track actual values instead of boolean flags where possible

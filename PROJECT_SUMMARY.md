@@ -327,3 +327,4 @@ The frontend uses a component-based architecture with Replicant instead of React
 - Use the **exact** snippet in the comment block of `dk.cst.prayer` to start a fresh instance of the web server and db.
 - Don't attempt to start shadow-cljs yourself, let me (the developer) do that manually.
 - When eval'ing code in the REPL keep it short and sweet, don't test every possible angle all at once.
+- When rewriting Clojure, attempt to gauge the appropriate ratio of comments to code from the surrounding lines of code.

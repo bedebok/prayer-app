@@ -47,12 +47,18 @@
   ;; This requires running shadow-cljs to access the frontend:
   ;;   $ npx shadow-cljs watch app
   (do
-    (db/rmdir db/db-path)
+    ;; Only try to remove a previous database if the directory exists.
+    (when (.exists (io/file db/db-path))
+      (db/rmdir db/db-path))
+
+    ;; Build an ephemeral database with the provided data paths.
     (db/build-db! db/db-path
                   "../Data/Gold corpus"
                   "../Data/Manuscripts/xml"
                   "../Data/Texts/xml"
                   "../Data/Works/xml")
+
+    ;; (Re)start the backend server.
     (backend/restart))
 
   (db/delete-db! db/db-path)

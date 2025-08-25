@@ -322,3 +322,8 @@ The frontend uses a component-based architecture with Replicant instead of React
 - Shadow-cljs provides advanced compilation
 - Module hash names for cache busting
 - Separate artifact builds for development and production
+
+## Special REPL instructions for AI/LLM
+- Use the **exact** snippet in the comment block of `dk.cst.prayer` to start a fresh instance of the web server and db.
+- Don't attempt to start shadow-cljs yourself, let me (the developer) do that manually.
+- When eval'ing code in the REPL keep it short and sweet, don't test every possible angle all at once.

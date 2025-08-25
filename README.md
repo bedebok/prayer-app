@@ -6,6 +6,14 @@ The system indexes a directory of relevant TEI documents (old prayer books that 
 
 ## Setup
 
+### Native libraries
+The Datalevin database [requires some native libraries](https://github.com/juji-io/datalevin/blob/master/doc/install.md#native-dependencies) to be installed before the database will work:
+
+```shell
+# e.g. on Mac
+brew install libomp llvm
+```
+
 ### Production environment
 The production setup requires Docker. It consists of two separate Docker containers: one for running the system and one for running Caddy (acting as a reverse proxy).
 

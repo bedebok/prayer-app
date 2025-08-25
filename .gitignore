@@ -3,7 +3,7 @@
 .idea/
 .nrepl-port
 .clj-kondo
-.clojure-mcp
+.clojure-mcp/scratch_pad.edn
 test/db
 
 /node_modules/

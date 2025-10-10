@@ -1,4 +1,4 @@
-FROM golang:1.24-bookworm AS build
+FROM golang:bookworm AS build
 
 WORKDIR /etc/caddy
 

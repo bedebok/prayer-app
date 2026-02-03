@@ -48,7 +48,7 @@
   ;;   $ npx shadow-cljs watch app
   (do
     ;; Only try to remove a previous database if the directory exists.
-    (when (.exists (io/file db/db-path))
+    (when (.exists (clojure.java.io/file db/db-path))
       (db/rmdir db/db-path))
 
     ;; Build an ephemeral database with the provided data paths.

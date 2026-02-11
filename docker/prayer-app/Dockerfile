@@ -24,7 +24,7 @@ ENV LC_ALL en_US.UTF-8
 
 # The recommended way of installing Clojure CLI tools
 # https://clojure.org/guides/getting_started#_installation_on_linux
-RUN curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh
+RUN curl -L -O https://github.com/clojure/brew-install/releases/download/1.12.4.1602/linux-install.sh
 RUN chmod +x linux-install.sh
 RUN ./linux-install.sh
 
@@ -32,27 +32,36 @@ WORKDIR /etc/prayer-app
 
 # Install JS dependencies
 RUN npm init -y
-RUN npm install -g shadow-cljs
-RUN npm install shadow-cljs
+RUN npm install -g shadow-cljs@3.1.7
+RUN npm install shadow-cljs@3.1.7
 
 # Fetch backend dependencies
 COPY ./deps.edn /etc/prayer-app/deps.edn
-RUN clojure -A:backend -Spath
+RUN --mount=type=cache,target=/root/.m2 \
+    --mount=type=cache,target=/root/.gitlibs \
+    clojure -A:backend -Spath
 
 # Fetch frontend dependencies
 COPY ./shadow-cljs.edn /etc/prayer-app/shadow-cljs.edn
-RUN shadow-cljs --aliases :frontend classpath
+RUN --mount=type=cache,target=/root/.m2 \
+    --mount=type=cache,target=/root/.gitlibs \
+    --mount=type=cache,target=/root/.npm \
+    shadow-cljs --aliases :frontend classpath
 
 # Prepare frontend app source files
 COPY ./src /etc/prayer-app/src
 COPY ./resources /etc/prayer-app/resources
 
 #  Create a release build of the frontend app
-RUN shadow-cljs --aliases :frontend release app
+RUN --mount=type=cache,target=/root/.m2 \
+    --mount=type=cache,target=/root/.gitlibs \
+    shadow-cljs --aliases :frontend release app
 
 # Build an uberjar for the backend
 COPY ./build.clj /etc/prayer-app/build.clj
-RUN clj -T:build uber
+RUN --mount=type=cache,target=/root/.m2 \
+    --mount=type=cache,target=/root/.gitlibs \
+    clj -T:build uber
 
 # Prepare the start script
 COPY ./docker/prayer-app/start.sh /etc/prayer-app/start.sh

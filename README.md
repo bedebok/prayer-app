@@ -15,27 +15,15 @@ brew install libomp llvm
 ```
 
 ### Production environment
-The production setup requires Docker. It consists of two separate Docker containers: one for running the system and one for running Caddy (acting as a reverse proxy).
+The production setup requires Docker. It comprises two separate Docker containers:
 
-The production TEI files must all go somewhere into the `/opt/tei-files` directory. Whenever the system is (re)started it will look inside this directory for compatible files to build a new database from. This database is what populates the various pages of the website.
+- one for running the web service
+- one for running Caddy (acting as a reverse proxy)
 
-The current production version of the system is kept as a Git repo in `/opt/prayer-app` while a snapshot of the Data repository is kept in `/opt/Data`. You can run a shell script such as this one to quickly copy files from `/opt/Data` to `/opt/tei-files`:
-
-```shell
-yes | cp Data/Texts/xml/*.xml tei-files
-yes | cp Data/Works/xml/*.xml tei-files
-yes | cp Data/Manuscripts/xml/*.xml tei-files
-yes | cp Data/Gold\ corpus/*.xml tei-files
-```
-
-#### Systemd service
-In the production environment, the Docker setup is ideally [run as a Systemd service](https://www.linode.com/docs/guides/introduction-to-systemctl/):
-
-```
-systemctl restart prayer
-```
-
-This will ensure that the service starts on boot if a third party, e.g. KU-IT, randomly restarts the server. A small set of Systemd commands form the basis of managing the website on the server.
+In the production environment, the Docker setup is [run as a Systemd service](https://www.linode.com/docs/guides/introduction-to-systemctl/).
+This ensures that the service starts on boot if a third party, e.g. KU-IT, randomly restarts the server.
+A small set of Systemd commands form the basis of managing the website on the server.
+You can see the relevant commands in the [DEPLOYMENT.md](DEPLOYMENT.md) document.
 
 > NOTE: this Systemd+Docker setup is pretty much exactly how I do it in several other projects, e.g. [DanNet](https://github.com/kuhumcst/DanNet/tree/master?tab=readme-ov-file#setup).
 
@@ -44,12 +32,6 @@ Prior to being run the first time, the service itself must be installed by copyi
 ```
 cp system/prayer.service /etc/systemd/system/prayer.service
 systemctl enable prayer
-```
-
-The current status of the service (i.e. a log snapshot) can be seen by running:
-
-```
-systemctl status prayer
 ```
 
 #### Running Docker Compose directly

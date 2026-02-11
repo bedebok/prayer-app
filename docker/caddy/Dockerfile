@@ -1,10 +1,16 @@
-FROM golang:bookworm AS build
+FROM golang:1.26.0-bookworm AS build
 
 WORKDIR /etc/caddy
 
 # Install xcaddy and compile a custom build of Caddy w/ rate limiting
-RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.4
-RUN xcaddy build --with github.com/RussellLuo/caddy-ext/ratelimit
+# NOTE: cache mounts persist Go modules and build cache across Docker rebuilds,
+# so xcaddy recompilation is fast even when the layer cache is invalidated.
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.4
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    xcaddy build --with github.com/RussellLuo/caddy-ext/ratelimit
 
 
 

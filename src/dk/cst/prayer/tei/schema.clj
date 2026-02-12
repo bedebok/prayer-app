@@ -31,24 +31,9 @@
 (def validator
   (delay (->validator "resources/schema/tei_all.xsd")))
 
+;;TODO: transformation of "cvc-complex-type.2.4.a: ..."
+;;TODO: transformation of "cvc-complex-type.2.4.b: ..."
 (defn validate-tei
-  "Return the first found validation error for TEI `xml` (if invalid)."
+  "Return the first found validation error message for TEI `xml` (if invalid)."
   [xml]
   (@validator xml))
-
-(defn valid-tei?
-  "Is the `xml` a valid TEI document?"
-  [xml]
-  (nil? (validate-tei xml)))
-
-(comment
-  (->validator "resources/schema/tei_all.xsd")
-
-  (validate-tei "test/Data/Catalogue/xml/AM04-0789.xml")
-  (validate-tei "test/Data/Catalogue/xml/AM08-0073.xml")
-  (validate-tei "test/Data/Prayers/xml/AM08-0073_237v.xml")
-
-  (valid-tei? "test/Data/Catalogue/xml/AM04-0789.xml")
-  (valid-tei? "test/Data/Catalogue/xml/AM08-0073.xml")
-  (valid-tei? "test/Data/Prayers/xml/AM08-0073_237v.xml")
-  #_.)

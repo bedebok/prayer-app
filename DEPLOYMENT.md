@@ -9,7 +9,7 @@ This is the **TL;DR** for how to deploy new TEI files:
 ssh rqf595@bedebog.dk
 git -C /opt/Data pull
 /opt/copy-files.sh
-systemctl restart prayer
+sudo systemctl restart prayer
 ```
 
 Read on for a more in-depth explanation.
@@ -61,10 +61,10 @@ The website runs in a Docker container as a so-called systemd service, so you
 can use systemd commands to view the current status or start/stop/restart it:
 
 ```shell
-systemctl status prayer
-systemctl restart prayer  # the command you most likely need
-systemctl stop prayer
-systemctl start prayer
+sudo systemctl status prayer
+sudo systemctl restart prayer  # the command you most likely need
+sudo systemctl stop prayer
+sudo systemctl start prayer
 ```
 
 ## Observe errors

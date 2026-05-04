@@ -8,6 +8,10 @@ services:
       context: ../
       dockerfile: docker/caddy/Dockerfile
     restart: unless-stopped
+    # Persist certs across container rebuilds to avoid
+    # hitting the Let's Encrypt rate limit on redeployment.
+    volumes:
+      - caddy_data:/root/.local/share/caddy
     ports:
       - "443:443"
       - "80:80"
@@ -22,3 +26,6 @@ services:
       - ${PRAYER_APP_FILES_DIR}:/etc/prayer-app/files
     ports:
       - "3456:3456"
+
+volumes:
+  caddy_data:

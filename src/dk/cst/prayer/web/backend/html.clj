@@ -5,7 +5,7 @@
   and the only HTML generated server-side is a skeleton page."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [huff2.core :as h])
+            [replicant.string :as rs])
   (:import [java.util Date]))
 
 (def main-js
@@ -48,16 +48,18 @@
     [:link {:rel "stylesheet" :href (cb "/css/main.css")}]
     [:link {:rel "stylesheet" :href (cb "/css/tei.css")}]]
    [:body
+    ;; TODO: server-side render the SPA content here and hydrate the frontend.
     [:div#app]
-    [:script
-     ;; Rather than having an extra endpoint that the SPA needs to access, these
-     ;; values are passed on to the SPA along with the compiled main.js code.
-     (str "var negotiatedLanguage = '" (pr-str negotiated-language) "';\n")
-     (str "var versionHash = '" version-hash "';\n")]
+    ;; Rather than having an extra endpoint that the SPA needs to access, these
+    ;; values are passed on to the SPA along with the compiled main.js code.
+    ;; NOTE: :innerHTML is needed since Replicant escapes all text children,
+    ;; which would corrupt the quotes in the JavaScript code.
+    [:script {:innerHTML (str "var negotiatedLanguage = '" (pr-str negotiated-language) "';\n"
+                              "var versionHash = '" version-hash "';\n")}]
     [:script {:src (cb (str "/js/" main-js))}]]])
 
 (def index-html
-  (memoize (comp h/page index-hiccup)))
+  (memoize (comp (partial str "<!DOCTYPE html>") rs/render index-hiccup)))
 
 (defn app-handler
   [{:keys [accept-language] :as request}]

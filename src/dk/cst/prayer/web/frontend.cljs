@@ -107,7 +107,7 @@
       ;; For whatever reason, I can't just throw the error and let it be handled
       ;; by js/window.onerror, so it must be handled directly here.
       (handle-error e)
-      (vreset! d/state {})                                  ; reset Replicant
+      (d/unmount (js/document.getElementById "app"))        ; reset Replicant
       (.back js/window.history))))                          ; last working page
 
 (defn scroll-to

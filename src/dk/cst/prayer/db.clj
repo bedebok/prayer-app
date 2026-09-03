@@ -339,7 +339,10 @@
       text (concat
              (for [s text]
                ;; All fulltext attributes participate in the "datalevin" domain.
-               [(list 'fulltext '$ {:phrase s} {:domains ["datalevin"]}) '[[?e ?a ?text]]]))
+               ;; NOTE: :top must be explicit as it defaults to only 10 results;
+               ;; huge values break Datalevin's internal PriorityQueue, however.
+               [(list 'fulltext '$ {:phrase s} {:domains ["datalevin"]
+                                                :top     100000}) '[[?e ?a ?text]]]))
 
       ;; Fields are only included when they match a known field type.
       FIELD (concat (->> (for [[_ k v] FIELD]

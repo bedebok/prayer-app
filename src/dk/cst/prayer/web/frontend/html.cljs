@@ -289,7 +289,8 @@
                                           :tei/incipit
                                           :tei/explicit)
                                   (not-empty))]
-    [:table.common {:id (str "db-" (or id locus))}
+    ;; The locus parts are joined to form a valid HTML id, e.g. "db-1r-4r".
+    [:table.common {:id (str "db-" (or id (str/join "-" locus)))}
      (if-let [locus (:tei/locus entity')]
        [:tr.header-row
         [:th {:colspan 2
@@ -350,9 +351,8 @@
                :on         {:click [::event/page id :backward]}
                :disabled   (= n 0)}
       "←"]
-     [:select {:aria-label    "Page"
-               :default-value n
-               :on            {:change [::event/page id]}}
+     [:select {:aria-label "Page"
+               :on         {:change [::event/page id]}}
       (for [i (range page-count)]
         [:option {:value    i
                   :selected (= n i)}
@@ -839,7 +839,7 @@
 
 (defn page
   []
-  (let [{:keys [user error] :as state'} @state
+  (let [{:keys [user error location] :as state'} @state
         {:keys [pins]} user]
     [:div.container {:class (if (empty? pins)
                               "single-document"
@@ -856,14 +856,16 @@
       ;; its ancestors to <html>, <body>, <div> and <form>.
       [:div.page-body
        ;; The key is needed for replicant to properly re-render on navigation.
+       ;; NOTE: keyed on the location in the app state rather than the browser
+       ;; URL, keeping the render a pure function of the state.
        (if (empty? pins)
          [:main {:id            "main-content"
-                 :replicant/key js/window.location.pathname}
+                 :replicant/key location}
           (content-view)]
          (list
            (pinning-view)
            [:main {:id            "main-content"
-                   :replicant/key js/window.location.pathname}
+                   :replicant/key location}
             (content-view)
             (for [id pins]
               (entity-view (get-in state' [:entities id])

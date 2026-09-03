@@ -1,22 +1,22 @@
 {:paths   ["src" "resources"]
- :deps    {org.clojure/clojure          {:mvn/version "1.12.1"}
+ :deps    {org.clojure/clojure          {:mvn/version "1.12.6"}
 
-           datalevin/datalevin          {:mvn/version "0.9.22"}
+           datalevin/datalevin          {:mvn/version "1.1.0"}
 
-           io.pedestal/pedestal.service {:mvn/version "0.8.0-beta-1"}
-           io.pedestal/pedestal.route   {:mvn/version "0.8.0-beta-1"}
-           io.pedestal/pedestal.jetty   {:mvn/version "0.8.0-beta-1"}
+           io.pedestal/pedestal.service {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.route   {:mvn/version "0.8.1"}
+           io.pedestal/pedestal.jetty   {:mvn/version "0.8.1"}
 
-           metosin/reitit               {:mvn/version "0.7.2"}
+           metosin/reitit               {:mvn/version "0.10.1"}
 
            com.wsscode/transito         {:mvn/version "2021.07.04"}
 
            ;; https://github.com/taoensso/telemere/wiki/3-Config#java-logging
-           org.slf4j/slf4j-api          {:mvn/version "2.0.17"}
-           com.taoensso/telemere        {:mvn/version "1.0.1"}
-           com.taoensso/telemere-slf4j  {:mvn/version "1.0.1"}
+           org.slf4j/slf4j-api          {:mvn/version "2.0.18"}
+           com.taoensso/telemere        {:mvn/version "1.4.0"}
+           com.taoensso/telemere-slf4j  {:mvn/version "1.4.0"}
 
-           io.github.escherize/huff     {:mvn/version "0.2.12"}
+           no.cjohansen/replicant       {:mvn/version "2026.07.1"}
 
            instaparse/instaparse        {:mvn/version "1.5.0"}
 
@@ -25,15 +25,14 @@
            dk.cst/hiccup-tools          {:git/url "https://github.com/kuhumcst/hiccup-tools.git"
                                          :sha     "c0b84e101e6edd8dee69935f8623908f23b5fcd8"}}
  :aliases {:dev      {:extra-paths ["dev/src"]}
-           :build    {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.9"}}
+           :build    {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.14"}}
                       :ns-default build}
-           :frontend {:extra-deps {thheller/shadow-cljs   {:mvn/version "3.1.7"}
-                                   lambdaisland/fetch     {:mvn/version "1.5.83"}
-                                   no.cjohansen/replicant {:mvn/version "2025.03.27"}}}
+           :frontend {:extra-deps {thheller/shadow-cljs {:mvn/version "3.5.0"}
+                                   lambdaisland/fetch   {:mvn/version "1.5.83"}}}
 
            ;; https://github.com/bhauman/clojure-mcp?tab=readme-ov-file#step-1-configure-your-target-projects-nrepl-connection
            :nrepl    {:extra-paths ["test" "src" "resources"]
-                      :extra-deps  {nrepl/nrepl {:mvn/version "1.3.1"}}
+                      :extra-deps  {nrepl/nrepl {:mvn/version "1.7.0"}}
                       ;; this allows nrepl to interrupt runaway repl evals
                       :jvm-opts    ["-Djdk.attach.allowAttachSelf"]
                       :main-opts   ["-m" "nrepl.cmdline" "--port" "7888"]}

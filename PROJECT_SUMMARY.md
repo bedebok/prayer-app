@@ -56,30 +56,30 @@ The application is architected as a **single-page app (SPA)** with client-side r
 ## Dependencies and Versions
 
 ### Core Clojure Dependencies
-- **Clojure 1.12.1** - Main language runtime
-- **Datalevin 0.9.22** - Datalog database for document indexing
-- **Pedestal 0.8.0-beta-1** - Web service framework (service, route, jetty)
-- **Reitit 0.7.2** - Frontend routing
+- **Clojure 1.12.6** - Main language runtime
+- **Datalevin 1.1.0** - Datalog database for document indexing
+- **Pedestal 0.8.1** - Web service framework (service, route, jetty)
+- **Reitit 0.10.1** - Frontend routing
 - **Transito 2021.07.04** - Transit encoding/decoding
 
 ### Logging & Monitoring
-- **Telemere 1.0.1** - Universal logging library
-- **Telemere SLF4J 1.0.1** - SLF4J integration
-- **SLF4J API 2.0.17** - Logging facade
+- **Telemere 1.4.0** - Universal logging library
+- **Telemere SLF4J 1.4.0** - SLF4J integration
+- **SLF4J API 2.0.18** - Logging facade
 
 ### Text Processing & Parsing
 - **Instaparse 1.5.0** - EBNF grammar parsing for search queries
 
 ### HTML Rendering
-- **Huff 0.2.12** - Hiccup-to-HTML compiler (renders the server-side skeleton page)
+- **Replicant 2026.07.1** - React-free HTML generation; also renders the
+  server-side skeleton page via `replicant.string` (SSR + hydration is a TODO)
 
 ### Custom Libraries (Git Dependencies)
 - **dk.cst/xml-hiccup** - TEI XML to Hiccup conversion
 - **dk.cst/hiccup-tools** - Hiccup manipulation utilities
 
 ### Frontend Dependencies
-- **Shadow-cljs 3.1.7** - ClojureScript build tool
-- **Replicant 2025.03.27** - React-free HTML generation
+- **Shadow-cljs 3.5.0** - ClojureScript build tool
 - **Lambdaisland/fetch 1.5.83** - HTTP client for ClojureScript
 
 ## Available APIs and Functions

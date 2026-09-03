@@ -1,6 +1,7 @@
 (ns dk.cst.prayer.web.frontend
   "The main namespace of the frontend single-page app."
   (:require [clojure.edn :as edn]
+            [reitit.impl :refer [form-decode]]
             [dk.cst.prayer.web :as web]
             [dk.cst.prayer.web.frontend.error :as err]
             [dk.cst.prayer.web.frontend.event :as event]
@@ -44,6 +45,32 @@
 
 ;; https://github.com/metosin/reitit/blob/master/examples/frontend/src/frontend/core.cljs
 
+(def base-title
+  "The <title> of the HTML page served by the backend."
+  (delay js/document.title))
+
+(defn location->title
+  "Derive a page title for the location given by route `name` and `params`."
+  [name {:keys [id query]}]
+  (case name
+    ::web/main nil
+    ::web/privacy "Privacy policy"
+    ::web/search (str "Search: " (form-decode query))
+    ::web/text-index "Texts"
+    ::web/manuscript-index "Manuscripts"
+    ::web/work-index "Works"
+    ::web/db-error "Database errors"
+    id))
+
+(defn set-title!
+  "Update the document title to match the location given by route `name` and
+  `params`, so that screen readers announce SPA navigation (WCAG 2.4.2)."
+  [name params]
+  (set! js/document.title
+        (if-let [title (location->title name params)]
+          (str title " – " @base-title)
+          @base-title)))
+
 (defn on-navigate
   [{:keys [data fragment] :as req}]
   ;; Replace Reitit coercion with our own that we can also use in the backend.
@@ -54,6 +81,7 @@
 
            ;; NOTE: fragment not considered part of the location.
            :fragment fragment)
+    (set-title! (:name data) (:params coerced-req))
     (when-let [handler (:handle data)]
       (api/handle coerced-req handler))))
 

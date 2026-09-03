@@ -72,7 +72,7 @@ body {
     background-image: url(/images/spirals.svg);
 }
 
-section.page-body {
+div.page-body {
     display: flex;
     flex-direction: column;
 }
@@ -381,7 +381,8 @@ table.common + table.common {
     margin-top: 32px;
 }
 
-table.common > tr:nth-child(2) > td {
+table.common > tr:nth-child(2) > td,
+table.common > tr:nth-child(2) > th {
     border-top: none;
 }
 
@@ -389,12 +390,18 @@ table.common > tr:first-child {
     border-bottom: none;
 }
 
-table.common > tr > td:first-child {
+table.common > tr > td:first-child,
+table.common th[scope=row] {
     text-align: right;
     font-weight: bold;
     font-variant: small-caps;
     border-right: 1px solid #888;
     width: 80px;
+    background: none;
+    color: inherit;
+    word-spacing: normal;
+    letter-spacing: normal;
+    height: auto;
 }
 
 /* Decorative element for linking tables. */
@@ -410,6 +417,12 @@ table.common > tr > td:last-child {
     text-align: left;
     font-weight: normal;
     font-variant: normal;
+}
+
+/* The empty decorative header row uses a <td> rather than a <th>. */
+table.common > tr.header-row > td {
+    height: 26.5px;
+    background: black;
 }
 
 table.common td, th {
@@ -557,28 +570,44 @@ table.dimensions td.dimensions-width {
     padding-bottom: 8px;
 }
 
-table.skiplinks {
+nav.skiplinks {
+    border: 2px solid black;
+    border-right-width: 6px;
     background: black;
     background-image: url(/images/stripes.svg);
+    font-size: 18px;
 }
 
-table.skiplinks td {
+nav.skiplinks + nav.skiplinks {
+    margin-top: 32px;
+}
+
+nav.skiplinks h3 {
+    margin: 0;
+    padding: 8px 12px;
+    background: black;
+    color: white;
+    word-spacing: 6px;
+    letter-spacing: 1px;
+    text-align: center;
+    font-weight: normal;
+    font-size: inherit;
+}
+
+nav.skiplinks ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav.skiplinks li {
     border: 1px solid #888;
     text-align: center;
     font-weight: bold;
     background: white;
-}
-
-table.skiplinks td.empty {
-    border: none;
-    background: none;
-}
-
-/* Undo table.common styles. '*/
-table.skiplinks > tr > td:first-child,
-table.skiplinks > tr > td:last-child {
-    text-align: center;
-    width: auto;
+    padding: 8px 12px;
 }
 
 .dimensions-model {
@@ -624,7 +653,7 @@ header.top {
     top: 0; /* required for sticky */
 }
 
-nav {
+header.top nav {
     display: flex;
     align-items: stretch;
     max-width: 1200px;
@@ -632,47 +661,47 @@ nav {
     background: white;
 }
 
-nav a {
+header.top nav a {
     color: black;
     text-decoration: none;
     font-variant: small-caps;
 }
 
-nav a:hover {
+header.top nav a:hover {
     text-decoration: underline;
     text-underline-offset: 4px;
     text-decoration-thickness: 1px;
 }
 
-nav a:not([href]) {
+header.top nav a:not([href]) {
     color: #DD2211;
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
 }
 
-nav a:not([href]):hover {
+header.top nav a:not([href]):hover {
 }
 
-nav ul {
+header.top nav ul {
     display: flex;
     border-right: 2px solid black;
     margin: 0 auto 0 0;
     padding: 32px 8px 8px 16px;
 }
 
-nav ul li {
+header.top nav ul li {
     display: inline-block;
     margin-right: 16px;
     font-size: 24px;
 }
 
-nav form {
+header.top nav form {
     flex-grow: 1;
     display: flex;
 }
 
-nav input[type=search] {
+header.top nav input[type=search] {
    flex-grow: 1;
    width: 0;
    font-size: 24px;
@@ -684,8 +713,8 @@ nav input[type=search] {
    line-height: 1;
 }
 
-nav input[type=search]:not(:focus),
-nav input[type=search]::placeholder
+header.top nav input[type=search]:not(:focus),
+header.top nav input[type=search]::placeholder
 {
     color: #00000033;
 }
@@ -927,14 +956,14 @@ dt + dd {
     section.pinning * + * {
          margin-left: 8px;
     }
-    nav ul {
+    header.top nav ul {
         padding: 16px 8px 8px 8px;
     }
-    nav ul li {
+    header.top nav ul li {
         display: inline-block;
         margin-right: 12px;
     }
-    nav input[type=search] {
+    header.top nav input[type=search] {
        flex-grow: 1;
        font-size: 18px;
        padding: 16px 8px 8px 8px;
@@ -964,16 +993,16 @@ dt + dd {
     footer {
         padding: 24px 12px;
     }
-    nav ul {
+    header.top nav ul {
         padding: 12px 6px 6px 6px
     }
-    nav ul li {
+    header.top nav ul li {
         font-size: 16px;
     }
-    nav ul li {
+    header.top nav ul li {
         margin-right: 8px;
     }
-    nav input[type=search] {
+    header.top nav input[type=search] {
        font-size: 16px;
        padding: 12px 6px 6px 6px
     }
@@ -981,4 +1010,20 @@ dt + dd {
         font-size: 16px;
         padding: 12px 6px;
     }
+}
+
+/* Visually hidden until focused via keyboard navigation. */
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: -100vw;
+    z-index: 10;
+    background: black;
+    color: white;
+    padding: 12px 16px;
+    font-weight: bold;
+}
+
+.skip-link:focus {
+    left: 0;
 }

@@ -34,7 +34,9 @@
 
 (defn index-hiccup
   [negotiated-language]
-  [:html {:lang (or negotiated-language "da")}
+  ;; NOTE: the lang describes the language of the user interface, which is
+  ;; currently English only; TEI content is marked up with its own lang attrs.
+  [:html {:lang (or negotiated-language "en")}
    [:head
     [:meta {:charset "utf-8"}]
     [:meta {:name    "viewport"

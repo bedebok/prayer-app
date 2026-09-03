@@ -30,18 +30,24 @@
   (let [{:keys [location]} @state
         {:keys [name]} location]
     [:header.top
-     [:nav
+     [:nav {:aria-label "Main"}
       [:ul
-       [:li [:a (if (= name ::page/main) {} {:href "/"}) "Home"]]
-       [:li [:a (if (= name ::page/text-index) {} {:href "/texts"}) "Texts"]]
-       [:li [:a (if (= name ::page/manuscript-index) {} {:href "/manuscripts"}) "Manuscripts"]]
-       [:li [:a (if (= name ::page/work-index) {} {:href "/works"}) "Works"]]]
-      [:form {:on {:submit [::event/search]}}
+       (for [[page-name href label] [[::page/main "/" "Home"]
+                                     [::page/text-index "/texts" "Texts"]
+                                     [::page/manuscript-index "/manuscripts" "Manuscripts"]
+                                     [::page/work-index "/works" "Works"]]]
+         [:li [:a (if (= name page-name)
+                    {:aria-current "page"}
+                    {:href href})
+               label]])]
+      [:form {:role "search"
+              :on   {:submit [::event/search]}}
        [:input#searchbar {:on          {:focus [::event/select]}
                           :value       (when (= name ::page/search)
                                          (-> (get-in location [:params :query])
                                              (form-decode)))
                           :placeholder "search"
+                          :aria-label  "Search"
                           :type        "search"
                           :name        "query"}]]]]))
 
@@ -82,6 +88,24 @@
   (let [label (get-in static/labels [k v] (str v))]
     label))
 
+(defn lang-attr
+  "Return a {:lang ...} attr map when `s` looks like a BCP 47 language tag.
+
+  Needed since some of the source TEI data contains full language names such as
+  \"Danish\" rather than language tags."
+  [s]
+  (when (and (string? s) (re-matches #"[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*" s))
+    {:lang s}))
+
+(defn entity-lang
+  "Return a {:lang ...} attr map for the TEI text of `entity` when its main
+  language can be unambiguously determined."
+  [{:keys [tei/mainLang tei/msItem] :as entity}]
+  (or (lang-attr mainLang)
+      (let [langs (distinct (keep :tei/mainLang msItem))]
+        (when (= 1 (count langs))
+          (lang-attr (first langs))))))
+
 (defn basic-field-search
   [k v]
   (if (set? v)
@@ -108,7 +132,11 @@
           [:strong (when-let [title (static/attr-doc k)] {:title title})
            (name k) ": "])
         (when (and v (string? v))
-          (uncapitalize v))])]))
+          ;; String keys are xml/lang values, marking up e.g. rubrics/incipits
+          ;; so that screen readers know the language of the source text.
+          (if-let [lang (and (string? k) (lang-attr k))]
+            [:span lang (uncapitalize v)]
+            (uncapitalize v)))])]))
 
 (defn cell-data-view
   [bedebok-type k v]
@@ -130,8 +158,10 @@
         [:td.dimensions-width width]]
        [:tr
         [:td.dimensions-height height]
-        [:div.dimensions-model {:style {:height (* ratio 100)
-                                        :width  100}}]]])
+        [:td
+         [:div.dimensions-model {:aria-hidden "true"
+                                 :style       {:height (* ratio 100)
+                                               :width  100}}]]]])
 
     :tei/author
     (let [{:keys [tei/key tei/title]} v]
@@ -228,8 +258,8 @@
   (when-not (and (= k :bedebok/type)
                  (keyword? v))
     [:tr
-     [:td (when-let [doc (static/attr-doc k)]
-            {:title doc})
+     [:th (cond-> {:scope "row"}
+            (static/attr-doc k) (assoc :title (static/attr-doc k)))
       (name k)]
      [:td (cell-data-view bedebok-type k v)]]))
 
@@ -263,15 +293,18 @@
      (if-let [locus (:tei/locus entity')]
        [:tr.header-row
         [:th {:colspan 2
+              :scope   "colgroup"
               :title   (static/attr-doc :tei/locus)}
          (locus-view locus)]]
        (if-let [filename (:file/name entity')]
          [:tr.header-row
           [:th {:colspan 2
+                :scope   "colgroup"
                 :title   (static/attr-doc :file/name)}
            filename]]
+         ;; A decorative row; a <td> since an empty header cell has no meaning.
          [:tr.header-row
-          [:th {:colspan 2}]]))
+          [:td {:colspan 2}]]))
 
      ;; General metadata comes immediately after the header.
      (map metadata-tr-view' (sort-by first table-data))
@@ -304,7 +337,7 @@
        (map prepare-for-table)
        (sort-by locus-order)
        (map table-view)
-       (interpose [:div.continuation "︙"])))
+       (interpose [:div.continuation {:aria-hidden "true"} "︙"])))
 
 (defn controls-view
   [id]
@@ -312,18 +345,21 @@
         pages      (get-in state' [:cached id :pages])
         page-count (count pages)
         n          (get-in state' [:user :entities id :n] 0)]
-    [:section.tei-page-controls
-     [:button {:on       {:click [::event/page id :backward]}
-               :disabled (= n 0)}
+    [:section.tei-page-controls {:aria-label "Page controls"}
+     [:button {:aria-label "Previous page"
+               :on         {:click [::event/page id :backward]}
+               :disabled   (= n 0)}
       "←"]
-     [:select {:default-value n
+     [:select {:aria-label    "Page"
+               :default-value n
                :on            {:change [::event/page id]}}
       (for [i (range page-count)]
         [:option {:value    i
                   :selected (= n i)}
          (inc i) " / " page-count])]
-     [:button {:on       {:click [::event/page id :forward]}
-               :disabled (= (inc n) page-count)}
+     [:button {:aria-label "Next page"
+               :on         {:click [::event/page id :forward]}
+               :disabled   (= (inc n) page-count)}
       "→"]]))
 
 (defn page-view
@@ -341,10 +377,11 @@
         {:keys [n]} (get-in state' [:user :entities id])
         pages         (get-in state' [:cached id :pages])
         pages-display (boolean (get-in state' [:user :prefs :pages-display]))]
-    [:section.tei-pages {:class (cond-> []
-                                  (not token-display) (conj "no-token-metadata")
-                                  (not pm-display) (conj "no-paragraph-marks")
-                                  (not lbm-display) (conj "no-lb-marks"))}
+    [:section.tei-pages (merge (entity-lang (get-in state' [:entities id]))
+                               {:class (cond-> []
+                                         (not token-display) (conj "no-token-metadata")
+                                         (not pm-display) (conj "no-paragraph-marks")
+                                         (not lbm-display) (conj "no-lb-marks"))})
      (if pages-display
        (map page-view pages)
        (list (controls-view id)
@@ -409,13 +446,15 @@
 
 (defn pin-button
   [id]
-  [:button.add-pin {:title "Pin content"
-                    :on    {:click [::event/pin id]}}])
+  [:button.add-pin {:title      "Pin content"
+                    :aria-label "Pin content"
+                    :on         {:click [::event/pin id]}}])
 
 (defn unpin-button
   [id]
-  [:button.remove-pin {:title "Unpin content"
-                       :on    {:click [::event/pin id]}}])
+  [:button.remove-pin {:title      "Unpin content"
+                       :aria-label "Unpin content"
+                       :on         {:click [::event/pin id]}}])
 
 (defn entity-view
   [{:keys [bedebok/type tei/msItem tei/collationItem bedebok/id]
@@ -475,7 +514,7 @@
              [:dl.index.table-like
               (for [[doc-type ks] (sort-by first type->document)]
                 (list
-                  [:dt {:id char} (str/capitalize doc-type)]
+                  [:dt (str/capitalize doc-type)]
                   [:dd
                    [:ul
                     (for [k (sort ks)]
@@ -535,34 +574,30 @@
        [:h1 "Search result"]
        [:p (form-decode query)
         ;; TODO: visualise search query?
-        #_(str (search/simplify (search/parse query)))]]
-      (case n
-        0 (list [:p "No documents match this specific query."]
-                (search-tips-view))
-        1 (list [:p "The following document matches this query:"]
-                (search-result-view search-result)
-                (search-tips-view))
-        (list [:p "The following " n " documents match this query:"]
-              (search-result-view search-result)
-              (search-tips-view)))]]))
+        #_(str (search/simplify (search/parse query)))]]]
+     (case n
+       0 (list [:p "No documents match this specific query."]
+               (search-tips-view))
+       1 (list [:p "The following document matches this query:"]
+               (search-result-view search-result)
+               (search-tips-view))
+       (list [:p "The following " n " documents match this query:"]
+             (search-result-view search-result)
+             (search-tips-view)))]))
 
 (defn alphabetical
   [s]
   (and (re-matches #"[\w]" s)
        (re-matches #"[^\d]" s)))
 
-(defn skiplinks-table-view
+(defn skiplinks-view
+  "Grid of jump links to the sections named by `ks` under a `header`."
   [header ks]
-  [:table.common.skiplinks
-   [:tr
-    [:th {:colspan 4}
-     header]]
-   (for [ks' (partition 4 4 [nil nil nil] ks)]
-     [:tr
-      (for [k ks']
-        (if (nil? k)
-          [:td.empty]
-          [:td [:a {:href (str "#" k)} k]]))])])
+  [:nav.skiplinks {:aria-label header}
+   [:h3 header]
+   [:ul
+    (for [k ks]
+      [:li [:a {:href (str "#" k)} k]])]])
 
 (defn find-duplicates
   [vs]
@@ -619,9 +654,9 @@
          "Index"
          (list
            (when letter->kvs
-             (skiplinks-table-view "Alphabetical" (map first letter->kvs)))
+             (skiplinks-view "Alphabetical" (map first letter->kvs)))
            (when other->kvs
-             (skiplinks-table-view "Other" (map first other->kvs)))))]]]))
+             (skiplinks-view "Other" (map first other->kvs)))))]]]))
 
 (defn frontpage-view
   []
@@ -681,30 +716,30 @@
   [:article
    [:header
     [:hgroup
-     [:h1 "Database errors"]]
-    [:h2 "TEI validation"]
-    (if validation
-      (list
-        [:p "The following TEI files have not been indexed in the database due to validation errors:"]
-        [:dl
-         (for [[filename error-message] (sort-by first validation)]
-           (list [:dt [:span.yellow "⚠ "] filename ": "]
-                 [:dd error-message]))])
-      [:p "No TEI validation errors were discovered."])
-    [:h2 "Other issues"]
-    (if other
-      (list
-        [:p "The following TEI files have not been indexed in the database due to various other issues:"]
-        [:dl
-         (for [[filename error-messages] (sort-by first other)]
-           (list [:dt [:span.yellow "⚠ "] filename ": "]
-                 [:dd
-                  (if (= 1 (count error-messages))
-                    (first error-messages)
-                    [:ul
-                     (for [error-message error-messages]
-                       [:li error-message])])]))])
-      [:p "No other issues were discovered."])]])
+     [:h1 "Database errors"]]]
+   [:h2 "TEI validation"]
+   (if validation
+     (list
+       [:p "The following TEI files have not been indexed in the database due to validation errors:"]
+       [:dl
+        (for [[filename error-message] (sort-by first validation)]
+          (list [:dt [:span.yellow "⚠ "] filename ": "]
+                [:dd error-message]))])
+     [:p "No TEI validation errors were discovered."])
+   [:h2 "Other issues"]
+   (if other
+     (list
+       [:p "The following TEI files have not been indexed in the database due to various other issues:"]
+       [:dl
+        (for [[filename error-messages] (sort-by first other)]
+          (list [:dt [:span.yellow "⚠ "] filename ": "]
+                [:dd
+                 (if (= 1 (count error-messages))
+                   (first error-messages)
+                   [:ul
+                    (for [error-message error-messages]
+                      [:li error-message])])]))])
+     [:p "No other issues were discovered."])])
 
 (defn content-view
   []
@@ -777,14 +812,16 @@
              [:rb title]
              [:rt id]]
             (or title id))]))
-     [:button.remove-pin {:title "Unpin all"
-                          :on    {:click [::event/reset-pins]}}]]))
+     [:button.remove-pin {:title      "Unpin all"
+                          :aria-label "Unpin all"
+                          :on         {:click [::event/reset-pins]}}]]))
 
 (defn error-message-view
   [{:keys [name message url body] :as error}]
   (when error
-    [:dialog.error {:open true}
-     [:h1 (or name "Unknown error")]
+    [:dialog.error {:open       true
+                    :aria-label "Error"}
+     [:h2 (or name "Unknown error")]
      [:ul
       [:li [:strong "Session: "] state/session-id]
       (when message
@@ -808,21 +845,25 @@
                               "single-document"
                               "multi-document")}
      #_(dev-view)
+     [:a.skip-link {:href "#main-content"} "Skip to main content"]
      (header-view)
      (error-message-view error)
      [:div.page-body-wrapper
       [:div.spacer]
       [:aside.spine {:aria-hidden "true"}
        "When " [:span.red "Danes"] " Prayed in " [:span.yellow "German"]]
-      [:section.page-body
-       ;; Some kind of ID is needed for replicant to properly re-render
-       ;; TODO: is there a better ID?
+      ;; NOTE: a <div> rather than a <section> since <main> conformance limits
+      ;; its ancestors to <html>, <body>, <div> and <form>.
+      [:div.page-body
+       ;; The key is needed for replicant to properly re-render on navigation.
        (if (empty? pins)
-         [:main {:id js/window.location.pathname}
+         [:main {:id            "main-content"
+                 :replicant/key js/window.location.pathname}
           (content-view)]
          (list
            (pinning-view)
-           [:main {:id js/window.location.pathname}
+           [:main {:id            "main-content"
+                   :replicant/key js/window.location.pathname}
             (content-view)
             (for [id pins]
               (entity-view (get-in state' [:entities id])

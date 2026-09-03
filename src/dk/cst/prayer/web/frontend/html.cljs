@@ -772,7 +772,7 @@
   []
   [:footer
    [:address.grey
-    [:div.big.black "© 2025"]
+    [:div.big.black "© 2025–2026"]
     "Department of Nordic Studies and Linguistics" [:br]
     "University of Copenhagen" [:br]
     "Emil Holms Kanal 2, DK-2300 Copenhagen S"]

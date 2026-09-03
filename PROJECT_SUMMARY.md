@@ -27,6 +27,7 @@ The application is architected as a **single-page app (SPA)** with client-side r
 - `src/dk/cst/prayer/search.cljc` - Search query language parser (shared)
 - `src/dk/cst/prayer/web.cljc` - Shared web utilities and routes
 - `src/dk/cst/prayer/tei.clj` - TEI document processing
+- `src/dk/cst/prayer/tei/schema.clj` - TEI schema (XSD) validation
 - `src/dk/cst/prayer/static.cljc` - Static data and constants
 
 ### Backend Web Layer
@@ -68,7 +69,9 @@ The application is architected as a **single-page app (SPA)** with client-side r
 
 ### Text Processing & Parsing
 - **Instaparse 1.5.0** - EBNF grammar parsing for search queries
-- **Huff 0.2.12** - Text processing utilities
+
+### HTML Rendering
+- **Huff 0.2.12** - Hiccup-to-HTML compiler (renders the server-side skeleton page)
 
 ### Custom Libraries (Git Dependencies)
 - **dk.cst/xml-hiccup** - TEI XML to Hiccup conversion
@@ -92,7 +95,7 @@ The system provides a sophisticated search interface through several key functio
 (dk.cst.prayer.search/query->ast "field:value AND other:term")
 
 ;; Database operations
-(dk.cst.prayer.db/build-db! db-path files-path)
+(dk.cst.prayer.db/build-db! db-path files-path & files-paths)
 (dk.cst.prayer.db/top-items db)
 ```
 
@@ -104,12 +107,16 @@ The backend serves transit-encoded EDN data at these endpoints:
 - Text content
 
 ### Frontend State Management
-State is managed through a centralized state atom with event-driven updates:
+State is managed through a centralized `state` atom (mutated with plain `swap!`)
+and a single Replicant dispatch handler for event-driven updates:
 
 ```clojure
-;; State management (frontend)
-(dk.cst.prayer.web.frontend.state/update-state! update-fn)
-(dk.cst.prayer.web.frontend.event/handle-event event-type data)
+;; The central state atom (frontend)
+dk.cst.prayer.web.frontend.state/state
+
+;; Replicant dispatches all UI events through this handler, which receives the
+;; Replicant data and a [handler-type & handler-args] vector.
+(dk.cst.prayer.web.frontend.event/handle replicant-data [handler-type & args])
 ```
 
 ## Data Model
@@ -276,7 +283,7 @@ The frontend uses a component-based architecture with Replicant instead of React
 - Prefer the idiomatic `clojure.java.shell/sh` for executing shell commands
 - Always handle potential errors from shell command execution
 - Use explicit working directory for relative paths: `(shell/sh "cmd" :dir "/path")`
-- For testing builds and tasks, run `clojure -X:test` instead of running tests piecemeal
+- There is no `:test` alias; run the test suite by loading its namespace in the REPL (e.g. `(require 'src.dk.cst.prayer.search-test :reload)` then `clojure.test/run-tests`) rather than testing piecemeal
 - When capturing shell output, remember it may be truncated for very large outputs
 - Consider using shell commands for tasks that have mature CLI tools like diffing or git operations
 

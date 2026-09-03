@@ -70,7 +70,7 @@
 - Prefer the idiomatic `clojure.java.shell/sh` for executing shell commands
 - Always handle potential errors from shell command execution
 - Use explicit working directory for relative paths: `(shell/sh "cmd" :dir "/path")`
-- For testing builds and tasks, run `clojure -X:test` instead of running tests piecemeal
+- Prefer running a whole test namespace over testing piecemeal (this project has no `:test` alias; load the test namespace in the REPL and use `clojure.test/run-tests`)
 - When capturing shell output, remember it may be truncated for very large outputs
 - Consider using shell commands for tasks that have mature CLI tools like diffing or git operations
 

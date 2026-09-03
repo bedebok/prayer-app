@@ -31,9 +31,28 @@
 (def validator
   (delay (->validator "resources/schema/tei_all.xsd")))
 
-;;TODO: transformation of "cvc-complex-type.2.4.a: ..."
-;;TODO: transformation of "cvc-complex-type.2.4.b: ..."
+(defn- shorten-alternatives
+  "Truncate a long comma-separated list `s` of expected elements."
+  [s]
+  (let [alternatives (str/split s #", ")]
+    (if (> (count alternatives) 6)
+      (str (str/join ", " (take 5 alternatives))
+           " … (+" (- (count alternatives) 5) " more)")
+      s)))
+
+(defn condense-error
+  "Make a Xerces validation `error-message` easier to read.
+
+  Strips XML namespace URIs from element references and truncates long lists
+  of expected elements, e.g. in cvc-complex-type.2.4.a/b messages."
+  [error-message]
+  (-> error-message
+      (str/replace #"\"[^\"]+\":" "")
+      (str/replace #"\{([^}]+)\}" (comp #(str "{" % "}")
+                                        shorten-alternatives
+                                        second))))
+
 (defn validate-tei
   "Return the first found validation error message for TEI `xml` (if invalid)."
   [xml]
-  (@validator xml))
+  (some-> (@validator xml) condense-error))

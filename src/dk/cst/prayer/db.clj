@@ -172,8 +172,55 @@
        (map :bedebok/id)
        (set)))
 
+(def key-attr->category
+  "Keyed reference attributes mapped to the semantic category of their keys."
+  {:bedebok/mentions "person"
+   :tei/author       "person"
+   :tei/respStmt     "person"
+   :tei/origPlace    "place"})
+
+(defn keyed-refs
+  "Return [attr key] pairs for every keyed reference within a TEI `entity`,
+  e.g. [:tei/author \"BIRGITTA\"]. Only categorised attributes are included."
+  [entity]
+  (letfn [(entry-refs [[k v]]
+            (cond
+              (map? v)
+              (concat (when-let [ref-key (and (key-attr->category k)
+                                              (:tei/key v))]
+                        [[k ref-key]])
+                      (mapcat entry-refs v))
+
+              (coll? v)
+              (mapcat #(entry-refs [k %]) v)))]
+    (mapcat entry-refs entity)))
+
+(defn check-key-conflicts!
+  "Log keyed references in `entities` whose keys have conflicting semantic
+  categories, e.g. a key marking both a person and a place (see issue #3).
+  Conflicts are also displayed on the db error page for every affected file."
+  [entities]
+  (let [refs (for [entity  entities
+                   [attr k] (keyed-refs entity)]
+               {:file     (:file/name entity)
+                :key      k
+                :category (key-attr->category attr)})]
+    (doseq [[k refs'] (group-by :key refs)]
+      (let [categories (sort (set (map :category refs')))]
+        (when (> (count categories) 1)
+          (let [msg (str "The key \"" k "\" is used as both: "
+                         (str/join " and " categories) ".")]
+            (t/log! {:level :warn
+                     :data  {:key k :refs refs'}}
+                    msg)
+            (doseq [file (set (map :file refs'))]
+              (swap! error-data update-in [:other file] conj msg))))))))
+
 (defn build-db!
   [db-path files-path & files-paths]
+  ;; The error page should only describe the latest build, so any errors
+  ;; accumulated during previous builds in the same JVM are cleared first.
+  (reset! error-data {})
   (io/make-parents db-path)
   (let [files    (validate-tei-files (apply xml-files files-path files-paths))
         entities (map tei/file->entity files)]
@@ -185,6 +232,9 @@
       (t/log! {:level :warn
                :data  error}
               (str "TEI validation error: " (count error) " file(s) excluded")))
+
+    ;; Keys with conflicting classifications are reported, but not excluded.
+    (check-key-conflicts! entities)
 
     (let [duplicate-ids (get-duplicate-ids entities)
           duplicate?    (comp duplicate-ids :bedebok/id)

@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 
   caddy:
@@ -8,6 +6,10 @@ services:
       context: ../
       dockerfile: docker/caddy/Dockerfile
     restart: unless-stopped
+    depends_on:
+      - prayer
+    security_opt:
+      - no-new-privileges:true
     # Persist certs across container rebuilds to avoid
     # hitting the Let's Encrypt rate limit on redeployment.
     volumes:
@@ -22,10 +24,13 @@ services:
       context: ../
       dockerfile: docker/prayer-app/Dockerfile
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     volumes:
-      - ${PRAYER_APP_FILES_DIR}:/etc/prayer-app/files
-    ports:
-      - "3457:3457"
+      - ${PRAYER_APP_FILES_DIR}:/etc/prayer-app/files:ro
+    # NOTE: no ports are published on purpose; Caddy (TLS + rate limiting) is
+    # the only public entrypoint and reaches the backend via the internal
+    # Docker network on prayer:3457.
 
 volumes:
   caddy_data:

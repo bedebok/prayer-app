@@ -8,10 +8,13 @@
             [dk.cst.hiccup-tools.hiccup :as hiccup]
             [dk.cst.hiccup-tools.match :as match]
             [dk.cst.hiccup-tools.zip :as z]
-            #?(:cljs [shadow.resource :as resource])))
+            #?(:clj  [clojure.java.io :as io]
+               :cljs [shadow.resource :as resource])))
 
+;; NOTE: the grammar is loaded from the classpath, not the filesystem, so that
+;; it also resolves inside the production uberjar.
 (insta/defparser parse*
-  #?(:clj  (slurp "resources/search.ebnf")
+  #?(:clj  (slurp (io/resource "search.ebnf"))
      :cljs (resource/inline "search.ebnf")))
 
 (defn parse

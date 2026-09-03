@@ -1,5 +1,6 @@
 (ns dk.cst.prayer.tei.schema
-  (:require [clojure.string :as str])
+  (:require [clojure.java.io :as io]
+            [clojure.string :as str])
   (:import [java.io File StringReader]
            [javax.xml XMLConstants]
            [javax.xml.transform Source]
@@ -9,8 +10,12 @@
            [javax.xml.transform.stream StreamSource]))
 
 (defn path->stream-source
+  "Make a StreamSource from a classpath-relative `path`.
+
+  The resource URL doubles as the system id, so that any relative imports in
+  the schema resolve correctly both in dev and inside the production uberjar."
   [^String path]
-  (StreamSource. (File. path)))
+  (StreamSource. (.toExternalForm (io/resource path))))
 
 ;; Based on https://github.com/rkday/clj-xml-validation
 (defn ->validator
@@ -29,7 +34,7 @@
           (.getMessage e))))))
 
 (def validator
-  (delay (->validator "resources/schema/tei_all.xsd")))
+  (delay (->validator "schema/tei_all.xsd")))
 
 (defn- shorten-alternatives
   "Truncate a long comma-separated list `s` of expected elements."

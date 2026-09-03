@@ -1,5 +1,6 @@
 {
-    order rate_limit before basicauth
+    # NOTE: the directive was renamed from basicauth in Caddy 2.8.
+    order rate_limit before basic_auth
 }
 
 bedebog.dk, localhost {

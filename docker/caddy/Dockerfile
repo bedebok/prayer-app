@@ -1,4 +1,4 @@
-FROM golang:1.26.0-bookworm AS build
+FROM golang:1.27.1-bookworm AS build
 
 WORKDIR /etc/caddy
 
@@ -7,20 +7,20 @@ WORKDIR /etc/caddy
 # so xcaddy recompilation is fast even when the layer cache is invalidated.
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.4
+    go install github.com/caddyserver/xcaddy/cmd/xcaddy@v0.4.7
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     xcaddy build --with github.com/RussellLuo/caddy-ext/ratelimit
 
 
 
-FROM ubuntu:noble
+FROM ubuntu:24.04
 
-RUN apt-get clean && \
-    apt-get update && \
+RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install --no-install-recommends -y \
-    ca-certificates
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /etc/caddy
 

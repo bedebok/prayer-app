@@ -1,5 +1,5 @@
 (ns src.dk.cst.prayer.search-test
-  (:require [dk.cst.prayer.search :refer [parse simplify]]
+  (:require [dk.cst.prayer.search :refer [parse simplify query->ast]]
             [clojure.test :refer [deftest is testing]]))
 
 (deftest test-parse
@@ -32,7 +32,17 @@
               [:QUIRK
                [:IGNORED [:OR]]
                [:UNION "1" [:INTERSECTION "2" "3"]]
-               [:IGNORED [:AND]]]]))))
+               [:IGNORED [:AND]]]])))
+    (testing "operand-less NOT should trigger it"
+      (is (= (parse "NOT")
+             [:QUERY [:QUIRK [:IGNORED [:NOT]]]]))
+      (is (= (parse "NOT NOT NOT")
+             [:QUERY [:QUIRK [:IGNORED [:NOT] [:NOT] [:NOT]]]])))
+    (testing "misplaced operators next to groups should trigger it"
+      (is (= (parse "| (1)")
+             [:QUERY [:QUIRK [:IGNORED [:OR]] [:INTERSECTION [:INTERSECTION "1"]]]]))
+      (is (= (parse "(1) |")
+             [:QUERY [:QUIRK [:INTERSECTION [:INTERSECTION "1"]] [:IGNORED [:OR]]]]))))
 
   (testing "values"
     (testing "whitespace at bounds should be ignored"
@@ -47,6 +57,20 @@
     (testing "groups should return same output as values"
       (is (= (parse "(this that)")
              [:QUERY [:INTERSECTION "this" "that"]])))
+    (testing "groups and values should be able to mix without operators"
+      (is (= (parse "this (that other)")
+             [:QUERY [:INTERSECTION "this" [:INTERSECTION "that" "other"]]]))
+      (is (= (parse "(this) (that)")
+             [:QUERY [:INTERSECTION [:INTERSECTION "this"] [:INTERSECTION "that"]]])))
+    (testing "tokens starting with an operator keyword should stay tokens"
+      (is (= (parse "ANDERS")
+             [:QUERY [:INTERSECTION "ANDERS"]]))
+      (is (= (parse "ORGEL")
+             [:QUERY [:INTERSECTION "ORGEL"]]))
+      (is (= (parse "NOTE")
+             [:QUERY [:INTERSECTION "NOTE"]]))
+      (is (= (parse "field:NOTE")
+             [:QUERY [:INTERSECTION [:FIELD "field" "NOTE"]]])))
     (testing "fields should be available"
       (is (= (parse "field:value")
              (parse "field = value")
@@ -123,4 +147,14 @@
              [:INTERSECTION [:UNION "1" [:INTERSECTION [:NEGATION "2"] "3"]]]))))
   (testing "quirks should be collapsed and misplaced content removed"
     (is (= (simplify (parse "| 1 | 2 & 3 &"))
-           [:INTERSECTION [:UNION "1" [:INTERSECTION "2" "3"]]]))))
+           [:INTERSECTION [:UNION "1" [:INTERSECTION "2" "3"]]])))
+  (testing "redundant grouping should be collapsed"
+    (is (= (simplify (parse "((1 2))"))
+           (simplify (parse "1 (2)"))
+           [:INTERSECTION "1" "2"]))))
+
+(deftest test-query->ast
+  (testing "blank, unparseable, and operator-only queries should return nil"
+    (is (nil? (query->ast "   ")))
+    (is (nil? (query->ast "\"\"")))
+    (is (nil? (query->ast "NOT AND")))))

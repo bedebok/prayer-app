@@ -65,21 +65,35 @@
            [:NEGATION handle-de-morgans-laws]]})
 
 (defn simplify
-  "Simplify a Hiccup `parse-tree`."
+  "Simplify a Hiccup `parse-tree`.
+
+  Returns nil for a degenerate tree without any usable content, e.g. a query
+  consisting solely of misplaced operators."
   [parse-tree]
-  (let [inner (second (hiccup/reshape parse-tree parse-tree-simplification))]
+  (when-let [inner (second (hiccup/reshape parse-tree parse-tree-simplification))]
     (if (not= :INTERSECTION (first inner))
       [:INTERSECTION inner]
       inner)))
 
 (defn query->ast
+  "Parse and simplify a search `query` into an executable AST.
+
+  Returns nil when the query is blank, cannot be parsed, or contains no
+  usable content."
   [query]
   (try
-    (doto (simplify (parse query))
-      (#(t/log! {:level :info
-                 :data  {:query query
-                         :ast   %}}
-                "Transformed search query into AST.")))
+    (let [parse-tree (parse query)]
+      (if (insta/failure? parse-tree)
+        (t/log! {:level :warn
+                 :data  {:query   query
+                         :failure parse-tree}}
+                "Failed to parse search query.")
+        (when-let [ast (some-> parse-tree simplify)]
+          (t/log! {:level :info
+                   :data  {:query query
+                           :ast   ast}}
+                  "Transformed search query into AST.")
+          ast)))
     (catch #?(:clj Exception :cljs js/Error) e
       (t/log! {:level :error
                :data {:query query

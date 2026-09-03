@@ -3,41 +3,44 @@
       - ordered choice (using / instead of |) is utilised to ensure correct
         evaluation of ambiguous queries.
       - the output is greatly is simplified by hiding unneeded data using <...>
+      - the word operators (AND, OR, NOT) only apply at word boundaries, so
+        tokens such as ANDERS or NOTE are not mistaken for operator usage.
       - currently this grammar supports parsing:
         * a single word or multiple words as a query
         * field:value (or field = value)
         * AND/OR operators (alternatively: | and &)
+        * NOT operator (alternatively: !)
         * grouping of values via parentheses
         * phrases "such as this one"
 *)
 
-QUERY = NEGATION / QUIRK / EXPRESSION / GROUP
+QUERY = NEGATION / QUIRK / GROUP / EXPRESSION
 
 (* correct usage of operators to make boolean expressions *)
 <EXPRESSION> = INTERSECTION / UNION
-INTERSECTION = VALUES / OPERAND ( {SPACE} <AND> {SPACE} OPERAND )+
-UNION = (VALUE/INTERSECTION/OPERAND) ( {SPACE} <OR> {SPACE} (VALUE/INTERSECTION/OPERAND) )+
+INTERSECTION = VALUES ( {SPACE} <AND> {SPACE} VALUES )*
+UNION = (VALUE/INTERSECTION) ( {SPACE} <OR> {SPACE} (VALUE/INTERSECTION) )+
 
 (* bad usage of operators, but the input values can still be used *)
 QUIRK = IGNORED EXPRESSION / EXPRESSION IGNORED / IGNORED EXPRESSION IGNORED / IGNORED
 IGNORED = MISPLACED
 <MISPLACED> = OPERATOR {SPACE} MISPLACED* /
               {SPACE} OPERATOR {SPACE} MISPLACED* /
-              SPACE NOT <MISPLACED*> /
-              NOT {SPACE} OPERATOR {SPACE} MISPLACED*
+              SPACE NOT MISPLACED* /
+              NOT {SPACE} OPERATOR {SPACE} MISPLACED* /
+              NOT ( {SPACE} NOT )* {SPACE} !#'\S'
 
-<OPERAND> = VALUES / GROUP
-NEGATION = <NOT {SPACE}> ( VALUE | GROUP )
-<GROUP> = <'(' {SPACE}> ( QUIRK / INTERSECTION / EXPRESSION ) <{SPACE} ')'>
+NEGATION = <NOT {SPACE}> VALUE
+<GROUP> = <'(' {SPACE}> ( QUIRK / EXPRESSION ) <{SPACE} ')'>
 <OPERATOR> = AND | OR
 <VALUES> = VALUE ( {SPACE} VALUE )*
-<VALUE> = NEGATION / PHRASE / FIELD / TOKEN
+<VALUE> = NEGATION / PHRASE / FIELD / GROUP / TOKEN
 FIELD = TOKEN {SPACE} <EQUALS> {SPACE} ( TOKEN | PHRASE )
 
 <PHRASE> = <'"'> #'[^"]+' <'"'>
 EQUALS = ":" | "="
-NOT = <'NOT' | '!' >
-AND = <'AND' | '&' | '&&'>
-OR = <'OR' | '|' | '||'>
+NOT = <'NOT' !#'[^\s"|&:=()]' | '!' >
+AND = <'AND' !#'[^\s"|&:=()]' | '&' | '&&'>
+OR = <'OR' !#'[^\s"|&:=()]' | '|' | '||'>
 <TOKEN> = !( OPERATOR | NOT ) #'[^\s"|&:=()]+'
 <SPACE> = <#'\s+'>

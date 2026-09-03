@@ -25,7 +25,7 @@ services:
     volumes:
       - ${PRAYER_APP_FILES_DIR}:/etc/prayer-app/files
     ports:
-      - "3456:3456"
+      - "3457:3457"
 
 volumes:
   caddy_data:

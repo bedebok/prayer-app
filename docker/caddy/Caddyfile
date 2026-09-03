@@ -5,5 +5,5 @@
 bedebog.dk, localhost {
     rate_limit {remote.ip} 240r/m
     encode gzip
-    reverse_proxy prayer:3456
+    reverse_proxy prayer:3457
 }

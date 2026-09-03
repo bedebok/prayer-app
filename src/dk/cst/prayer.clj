@@ -12,7 +12,7 @@
 (t/streams->telemere!)
 (t/set-min-level! :info)
 
-;; Starts a production server available at port 3456.
+;; Starts a production server available at port 3457.
 ;; NOTE: this is expected to be done by booting system via docker compose!
 (defn -main
   [& _args]

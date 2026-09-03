@@ -8,7 +8,7 @@
             #?(:cljs [reitit.frontend.history :as rfh])))
 
 (def port
-  3456)
+  3457)
 
 ;; NOTE: must be 0.0.0.0 when running in a container, cannot be localhost!
 (def host

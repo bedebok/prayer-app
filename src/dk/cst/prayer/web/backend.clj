@@ -53,7 +53,7 @@
                :font-src    "'self'"
                :style-src   "'self' 'unsafe-inline'"
                :base-uri    "'self'"})]
-    (-> {::http/routes          #((deref #'routes))
+    (-> {::http/routes          #(routes)
          ::http/type            :jetty
          ::http/host            web/host
          ::http/port            web/port

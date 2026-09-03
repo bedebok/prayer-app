@@ -44,16 +44,14 @@
 (defn coerce-params
   [params]
   (->> (for [[k v] params]
-         (let [{:keys [constraint coerce]} (get coercion k)]
+         (let [{:keys [constraint]} (get coercion k)]
            ;; Only apply constraints in ClojureScript here as constraints are
            ;; already applied at the route level in Pedestal.
            #?(:cljs (when (and constraint (not (re-matches constraint v)))
                       (throw (ex-info (str k " constraint did not match: " v)
                                       {:params   params
                                        :coercion coercion}))))
-           (if coerce
-             [k (coerce v)]
-             [k v])))
+           [k v]))
        (into {})))
 
 (defn coerce-request

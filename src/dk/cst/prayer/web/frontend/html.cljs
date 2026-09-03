@@ -85,8 +85,7 @@
 
 (defn label-view
   [k v]
-  (let [label (get-in static/labels [k v] (str v))]
-    label))
+  (get-in static/labels [k v] (str v)))
 
 (defn lang-attr
   "Return a {:lang ...} attr map when `s` looks like a BCP 47 language tag.
@@ -218,11 +217,6 @@
              :title "View corresponding text"})
        id])
 
-    #_:bedebok/type
-    #_[:a {:href  (str "/" bedebok-type "s")
-           :title "View more of this type"}
-       v]
-
     #{:bedebok/type
       :tei/class
       :tei/settlement
@@ -342,7 +336,7 @@
 
 (defn controls-view
   [id]
-  (let [{:keys [location] :as state'} @state
+  (let [state'     @state
         pages      (get-in state' [:cached id :pages])
         page-count (count pages)
         n          (get-in state' [:user :entities id :n] 0)]
@@ -365,8 +359,9 @@
 (defn page-view
   [[pb content]]
   (let [data-n (-> pb first second :data-n)]
-    (into [:article.tei-page [:header.tei-page-header data-n]
-           [:section.tei-page-content content]])))
+    [:article.tei-page
+     [:header.tei-page-header data-n]
+     [:section.tei-page-content content]]))
 
 (defn pages-view
   [id]
@@ -527,8 +522,7 @@
   [:article
    [:header
     [:hgroup
-     [:h1 (or title id)]
-     #_[:p "References to this work"]]]
+     [:h1 (or title id)]]]
    (when node
      [:section.tei-free-content node])
    (if-let [miscellaneous (-> entity

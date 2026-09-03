@@ -137,31 +137,30 @@
   #"[0-9a-zA-ZæøåÆØÅ_-]+")
 
 (defn check-illegal-id!
-  "Returns TRUE if the TEI `entity` isn't missing the initial <pb> tag."
+  "Returns TRUE if the `entity` has a legal xml:id; a bad corresp attribute is
+  only reported, since it merely breaks cross-references, not the entity."
   [{:keys [file/name bedebok/id tei/corresp] :as entity}]
   (let [bad? #(and (string? %)
                    (not (re-matches alphanumeric-id %)))
         bad-id      (bad? id)
         bad-corresp (some bad? corresp)]
-    (if (and (not bad-id) (not bad-corresp))
-      true
-      (do
-        (when bad-id
-          (t/log! {:level :warn
-                   :data  (entity-summary entity)}
-                  (str "The ID of " name " should be an alphanumeric string,"
-                       " not " id ". "
-                       "It has been excluded from the database."))
-          (swap! error-data update-in [:other name]
-                 conj (str "The xml:id should be an alphanumeric string.")))
-        (when bad-corresp
-          (t/log! {:level :warn
-                   :data  (entity-summary entity)}
-                  (str "The corresp attribute of " name " should be an alphanumeric string,"
-                       " not " (str/join ", " corresp) ". "
-                       "It has been excluded from the database."))
-          (swap! error-data update-in [:other name]
-                 conj (str "The corresp attribute should be an alphanumeric string.")))))))
+    (when bad-id
+      (t/log! {:level :warn
+               :data  (entity-summary entity)}
+              (str "The ID of " name " should be an alphanumeric string,"
+                   " not " id ". "
+                   "It has been excluded from the database."))
+      (swap! error-data update-in [:other name]
+             conj (str "The xml:id should be an alphanumeric string.")))
+    (when bad-corresp
+      (t/log! {:level :warn
+               :data  (entity-summary entity)}
+              (str "The corresp attribute of " name " should be an alphanumeric"
+                   " string, not " (str/join ", " corresp) ". "
+                   "Cross-references to it will not work."))
+      (swap! error-data update-in [:other name]
+             conj (str "The corresp attribute should be an alphanumeric string.")))
+    (not bad-id)))
 
 (defn- get-duplicate-ids
   [entities]
@@ -248,13 +247,14 @@
                              (filter check-illegal-id!))]
 
       ;; Some TEI files might not have unique IDs, so they are excluded next.
-      (doseq [duplicate duplicates]
-        (swap! error-data assoc-in [:other (:file/name duplicate)]
-               #{(str "The document has a duplicate xml:id: " (:bedebok/id duplicate))}))
-      (t/log! {:level :warn
-               :data  {:affected-ids duplicate-ids
-                       :duplicates   (map entity-summary duplicates)}}
-              (str "Duplicate IDs found: " (count duplicates) " files(s) excluded."))
+      (when (seq duplicates)
+        (doseq [duplicate duplicates]
+          (swap! error-data assoc-in [:other (:file/name duplicate)]
+                 #{(str "The document has a duplicate xml:id: " (:bedebok/id duplicate))}))
+        (t/log! {:level :warn
+                 :data  {:affected-ids duplicate-ids
+                         :duplicates   (map entity-summary duplicates)}}
+                (str "Duplicate IDs found: " (count duplicates) " file(s) excluded.")))
 
       ;; Before transacting we present an overview of the validated files.
       (t/log! {:level :info
@@ -270,35 +270,6 @@
                  :data  (entity-summary entity)}
                 (str "Transacting entity: " (:bedebok/id entity)))
         (d/transact! @conn [entity])))))
-
-(defn top-items
-  "Get the top-level <msItem> data, i.e. not the children."
-  [db]
-  (->> (d/q '[:find [?e ...]
-              :where
-              (not [?gpe :tei/msItem ?pe])                  ; top-level
-              [?pe :tei/msItem ?e]
-              [?e :tei/key ?key]]
-            (d/db (d/get-conn db-path static/schema)))
-       (map (fn [id]
-              (d/touch (d/entity db id))))))
-
-;; TODO: remove this now that the built-in phrase search is in use?
-;; The phrase search implementation: Datalevin's existing full-text search is
-;; augmented with a fairly loose regex search for the required phrase.
-;; NOTE: Datalevin returns the UNION of results rather than the INTERSECTION,
-;;       e.g. the query "this that" is equivalent to "this OR that".
-;;       It also doesn't support phrase search (only token search is supported),
-;;       so the phrase "\"this that\"" returns the equivalent of the UNION of
-;;       results of searching for either "this" or "that".
-(defn contains-phrase
-  "Does the string `s` contain the `phrase` (case-insensitive)."
-  [s phrase]
-  (-> (str "(?i)" phrase)                                   ; case-insensitive
-      (str/replace #"\s+" "\\\\s")                          ; whitespace-insensitive
-      (re-pattern)
-      (re-find s)
-      (boolean)))
 
 (defn operand-type
   [v]
@@ -477,7 +448,7 @@
   (let [triples        (intersection->triples ast)
         initial-result (run-search db triples)]
     (if-let [or-clauses (:UNION (meta triples))]
-      (->> (map (comp (partial search-union db initial-result)) or-clauses)
+      (->> (map (partial search-union db initial-result) or-clauses)
            (reduce result-intersection))
       initial-result)))
 
@@ -596,8 +567,6 @@
          [?msitem :tei/key "MAGNIFICAT"]
          [?e :bedebok/id ?id]]
        (d/db (d/get-conn db-path static/schema)))
-
-  (top-items (d/db (d/get-conn db-path static/schema)))
 
   ;; Test full-text search
   (d/q '[:find ?v ?e ?a

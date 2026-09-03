@@ -48,9 +48,9 @@
   (let [body (:body response)]
     (if (coll? body)
       body
-      (do (t/log! {:level    :warn
-                   :url      (some-> response meta ::fetch/request .-url)
-                   :response response}
+      (do (t/log! {:level :warn
+                   :data  {:url      (some-> response meta ::fetch/request .-url)
+                           :response response}}
                   "Response body is not a collection, ignoring.")
           nil))))
 
@@ -71,7 +71,7 @@
             %)))
 
 (defn warn-on-4xx!
-  "Return nil on server error in `fetch-promise` and write to error log."
+  "Return nil on client error in `fetch-promise` and log a warning."
   [fetch-promise]
   (.then fetch-promise
          #(if (<= 400 (:status %) 499)
@@ -116,20 +116,16 @@
 (defn fetch-index
   [type]
   (when-not (contains? (:index @state) type)
-    (some-> (fetch (web/api-path "/api/index/" type))
+    (some-> (fetch (web/api-path (if (= type "work")
+                                   "/api/works"
+                                   (str "/api/index/" type))))
             (.then #(add-index type (coll-body %))))))
 
-(defn fetch-works
-  []
-  (when-not (contains? (:index @state) "work")
-    (some-> (fetch (web/api-path "/api/works"))
-            (.then #(add-index "work" (coll-body %))))))
-
 (defn fetch-db-error
+  "Fetch the db error overview (always refetched to keep it fresh)."
   []
-  (when-not (contains? (:error @state) :db)
-    (some-> (fetch (web/api-path "/api/db-error"))
-            (.then #(swap! state assoc :db-error (coll-body %))))))
+  (some-> (fetch (web/api-path "/api/db-error"))
+          (.then #(swap! state assoc :db-error (coll-body %)))))
 
 (defn backend-log
   [error-data]
@@ -140,12 +136,10 @@
   #_(.sendBeacon js/navigator (web/api-path "/api/error/" state/session-id) error-data))
 
 (defn handle
-  [req handler-data]
-  (case handler-data
-    [::search] (search req)
-    [::fetch-db-error] (fetch-db-error)
-    [::fetch-entity] (fetch-entity req)
-    [::fetch-work] (fetch-work req)
-    [::fetch-index "work"] (fetch-works)
-    [::fetch-index "text"] (fetch-index "text")
-    [::fetch-index "manuscript"] (fetch-index "manuscript")))
+  [req [handler-type & [arg]]]
+  (case handler-type
+    ::search (search req)
+    ::fetch-db-error (fetch-db-error)
+    ::fetch-entity (fetch-entity req)
+    ::fetch-work (fetch-work req)
+    ::fetch-index (fetch-index arg)))

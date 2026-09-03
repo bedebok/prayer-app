@@ -101,97 +101,31 @@
               "Failed to transform search query into AST."))))
 
 (comment
-  (query->ast "NOT corresp:AM08-0073")
-  (simplify (parse "NOT (NOT NOT NOT NOT børge & glen)"))
-  (simplify (parse "NOT (glen & glen)"))
-  (simplify (parse "NOT corresp:AM08-0073 glen"))
-
-  (parse "!(this that)")
-  (parse "1 2 OR (3 AND 4)")
-  [:QUERY
-   [:UNION
-    [:INTERSECTION [:FIELD "field" "value"] "1" "2" "3"]
-    [:INTERSECTION
-     [:NEGATION [:INTERSECTION "4" "5"]]
-     [:UNION "6" "7"]]]]
-
-  [:QUERY
-   [:EXPRESSION
-    [:EXPRESSION "1" [:EXPRESSION "2" [:OR] "3"]]
-    [:OR]
-    "4"
-    [:OR]
-    "5"]]
-
-  (let [parts (->> [[:VALUES "1"] [:AND] [:VALUES "2"] [:OR] [:VALUES "3"]]
-                   (remove #{[:AND]})
-                   (partition-by #{[:OR]})
-                   (take-nth 2))]
-    (map (partial into #{}) parts))
-
-  [:QUERY
-   [:OPT
-    [:OPT "1" [:OPT "2"] [:OPT "3"]]
-    [:OPT "4"]
-    [:OPT "5"]]]
-
-  (->> [[:VALUES "1"] [:AND] [:VALUES "2"]]
-       (remove #{[:AND]})
-       (partition-by #{[:OR]})
-       (take-nth 2)
-       (count))
-
-  (simplify (parse "!!!!!!!(4 | !5)"))
-  (simplify (parse "!!!!!!(4 !5)"))
-  (simplify (parse "!!!!!!(4 !5)"))
-  (parse "1 & 2 | 3")
-  (parse "1 & 2")
-  (parse "1 | 2 3")
-  (simplify (parse "1 & ( 2 & (3 & 4) )"))
-  (simplify (parse "(field:value 1 2 3) | !!!(4 5) & (6 | 7)"))
-  (simplify (parse "1 | (2 3)"))
-  (simplify (parse "(1 & (2|3)) | 4 | 5"))
-  (simplify (parse "this that AND (1 2 3)"))
-  (parse "that OR this AND f:v AND NOT (1 2 3)")
-  (parse "that OR (1 2 3)")
-  (parse "!(this & that)")
+  ;; Basic parsing and simplification.
   (parse "this that")
+  (parse "this AND that")
+  (parse "1 & 2 | 3")
+  (simplify (parse "(1 & (2|3)) | 4 | 5"))
+  (simplify (parse "1 & ( 2 & (3 & 4) )"))
 
-  (parse "NOT that this")
-  (simplify (parse "that OR this AND that"))
-
-  (simplify (parse "thing NOT (that this)"))
-  (parse "NOT AND this that")
-  (parse "AND this AND that")
-  (simplify (parse "AND&|"))
-  (parse "NOT NOT NOT")
-  (parse "NOT AND")
-  (parse "NOT (that this)")
-  (parse "this !that")
-  (parse "   ")                                             ; => should return nil
-  (parse "1|")                                              ; => quirks mode
-  (simplify (parse "1|&"))                                  ; => quirks mode
-  (parse "|1|&")                                            ; => quirks mode
-  (parse "| 1 |")                                           ; => quirks mode
-  (parse "AND")
-  (parse "field:value")
+  ;; Fields and phrases.
   (parse "field:value")
   (parse "field = value")
-  (parse "aaabbbb field:value OR asdsd")
-  (parse "aaabbbb (field:value OR asdsd OR 1 2 3)")         ; TODO: should be possible?
-  (parse "aaabbbb (field:value AND asdsd AND 1 2 3)")       ;  TODO: should be possible?
-  (parse "1 2 3")
-  (parse "aaabbbb sdds AND asdsd")
-  (parse "aaabbbb sdds AND asdsd")
-  (parse "aaabbbb sdds AND ( asdsd OR glen john)")
-  (parse "this AND that")
-  (parse "\"aaabbbb sdd\" AND sdds AND asdsd")
-  (parse "(aaabbbb sdds AND) OR asdsd")                     ; quirks mode
-  (parse "aaabbbb|asdsd|\"glen er john\"")
-  (parse "\"aaabbbb AND sdd\" | asdsd")
   (parse "\"glen:john\" | asdsd")
-  (parse "\"aaabbbb sdd\" OR asdsd OR glen")
-  (parse "\"aaabbbb sdd\" | asdsd | glen")
-  (parse "\"aaabbbb sdd\" | asdsd")
-  #_.
+  (parse "\"aaabbbb AND sdd\" | asdsd")
+
+  ;; Negations, incl. double negatives and De Morgan's laws.
+  (query->ast "NOT corresp:AM08-0073")
+  (simplify (parse "NOT (NOT NOT NOT NOT børge & glen)"))
+  (simplify (parse "!!!!!!!(4 | !5)"))
+  (simplify (parse "thing NOT (that this)"))
+
+  ;; Degenerate input.
+  (parse "   ")                                             ; => should return nil
+  (parse "1|")                                              ; => quirks mode
+  (simplify (parse "AND&|"))                                ; => quirks mode
+  (parse "AND")
+
+  ;; TODO: should be possible?
+  (parse "aaabbbb (field:value OR asdsd OR 1 2 3)")
   #_.)

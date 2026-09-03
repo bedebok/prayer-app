@@ -92,7 +92,7 @@
   ([ctx res]
    (update
      ctx :response merge
-     (if (not (empty? res))
+     (if (seq res)
        {:status  200
         :headers {"Content-Type" "application/transit+json"}
         :body    (transito/write-str res)}
@@ -124,7 +124,7 @@
 
 (def with-eid
   (interceptor
-    {:name  ::entity
+    {:name  ::with-eid
      :enter (fn [{:keys [db request] :as ctx}]
               (assoc ctx :eid (->> (d/q '[:find ?e .
                                           :in $ ?id
@@ -140,7 +140,7 @@
   (-> (d/touch e)
       (str)
       (edn/read-string)
-      (dissoc :bedebok/text :db/id)))                       ; clean))
+      (dissoc :bedebok/text :db/id)))
 
 (def entity
   (interceptor
@@ -271,7 +271,7 @@
                                  :error      error}}
                         (str "[FRONTEND] " name (when message
                                                   (str ": " message))))
-                (basic-response ctx request)))}))
+                (basic-response ctx)))}))
 
 (def app
   (interceptor

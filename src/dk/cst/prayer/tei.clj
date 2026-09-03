@@ -14,15 +14,14 @@
 
 (defn tei-ref
   [tag]
-  (let [url  (str "https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-"
-                  (if (string? tag)
-                    tag
-                    (name tag))
-                  ".html")
-        html (try
-               (slurp url)
-               (catch FileNotFoundException _))]
-    html))
+  (let [url (str "https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-"
+                 (if (string? tag)
+                   tag
+                   (name tag))
+                 ".html")]
+    (try
+      (slurp url)
+      (catch FileNotFoundException _))))
 
 (defn tei-description
   [html]
@@ -133,7 +132,7 @@
            (set)))
 
 (defn hiccup->entity
-  "Convert TEI `hiccup` into an Datom entity based on a `search-kvs`."
+  "Convert TEI `hiccup` into a Datom entity based on a `search-kvs`."
   [hiccup search-kvs]
   (let [matchers (map-indexed (fn [n [matcher _]]
                                 [n (match matcher)]) search-kvs)
@@ -383,15 +382,7 @@
    [:acquisition
     (inner-text :tei/acquisition)]
 
-   #_[:support
-      (inner-text :tei/support)]
-
-   ;; TODO: what is this value? what should be done about it?
-   #_[:extent
-      (fn [node])]
-
-   #_[:dimensions]
-
+   ;; TODO: handle <extent>?
    [:height
     (inner-text :tei/dimensions :tei/height)]
 
@@ -424,18 +415,6 @@
                                                      :tei/name      key
                                                      :tei/type      type}}
                              label (assoc :bedebok/label label))]})))]
-
-   ;; TODO: ensure that these exist in prototypical files
-   ;; These sentence references seem to be another type of named entity.
-   [(with-meta (match [:s {:n true :type true}]) {:on-match :continue})
-    (fn [node]
-      (let [{:keys [type n]} (elem/attr node)
-            label (h/hiccup->text node tei-conversion)]
-        ;; NOTE: upserts require both composite & constituent parts!
-        {:bedebok/named [(cond-> {:bedebok/entity {:tei/name+type [key type]
-                                                   :tei/name      key
-                                                   :tei/type      type}}
-                           label (assoc :bedebok/label label))]}))]
 
    ;; The raw document text is included to facilitate full-text search.
    ;; This is enabled in the db schema definition for :tei/text.

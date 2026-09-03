@@ -143,7 +143,7 @@
     (if @hard-refresh?
       (do
         (println "hard refresh -- removing cache:" (cache-size ls))
-        (doto (.-localStorage js/window)
+        (doto ls
           (.removeItem "hash")
           (.removeItem "state")))
 
